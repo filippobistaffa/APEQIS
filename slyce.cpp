@@ -174,25 +174,37 @@ unsigned vectorsum(const agent *r, agent n, const chunk *x) {
 	return ret;
 }
 
-/*__attribute__((always_inline)) inline
-void coalition(agent *c, const chunk *dr, const meter *sp,
+__attribute__((always_inline)) inline
+void coalition(agent *c, const chunk *dr, const meter *sp, const edge *g, const agent *adj,
 	       IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
+	IloFloatVar d = IloFloatVar(env, 0, FLT_MAX);
+	da.add(d);
 	IloExpr expr(env);
-	for (agent j = 0; j < *c; j++) {
-		expr += x[c[j + 1]];
-		#ifdef DEBUG
-		printf("%sx[%u] ", j ? "+ " : "", c[j + 1]);
-		#endif
-	}
-	#ifdef DEBUG
-	printf("<= %.2f\n", 0.01 * COALVALUE(c, GET(dr, c[1]), sp));
-	#endif
-	model.add(expr <= 0.01 * COALVALUE(c, GET(dr, c[1]), sp));
-	expr.end();
-}*/
 
-size_t slyce(agent *r, agent *f, agent m, const agent *adj, agent d, const chunk *dr, const meter *sp,
+	for (agent i = 0; i < *c; i++) {
+		const agent v1 = c[i + 1];
+		expr += ea[v1];
+		for (agent j = 0; j < adj[v1 * N]; j++) {
+			const agent v2 = adj[v1 * N + j + 1];
+			if (v2 > v1 && binarysearch(v2, c + 1, *c, dr) < *c)
+				expr += ea[g[v1 * N + v2]];
+		}
+	}
+
+	const penny cv = COALVALUE(c, GET(dr, c[1]), sp);
+
+	#ifdef DEBUG
+	cout << expr << endl;
+	printf("cv = %u\n", cv);
+	#endif
+
+	model.add(expr - d <= cv);
+	model.add(expr + d >= cv);
+	expr.end();
+}
+
+size_t slyce(agent *r, agent *f, agent m, const edge *g, const agent *adj, agent d, const chunk *dr, const meter *sp,
 	     IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
 	size_t ret = 0;
@@ -201,7 +213,7 @@ size_t slyce(agent *r, agent *f, agent m, const agent *adj, agent d, const chunk
 		#ifdef DEBUG
 		printc(r, COALVALUE(r, GET(dr, *(r + 1)), sp));
 		#endif
-		//coalition(r, dr, sp, env, model, ea, da);
+		coalition(r, dr, sp, g, adj, env, model, ea, da);
 		ret++;
 	}
 
@@ -220,7 +232,7 @@ size_t slyce(agent *r, agent *f, agent m, const agent *adj, agent d, const chunk
 				memcpy(nfs, fs, sizeof(agent) * k);
 				QSORT(agent, nr + 1, *nr, LTDR);
 				nbar(fs, k, r, nr, adj, nf, dr);
-				ret += slyce(nr, nf, m - k, adj, d + nd, dr, sp, env, model, ea, da);
+				ret += slyce(nr, nf, m - k, g, adj, d + nd, dr, sp, env, model, ea, da);
 			}
 			inittwiddle(k, *f, p);
 			while (!twiddle(&w, &y, &z, p)) {
@@ -231,7 +243,7 @@ size_t slyce(agent *r, agent *f, agent m, const agent *adj, agent d, const chunk
 					memcpy(nfs, fs, sizeof(agent) * k);
 					QSORT(agent, nr + 1, *nr, LTDR);
 					nbar(fs, k, r, nr, adj, nf, dr);
-					ret += slyce(nr, nf, m - k, adj, d + nd, dr, sp, env, model, ea, da);
+					ret += slyce(nr, nf, m - k, g, adj, d + nd, dr, sp, env, model, ea, da);
 				}
 			}
 		}
@@ -240,7 +252,7 @@ size_t slyce(agent *r, agent *f, agent m, const agent *adj, agent d, const chunk
 	return ret;
 }
 
-size_t constraints(const agent *adj, const chunk *dr, const meter *sp,
+size_t constraints(const edge *g, const agent *adj, const chunk *dr, const meter *sp,
 		   IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
 	agent *r = (agent *)malloc(sizeof(agent) * (K + 1) * N);
@@ -249,7 +261,7 @@ size_t constraints(const agent *adj, const chunk *dr, const meter *sp,
 
 	for (agent i = 0; i < N; i++) {
 		r[0] = 0; f[0] = 1; f[1] = i;
-		ret += slyce(r, f, K, adj, 0, dr, sp, env, model, ea, da);
+		ret += slyce(r, f, K, g, adj, 0, dr, sp, env, model, ea, da);
 	}
 
 	free(f);

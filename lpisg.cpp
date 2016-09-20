@@ -16,22 +16,27 @@ void printbuf(const type *buf, unsigned n, const char *name = NULL) {
 #ifndef TWITTER
 
 __attribute__((always_inline)) inline
-void createedge(agent *adj, agent v1, agent v2) {
+void createedge(edge *g, agent *adj, agent v1, agent v2, edge e, IloEnv &env, IloFloatVarArray &ea) {
 
-	printf("%u -- %u\n", v1, v2);
+	//printf("%u -- %u\n", v1, v2);
+	g[v1 * N + v2] = g[v2 * N + v1] = e;
 	adj[v1 * N + (adj[v1 * N]++) + 1] = v2;
 	adj[v2 * N + (adj[v2 * N]++) + 1] = v1;
+
+	ostringstream ostr;
+	ostr << "e_" << v1 << "," << v2;
+	ea.add(IloFloatVar(env, -FLT_MAX, FLT_MAX, ostr.str().c_str()));
 }
 
 __attribute__((always_inline)) inline
-edge scalefree(agent *adj, const chunk *dr) {
+edge scalefree(edge *g, agent *adj, const chunk *dr, IloEnv &env, IloFloatVarArray &ea) {
 
 	edge ne = 0;
 	agent deg[N] = {0};
 
 	for (agent i = 1; i <= M; i++) {
 		for (agent j = 0; j < i; j++) {
-			createedge(adj, i, j);
+			createedge(g, adj, i, j, N + ne, env, ea);
 			deg[i]++;
 			deg[j]++;
 			ne++;
@@ -55,7 +60,7 @@ edge scalefree(agent *adj, const chunk *dr) {
 				}
 				q--;
 				t |= 1UL << q;
-				createedge(adj, i, q);
+				createedge(g, adj, i, q, N + ne, env, ea);
 				deg[i]++;
 				deg[q]++;
 				ne++;
@@ -87,17 +92,6 @@ int main(int argc, char *argv[]) {
 	for (agent i = 0; i < N; i++)
 		if (dra[i]) SET(dr, i);
 
-	init(seed);
-	agent *adj = (agent *)calloc(N * N, sizeof(agent));
-	edge ne = scalefree(adj, dr);
-
-	#ifdef DEBUG
-	printf("%u edges + %u autoedges\n", ne, N);
-	puts("Adjacency lists");
-	for (agent i = 0; i < N; i++)
-		printbuf(adj + i * N + 1, adj[i * N]);
-	#endif
-
 	// CPLEX environment and model
 
 	IloEnv env;
@@ -105,21 +99,40 @@ int main(int argc, char *argv[]) {
 
 	// Variables representing edge values
 
-	IloFloatVarArray e(env, ne + N);
-	IloFloatVarArray d(env);
+	IloFloatVarArray ea(env, N);
+	IloFloatVarArray da(env);
 	ostringstream ostr;
 
-	for (agent i = 0; i < ne + N; i++) {
-		ostr << "e[" << i << "]";
-		e[i] = IloFloatVar(env, -FLT_MAX, FLT_MAX, ostr.str().c_str());
-		//cout << ostr.str() << endl;
+	for (agent i = 0; i < N; i++) {
+		ostr << "e_" << i;
+		ea[i] = IloFloatVar(env, -FLT_MAX, FLT_MAX, ostr.str().c_str());
 		ostr.str("");
 	}
 
-	constraints(adj, dr, sp, env, model, e, d);
+	init(seed);
+	edge *g = (edge *)calloc(N * N, sizeof(edge));
+	agent *adj = (agent *)calloc(N * N, sizeof(agent));
+	edge ne = scalefree(g, adj, dr, env, ea);
+
+	#ifdef DEBUG
+	printf("%u edges + %u autoedges\n", ne, N);
+	puts("\nAdjacency lists");
+	for (agent i = 0; i < N; i++)
+		printbuf(adj + i * N + 1, adj[i * N]);
+	puts("\nAdjacency matrix");
+	for (agent i = 0; i < N; i++)
+		printbuf(g + i * N, N);
+	puts("");
+	#endif
+
+	constraints(g, adj, dr, sp, env, model, ea, da);
+
+	IloCplex cplex(model);
+	cplex.exportModel ("lpex1.lp");
 
 	env.end();
 	free(adj);
+	free(g);
 
 	return 0;
 }
