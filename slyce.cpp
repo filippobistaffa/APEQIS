@@ -177,7 +177,8 @@ unsigned vectorsum(const agent *r, agent n, const chunk *x) {
 }
 
 /*__attribute__((always_inline)) inline
-void coalition(agent *c, const chunk *dr, const meter *sp, IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
+void coalition(agent *c, const chunk *dr, const meter *sp,
+	       IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
 	IloExpr expr(env);
 	for (agent j = 0; j < *c; j++) {
@@ -193,7 +194,8 @@ void coalition(agent *c, const chunk *dr, const meter *sp, IloEnv &env, IloModel
 	expr.end();
 }*/
 
-size_t slyce(agent *r, agent *f, agent m, const agent *adj, agent d, const chunk *dr, const meter *sp, IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
+size_t slyce(agent *r, agent *f, agent m, const agent *adj, agent d, const chunk *dr, const meter *sp,
+	     IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
 	size_t ret = 0;
 
@@ -201,7 +203,7 @@ size_t slyce(agent *r, agent *f, agent m, const agent *adj, agent d, const chunk
 		#ifdef DEBUG
 		printc(r, COALVALUE(r, GET(dr, *(r + 1)), sp));
 		#endif
-		//coalition(r, dr, sp, env, x, model);
+		//coalition(r, dr, sp, env, model, ea, da);
 		ret++;
 	}
 
@@ -240,7 +242,8 @@ size_t slyce(agent *r, agent *f, agent m, const agent *adj, agent d, const chunk
 	return ret;
 }
 
-size_t constraints(const agent *adj, const chunk *dr, const meter *sp, IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
+size_t constraints(const agent *adj, const chunk *dr, const meter *sp,
+		   IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
 	agent *r = (agent *)malloc(sizeof(agent) * (K + 1) * N);
 	agent *f = (agent *)malloc(sizeof(agent) * (N + 1) * N);
