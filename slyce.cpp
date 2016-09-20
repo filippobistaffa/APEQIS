@@ -176,8 +176,8 @@ unsigned vectorsum(const agent *r, agent n, const chunk *x) {
 	return ret;
 }
 
-__attribute__((always_inline)) inline
-void coalition(agent *c, const chunk *dr, const meter *sp, IloEnv env, IloFloatVarArray x, IloModel model) {
+/*__attribute__((always_inline)) inline
+void coalition(agent *c, const chunk *dr, const meter *sp, IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
 	IloExpr expr(env);
 	for (agent j = 0; j < *c; j++) {
@@ -191,9 +191,9 @@ void coalition(agent *c, const chunk *dr, const meter *sp, IloEnv env, IloFloatV
 	#endif
 	model.add(expr <= 0.01 * COALVALUE(c, GET(dr, c[1]), sp));
 	expr.end();
-}
+}*/
 
-size_t slyce(agent *r, agent *f, agent m, const agent *adj, agent d, const chunk *dr, const meter *sp, IloEnv env, IloFloatVarArray x, IloModel model) {
+size_t slyce(agent *r, agent *f, agent m, const agent *adj, agent d, const chunk *dr, const meter *sp, IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
 	size_t ret = 0;
 
@@ -201,7 +201,7 @@ size_t slyce(agent *r, agent *f, agent m, const agent *adj, agent d, const chunk
 		#ifdef DEBUG
 		printc(r, COALVALUE(r, GET(dr, *(r + 1)), sp));
 		#endif
-		coalition(r, dr, sp, env, x, model);
+		//coalition(r, dr, sp, env, x, model);
 		ret++;
 	}
 
@@ -220,7 +220,7 @@ size_t slyce(agent *r, agent *f, agent m, const agent *adj, agent d, const chunk
 				memcpy(nfs, fs, sizeof(agent) * k);
 				QSORT(agent, nr + 1, *nr, LTDR);
 				nbar(fs, k, r, nr, adj, nf, dr);
-				ret += slyce(nr, nf, m - k, adj, d + nd, dr, sp, env, x, model);
+				ret += slyce(nr, nf, m - k, adj, d + nd, dr, sp, env, model, ea, da);
 			}
 			inittwiddle(k, *f, p);
 			while (!twiddle(&w, &y, &z, p)) {
@@ -231,7 +231,7 @@ size_t slyce(agent *r, agent *f, agent m, const agent *adj, agent d, const chunk
 					memcpy(nfs, fs, sizeof(agent) * k);
 					QSORT(agent, nr + 1, *nr, LTDR);
 					nbar(fs, k, r, nr, adj, nf, dr);
-					ret += slyce(nr, nf, m - k, adj, d + nd, dr, sp, env, x, model);
+					ret += slyce(nr, nf, m - k, adj, d + nd, dr, sp, env, model, ea, da);
 				}
 			}
 		}
@@ -240,7 +240,7 @@ size_t slyce(agent *r, agent *f, agent m, const agent *adj, agent d, const chunk
 	return ret;
 }
 
-size_t coalrat(const agent *adj, const chunk *dr, const meter *sp, IloEnv env, IloFloatVarArray x, IloModel model) {
+size_t constraints(const agent *adj, const chunk *dr, const meter *sp, IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
 	agent *r = (agent *)malloc(sizeof(agent) * (K + 1) * N);
 	agent *f = (agent *)malloc(sizeof(agent) * (N + 1) * N);
@@ -248,7 +248,7 @@ size_t coalrat(const agent *adj, const chunk *dr, const meter *sp, IloEnv env, I
 
 	for (agent i = 0; i < N; i++) {
 		r[0] = 0; f[0] = 1; f[1] = i;
-		ret += slyce(r, f, K, adj, 0, dr, sp, env, x, model);
+		ret += slyce(r, f, K, adj, 0, dr, sp, env, model, ea, da);
 	}
 
 	free(f);

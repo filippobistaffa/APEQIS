@@ -10,6 +10,6 @@ void printc(const agent *c, penny v) {
 	printf("] = %.2f£\n", 0.01 * v);
 }
 
-size_t coalrat(const agent *adj, const chunk *dr, const meter *sp, IloEnv env, IloFloatVarArray x, IloModel model);
+size_t constraints(const agent *adj, const chunk *dr, const meter *sp, IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da);
 
 #endif /* SLYCE_H_ */
