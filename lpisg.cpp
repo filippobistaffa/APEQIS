@@ -24,7 +24,7 @@ void createedge(agent *adj, agent v1, agent v2) {
 }
 
 __attribute__((always_inline)) inline
-edge scalefree(agent *adj) {
+edge scalefree(agent *adj, const chunk *dr) {
 
 	edge ne = 0;
 	agent deg[N] = {0};
@@ -63,6 +63,9 @@ edge scalefree(agent *adj) {
 		}
 	}
 
+	for (agent i = 0; i < N; i++)
+		QSORT(agent, adj + i * N + 1, adj[i * N], LTDR);
+
 	return ne;
 }
 
@@ -86,10 +89,13 @@ int main(int argc, char *argv[]) {
 
 	init(seed);
 	agent *adj = (agent *)calloc(N * N, sizeof(agent));
-	edge ne = scalefree(adj);
+	edge ne = scalefree(adj, dr);
 
 	#ifdef DEBUG
 	printf("%u edges + %u autoedges\n", ne, N);
+	puts("Adjacency lists");
+	for (agent i = 0; i < N; i++)
+		printbuf(adj + i * N + 1, adj[i * N]);
 	#endif
 
 	// CPLEX environment and model
