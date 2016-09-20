@@ -2,6 +2,7 @@
 
 typedef int16_t sign;
 static size_t bcm[(N + 1) * (N + 1)], pm[N * N];
+static size_t dn;
 
 #define P(_s, _i) (pm[(_s) * N + (_i)])
 #define BC(_n, _m) (bcm[(_n) * (N + 1) + (_m)])
@@ -178,7 +179,9 @@ __attribute__((always_inline)) inline
 void coalition(agent *c, const chunk *dr, const meter *sp, const edge *g, const agent *adj,
 	       IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
-	IloFloatVar d = IloFloatVar(env, 0, FLT_MAX);
+	ostringstream ostr;
+	ostr << "d_" << dn++;
+	IloFloatVar d = IloFloatVar(env, 0, FLT_MAX, ostr.str().c_str());
 	da.add(d);
 	IloExpr expr(env);
 
