@@ -196,11 +196,11 @@ void coalition(agent *c, const chunk *dr, const meter *sp, const edge *g, const 
 
 	#ifdef DEBUG
 	cout << expr << endl;
-	printf("cv = %u\n", cv);
+	printf("cv = %.2f\n", 0.01 * cv);
 	#endif
 
-	model.add(expr - d <= cv);
-	model.add(expr + d >= cv);
+	model.add(expr - d <= 0.01 * cv);
+	model.add(expr + d >= 0.01 * cv);
 	expr.end();
 }
 

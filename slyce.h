@@ -11,7 +11,7 @@ void printc(const agent *c, penny v) {
 	agent n = *c;
 	printf("[ ");
 	while (n--) printf("%u ", *(++c));
-	printf("] = %.2f£\n", 0.01 * v);
+	printf("] = %.2f\n", 0.01 * v);
 }
 
 size_t constraints(const edge *g, const agent *adj, const chunk *dr, const meter *sp, IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da);
