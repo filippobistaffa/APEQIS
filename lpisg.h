@@ -22,6 +22,7 @@
 
 using namespace std;
 
+#include "random.h"
 #include "iqsort.h"
 #include "slyce.h"
 #include "value.h"
