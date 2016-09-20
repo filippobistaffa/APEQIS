@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-#!/usr/bin/env bash
-
 red='\033[0;31m'			# Red
 nc='\033[0m'				# No color
 re='^[0-9]+$'				# Regular expression to detect natural numbers

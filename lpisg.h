@@ -1,5 +1,5 @@
-#ifndef PK_H_
-#define PK_H_
+#ifndef LPISG_H_
+#define LPISG_H_
 
 #include <omp.h>
 #include <stdio.h>
@@ -29,4 +29,4 @@ using namespace std;
 #include "value.h"
 #include "sp.h"
 
-#endif /* PK_H_ */
+#endif /* LPISG_H_ */
