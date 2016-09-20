@@ -46,7 +46,7 @@ all: lpisg
 
 -include ${DEPSUBDIR}/*.d
 
-lpisg: ${COBJSUBDIR}/lpisg.o ${COBJSUBDIR}/sp.o ${COBJSUBDIR}/value.o ${COBJSUBDIR}/slyce.o
+lpisg: ${COBJSUBDIR}/lpisg.o ${COBJSUBDIR}/sp.o ${COBJSUBDIR}/value.o ${COBJSUBDIR}/slyce.o ${COBJSUBDIR}/random.o
 	@${ECHOLD} lpisg
 	@${CMP} ${OPT} ${LDIR} $^ ${LINK} -o ${OUT}
 
@@ -57,6 +57,9 @@ ${COBJSUBDIR}/value.o: value.cpp
 	@$(compilec)
 
 ${COBJSUBDIR}/sp.o: sp.cpp
+	@$(compilec)
+
+${COBJSUBDIR}/random.o: random.c
 	@$(compilec)
 
 ${COBJSUBDIR}/lpisg.o: lpisg.cpp
