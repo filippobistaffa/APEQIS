@@ -23,8 +23,9 @@ void createedge(agent *adj, agent v1, agent v2) {
 }
 
 __attribute__((always_inline)) inline
-void scalefree(agent *adj) {
+edge scalefree(agent *adj) {
 
+	edge ne = 0;
 	agent deg[N] = {0};
 
 	for (agent i = 1; i <= M; i++) {
@@ -32,6 +33,7 @@ void scalefree(agent *adj) {
 			createedge(adj, i, j);
 			deg[i]++;
 			deg[j]++;
+			ne++;
 		}
 	}
 
@@ -55,9 +57,12 @@ void scalefree(agent *adj) {
 				createedge(adj, i, q);
 				deg[i]++;
 				deg[q]++;
+				ne++;
 			}
 		}
 	}
+
+	return ne;
 }
 
 #endif
@@ -75,11 +80,17 @@ int main(int argc, char *argv[]) {
 	memset(dr + D, 0, sizeof(agent) * (N - D));
 	shuffle(dr, N, sizeof(agent));
 
+	#ifdef DEBUG
 	printbuf(dr, N, "dr");
+	#endif
 
 	init(seed);
 	agent *adj = (agent *)calloc(N * N, sizeof(agent));
-	scalefree(adj);
+	edge ne = scalefree(adj);
+
+	#ifdef DEBUG
+	printf("%u edges + %u autoedges\n", ne, N);
+	#endif
 
 	IloEnv env;
 	IloModel model(env);
