@@ -5,9 +5,10 @@
 #include <iostream>
 template <typename type>
 __attribute__((always_inline)) inline
-void printbuf(const type *buf, unsigned n, const char *name) {
+void printbuf(const type *buf, unsigned n, const char *name = NULL) {
 
-	printf("%s = [ ", name);
+	if (name) printf("%s = [ ", name);
+	else printf("[ ");
 	while (n--) std::cout << *(buf++) << " ";
 	printf("]\n");
 }
