@@ -65,6 +65,10 @@ fi
 tmp=`mktemp`
 echo "#define N $n" > $tmp
 echo "#define DRIVERSPERC $d" >> $tmp
+if [[ $t == "scalefree" ]]
+then
+	echo "#define M $m" >> $tmp
+fi
 
 if [ ! -f instance.h ]
 then
@@ -81,4 +85,5 @@ else
 	fi
 fi
 
-make
+make -j
+./lpisg $s

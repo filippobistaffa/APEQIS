@@ -18,7 +18,7 @@
 #include "macros.h"
 #include "types.h"
 
-#define C CEILBPC(N)
+#define D (N * DRIVERSPERC / 100)
 
 using namespace std;
 
