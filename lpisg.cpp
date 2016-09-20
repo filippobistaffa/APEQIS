@@ -125,10 +125,24 @@ int main(int argc, char *argv[]) {
 	puts("");
 	#endif
 
+	// Create constraints
+
 	constraints(g, adj, dr, sp, env, model, ea, da);
 
+	// Create objective expression
+
+	IloExpr expr(env);
+	for (agent i = 0; i < da.getSize(); i++)
+		expr += da[i];
+
+	#ifdef DEBUG
+	cout << expr << endl;
+	#endif
+
+	model.add(IloMinimize(env, expr));
+	expr.end();
+
 	IloCplex cplex(model);
-	cplex.exportModel ("lpex1.lp");
 
 	env.end();
 	free(adj);
