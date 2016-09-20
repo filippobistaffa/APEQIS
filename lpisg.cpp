@@ -91,8 +91,23 @@ int main(int argc, char *argv[]) {
 	printf("%u edges + %u autoedges\n", ne, N);
 	#endif
 
+	// CPLEX environment and model
+
 	IloEnv env;
 	IloModel model(env);
+
+	// Variables representing edge values
+
+	IloFloatVarArray e(env, ne + N);
+	ostringstream ostr;
+
+	for (agent i = 0; i < ne + N; i++) {
+		ostr << "e[" << i << "]";
+		e[i] = IloFloatVar(env, -FLT_MAX, FLT_MAX, ostr.str().c_str());
+		//cout << ostr.str() << endl;
+		ostr.str("");
+	}
+
 	env.end();
 	free(adj);
 
