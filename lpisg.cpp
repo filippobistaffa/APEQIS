@@ -72,17 +72,16 @@ int main(int argc, char *argv[]) {
 	unsigned seed = atoi(argv[1]);
 	meter *sp = createsp(seed);
 
-	agent dr[N] = {0};
+	agent dra[N] = {0};
+	chunk dr[C] = {0};
 
 	for (agent i = 0; i < D; i++)
-		dr[i] = 1;
+		dra[i] = 1;
 
-	memset(dr + D, 0, sizeof(agent) * (N - D));
-	shuffle(dr, N, sizeof(agent));
+	shuffle(dra, N, sizeof(agent));
 
-	#ifdef DEBUG
-	printbuf(dr, N, "dr");
-	#endif
+	for (agent i = 0; i < N; i++)
+		if (dra[i]) SET(dr, i);
 
 	init(seed);
 	agent *adj = (agent *)calloc(N * N, sizeof(agent));

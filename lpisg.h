@@ -19,6 +19,7 @@
 #include "types.h"
 
 #define D (N * DRIVERSPERC / 100)
+#define C CEILBPC(N)
 
 using namespace std;
 
