@@ -143,7 +143,27 @@ int main(int argc, char *argv[]) {
 	expr.end();
 
 	IloCplex cplex(model);
+	IloTimer timer(env);
+	timer.start();
 
+	#ifndef DEBUG
+	cplex.setOut(env.getNullStream());
+	#endif
+
+	if (!cplex.solve()) {
+		env.out() << "Unable to find a solution" << endl;
+		exit(1);
+	}
+
+	timer.stop();
+	IloNumArray eval(env);
+	#ifdef DEBUG
+	env.out() << "Solution status = " << cplex.getStatus() << endl;
+	env.out() << "Elapsed time = " << timer.getTime() << endl;
+	#endif
+	env.out() << "Overall difference = " << cplex.getObjValue() << endl ;
+	cplex.getValues(eval, ea);
+	env.out() << "Edge values = " << eval << endl;
 	env.end();
 	free(adj);
 	free(g);
