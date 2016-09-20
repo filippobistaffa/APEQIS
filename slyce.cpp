@@ -5,8 +5,6 @@ static size_t bcm[(N + 1) * (N + 1)], pm[N * N];
 
 #define P(_s, _i) (pm[(_s) * N + (_i)])
 #define BC(_n, _m) (bcm[(_n) * (N + 1) + (_m)])
-#define LTDR(X, Y) (GET(dr, *(X)) == GET(dr, *(Y)) ? (*(X)) < (*(Y)) : GET(dr, *(X)) > GET(dr, *(Y)))
-#define LEDR(X, Y) (GET(dr, *(X)) == GET(dr, *(Y)) ? (*(X)) <= (*(Y)) : GET(dr, *(X)) > GET(dr, *(Y)))
 
 void filltables() {
 

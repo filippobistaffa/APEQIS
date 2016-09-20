@@ -1,5 +1,9 @@
+
 #ifndef SLYCE_H_
 #define SLYCE_H_
+
+#define LTDR(X, Y) (GET(dr, *(X)) == GET(dr, *(Y)) ? (*(X)) < (*(Y)) : GET(dr, *(X)) > GET(dr, *(Y)))
+#define LEDR(X, Y) (GET(dr, *(X)) == GET(dr, *(Y)) ? (*(X)) <= (*(Y)) : GET(dr, *(X)) > GET(dr, *(Y)))
 
 __attribute__((always_inline)) inline
 void printc(const agent *c, penny v) {

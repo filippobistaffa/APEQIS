@@ -106,6 +106,7 @@ int main(int argc, char *argv[]) {
 	// Variables representing edge values
 
 	IloFloatVarArray e(env, ne + N);
+	IloFloatVarArray d(env);
 	ostringstream ostr;
 
 	for (agent i = 0; i < ne + N; i++) {
@@ -114,6 +115,8 @@ int main(int argc, char *argv[]) {
 		//cout << ostr.str() << endl;
 		ostr.str("");
 	}
+
+	constraints(adj, dr, sp, env, model, e, d);
 
 	env.end();
 	free(adj);
