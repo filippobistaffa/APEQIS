@@ -156,17 +156,27 @@ int main(int argc, char *argv[]) {
 	}
 
 	timer.stop();
-	IloNumArray eval(env);
 	#ifdef DEBUG
 	env.out() << "Solution status = " << cplex.getStatus() << endl;
 	env.out() << "Elapsed time = " << timer.getTime() << endl;
 	#endif
 	double dif = cplex.getObjValue();
 
-	printf("Overall difference = %.2f (%.2f%%)\n", dif, (dif * 1E4) / tv);
+	printf("\nOverall difference = %.2f (%.2f%%)\n", dif, (dif * 1E4) / tv);
 	printf("Average difference = %.2f\n", dif / da.getSize());
-	cplex.getValues(eval, ea);
-	env.out() << "Edge values = " << eval << endl;
+
+	puts("\nEdge values:");
+	for (edge i = 0; i < ea.getSize(); i++) {
+		try {
+			const double val = cplex.getValue(ea[i]);
+			cout << ea[i].getName() << " = " << val << endl;
+		}
+		catch (IloException& e) {
+			cout << ea[i].getName() << " not assigned" << endl;
+			e.end();
+		}
+	}
+
 	env.end();
 	free(adj);
 	free(g);
