@@ -164,7 +164,6 @@ int main(int argc, char *argv[]) {
 	double dif = cplex.getObjValue();
 
 	printf("Overall difference = %.2f (%.2f%%)\n", dif, (dif * 1E4) / tv);
-	//env.out() << "Overall difference = " << cplex.getObjValue() << endl ;
 	cplex.getValues(eval, ea);
 	env.out() << "Edge values = " << eval << endl;
 	env.end();
