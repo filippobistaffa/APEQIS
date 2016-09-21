@@ -167,7 +167,6 @@ int main(int argc, char *argv[]) {
 	// Create individual rationality constraints
 
 	#ifdef INDIVIDUALLYRATIONAL
-
 	for (agent i = 0; i < N; i++) {
 		IloExpr expr(env);
 		for (agent j = 0; j < N; j++) {
@@ -180,7 +179,6 @@ int main(int argc, char *argv[]) {
 		model.add(expr <= 0);
 		expr.end();
 	}
-
 	#endif
 
 	// Create objective expression
