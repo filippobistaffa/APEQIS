@@ -113,8 +113,6 @@ int main(int argc, char *argv[]) {
 	edge *g = (edge *)calloc(N * N, sizeof(edge));
 	agent *adj = (agent *)calloc(N * N, sizeof(agent));
 	#ifdef DEBUG
-	edge ne = scalefree(g, adj, dr, env, ea);
-	#else
 	scalefree(g, adj, dr, env, ea);
 	#endif
 
@@ -123,7 +121,6 @@ int main(int argc, char *argv[]) {
 	#endif
 
 	#ifdef DEBUG
-	printf("%u edges + %u autoedges\n", ne, N);
 	puts("\nAdjacency lists");
 	for (agent i = 0; i < N; i++)
 		printbuf(adj + i * N + 1, adj[i * N]);
