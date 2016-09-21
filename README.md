@@ -16,7 +16,7 @@ LP-ISG must be executed by means of the [`lpisg.sh`](https://github.com/filippob
 -t	Network topology (either scalefree or twitter)
 -n	Number of agents
 -s	Seed
--d	Drivers' percentage (optional, default d = 10)
+-d	Drivers' percentage (optional, default d = 20)
 -m	Parameter m of the Barabasi-Albert model (optional, default m = 1)
 ```
 

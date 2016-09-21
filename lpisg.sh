@@ -3,7 +3,7 @@
 red='\033[0;31m'			# Red
 nc='\033[0m'				# No color
 re='^[0-9]+$'				# Regular expression to detect natural numbers
-d=10					# Default d = 10
+d=20					# Default d = 20
 m=1					# Default m = 1
 basename="twitter/net/twitter-2010"	# Twitter files must be in "twitter/net" subdir and have twitter-2010.* filenames
 wg="twitter/wg"				# Place WebGraph libraries in "twitter/wg" subdir
