@@ -17,7 +17,7 @@ LP-ISG must be executed by means of the [`lpisg.sh`](https://github.com/filippob
 -n	Number of agents
 -s	Seed
 -d	Drivers' percentage (optional, default d = 20)
--m	Parameter m of the Barabasi-Albert model (optional, default m = 1)
+-m	Parameter m of the Barabasi-Albert model (optional, default m = 2)
 ```
 
 Acknowledgements
