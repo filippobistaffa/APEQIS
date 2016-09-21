@@ -13,8 +13,6 @@ void printbuf(const type *buf, unsigned n, const char *name = NULL) {
 	printf("]\n");
 }
 
-#ifndef TWITTER
-
 __attribute__((always_inline)) inline
 void createedge(edge *g, agent *adj, agent v1, agent v2, edge e, IloEnv &env, IloFloatVarArray &ea) {
 
@@ -27,6 +25,35 @@ void createedge(edge *g, agent *adj, agent v1, agent v2, edge e, IloEnv &env, Il
 	ostr << "e_" << v1 << "," << v2;
 	ea.add(IloFloatVar(env, MINEDGEVALUE, FLT_MAX, ostr.str().c_str()));
 }
+
+#ifdef TWITTER
+
+__attribute__((always_inline)) inline
+edge twitter(const char *filename, edge *g, agent *adj, const chunk *dr, IloEnv &env, IloFloatVarArray &ea) {
+
+	#define MAXLINE 1000
+	static char line[MAXLINE];
+	FILE *f = fopen(filename, "rt");
+	fgets(line, MAXLINE, f);
+	edge ne = atoi(line);
+
+	for (edge i = 0; i < ne; i++) {
+		fgets(line, MAXLINE, f);
+		const agent v1 = atoi(line);
+		fgets(line, MAXLINE, f);
+		const agent v2 = atoi(line);
+		createedge(g, adj, v1, v2, N + i, env, ea);
+	}
+
+	fclose(f);
+
+	for (agent i = 0; i < N; i++)
+		QSORT(agent, adj + i * N + 1, adj[i * N], LTDR);
+
+	return ne;
+}
+
+#else
 
 __attribute__((always_inline)) inline
 edge scalefree(edge *g, agent *adj, const chunk *dr, IloEnv &env, IloFloatVarArray &ea) {
@@ -112,7 +139,10 @@ int main(int argc, char *argv[]) {
 	init(seed);
 	edge *g = (edge *)calloc(N * N, sizeof(edge));
 	agent *adj = (agent *)calloc(N * N, sizeof(agent));
-	#ifdef DEBUG
+
+	#ifdef TWITTER
+	twitter(argv[2], g, adj, dr, env, ea);
+	#else
 	scalefree(g, adj, dr, env, ea);
 	#endif
 
