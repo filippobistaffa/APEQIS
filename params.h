@@ -14,3 +14,6 @@
 
 // Force positive edge values
 //#define POSITIVEEDGES
+
+// Compute Shapley values
+#define SHAPLEY

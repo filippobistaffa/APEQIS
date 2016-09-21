@@ -218,6 +218,22 @@ int main(int argc, char *argv[]) {
 	printf("Average difference = %.2f\n", dif / da.getSize());
 	#endif
 
+	#ifdef SHAPLEY
+	double sv[N];
+	double sing[N];
+
+	for (agent i = 0; i < N; i++) {
+		sing[i] = sv[i] = cplex.getValue(ea[i]);
+		for (agent j = 0; j < N; j++) {
+			const edge e = g[i * N + j];
+			if (e) sv[i] += cplex.getValue(ea[e]) / 2;
+		}
+	}
+
+	printbuf(sv, N, "Shapley values");
+	printbuf(sing, N, "Singleton values");
+	#endif
+
 	env.end();
 	free(adj);
 	free(g);
