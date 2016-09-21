@@ -112,7 +112,15 @@ int main(int argc, char *argv[]) {
 	init(seed);
 	edge *g = (edge *)calloc(N * N, sizeof(edge));
 	agent *adj = (agent *)calloc(N * N, sizeof(agent));
+	#ifdef DEBUG
 	edge ne = scalefree(g, adj, dr, env, ea);
+	#else
+	scalefree(g, adj, dr, env, ea);
+	#endif
+
+	#ifndef CSV
+	puts("Creating LP model...");
+	#endif
 
 	#ifdef DEBUG
 	printf("%u edges + %u autoedges\n", ne, N);
@@ -127,7 +135,7 @@ int main(int argc, char *argv[]) {
 
 	// Create constraints
 
-	penny tv = constraints(g, adj, dr, sp, env, model, ea, da);
+	const penny tv = constraints(g, adj, dr, sp, env, model, ea, da);
 
 	// Create objective expression
 
@@ -142,11 +150,15 @@ int main(int argc, char *argv[]) {
 	model.add(IloMinimize(env, expr));
 	expr.end();
 
+	#ifndef CSV
+	puts("Starting CPLEX...\n");
+	#endif
+
 	IloCplex cplex(model);
 	IloTimer timer(env);
 	timer.start();
 
-	#ifndef DEBUG
+	#ifdef CSV
 	cplex.setOut(env.getNullStream());
 	#endif
 
@@ -156,26 +168,28 @@ int main(int argc, char *argv[]) {
 	}
 
 	timer.stop();
-	#ifdef DEBUG
-	env.out() << "Solution status = " << cplex.getStatus() << endl;
-	env.out() << "Elapsed time = " << timer.getTime() << endl;
-	#endif
 	double dif = cplex.getObjValue();
 
-	printf("\nOverall difference = %.2f (%.2f%%)\n", dif, (dif * 1E4) / tv);
-	printf("Average difference = %.2f\n", dif / da.getSize());
-
-	puts("\nEdge values:");
+	#ifdef CSV
+	printf("%.2f,%.2f,%.2f,%.2f\n", dif, (dif * 1E4) / tv, dif / da.getSize(), timer.getTime() * 1000);
+	#else
+	puts("Edge values:");
 	for (edge i = 0; i < ea.getSize(); i++) {
 		try {
 			const double val = cplex.getValue(ea[i]);
 			cout << ea[i].getName() << " = " << val << endl;
 		}
 		catch (IloException& e) {
-			cout << ea[i].getName() << " not assigned" << endl;
+			cout << ea[i].getName() << " never occurs in a feasible coalition" << endl;
 			e.end();
 		}
 	}
+
+	env.out() << "\nLP solution elapsed time = " << timer.getTime() * 1000 << "ms" << endl;
+	printf("Overall difference = %.2f\n", dif);
+	printf("Percentage difference = %.2f%%\n", (dif * 1E4) / tv);
+	printf("Average difference = %.2f\n", dif / da.getSize());
+	#endif
 
 	env.end();
 	free(adj);
