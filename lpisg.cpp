@@ -171,7 +171,7 @@ int main(int argc, char *argv[]) {
 	double dif = cplex.getObjValue();
 
 	#ifdef CSV
-	printf("%.2f,%.2f,%.2f,%.2f\n", dif, (dif * 1E4) / tv, dif / da.getSize(), timer.getTime() * 1000);
+	printf("%u,%u,%u,%.2f,%.2f,%.2f,%.2f\n", N, DRIVERSPERC, seed, dif, (dif * 1E4) / tv, dif / da.getSize(), timer.getTime() * 1000);
 	#else
 	puts("Edge values:");
 	for (edge i = 0; i < ea.getSize(); i++) {
