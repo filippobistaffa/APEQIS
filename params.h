@@ -5,6 +5,7 @@
 #define PENNYPERLITRE 130
 #define METERSPERLITRE 15000
 #define MAXDRIVERS 1
+#define EPSILON 0.001
 
 // Enable debug messages (lots of output, reduces performance)
 //#define DEBUG
@@ -17,3 +18,6 @@
 
 // Compute Shapley values
 #define SHAPLEY
+
+// Enforce individually rational Shapley values
+#define INDIVIDUALLYRATIONAL

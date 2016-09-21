@@ -164,6 +164,25 @@ int main(int argc, char *argv[]) {
 
 	const penny tv = constraints(g, adj, dr, sp, env, model, ea, da);
 
+	// Create individual rationality constraints
+
+	#ifdef INDIVIDUALLYRATIONAL
+
+	for (agent i = 0; i < N; i++) {
+		IloExpr expr(env);
+		for (agent j = 0; j < N; j++) {
+			const edge e = g[i * N + j];
+			if (e) expr += 0.5 * ea[e];
+		}
+		#ifdef DEBUG
+		cout << expr << endl;
+		#endif
+		model.add(expr <= 0);
+		expr.end();
+	}
+
+	#endif
+
 	// Create objective expression
 
 	IloExpr expr(env);
@@ -221,17 +240,25 @@ int main(int argc, char *argv[]) {
 	#ifdef SHAPLEY
 	double sv[N];
 	double sing[N];
+	bool ir = true;
 
 	for (agent i = 0; i < N; i++) {
 		sing[i] = sv[i] = cplex.getValue(ea[i]);
 		for (agent j = 0; j < N; j++) {
 			const edge e = g[i * N + j];
-			if (e) sv[i] += cplex.getValue(ea[e]) / 2;
+			try {
+				if (e) sv[i] += cplex.getValue(ea[e]) / 2;
+			}
+			catch (IloException& e) {
+				e.end();
+			}
 		}
+		ir &= sing[i] + EPSILON >= sv[i];
 	}
 
 	printbuf(sv, N, "Shapley values");
 	printbuf(sing, N, "Singleton values");
+	if (ir) puts("Payments are individually rational");
 	#endif
 
 	env.end();
