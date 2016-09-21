@@ -7,3 +7,6 @@
 
 // Enable debug messages
 #define DEBUG
+
+// Force positive edge values
+//#define POSITIVEEDGES

@@ -21,6 +21,12 @@
 #define D (N * DRIVERSPERC / 100)
 #define C CEILBPC(N)
 
+#ifdef POSITIVEEDGES
+#define MINEDGEVALUE 0
+#else
+#define MINEDGEVALUE (-FLT_MAX)
+#endif
+
 using namespace std;
 
 #include "random.h"

@@ -25,7 +25,7 @@ void createedge(edge *g, agent *adj, agent v1, agent v2, edge e, IloEnv &env, Il
 
 	ostringstream ostr;
 	ostr << "e_" << v1 << "," << v2;
-	ea.add(IloFloatVar(env, -FLT_MAX, FLT_MAX, ostr.str().c_str()));
+	ea.add(IloFloatVar(env, MINEDGEVALUE, FLT_MAX, ostr.str().c_str()));
 }
 
 __attribute__((always_inline)) inline
@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
 
 	for (agent i = 0; i < N; i++) {
 		ostr << "e_" << i;
-		ea[i] = IloFloatVar(env, -FLT_MAX, FLT_MAX, ostr.str().c_str());
+		ea[i] = IloFloatVar(env, MINEDGEVALUE, FLT_MAX, ostr.str().c_str());
 		ostr.str("");
 	}
 
