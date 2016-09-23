@@ -89,7 +89,10 @@ else
 fi
 
 make -j
-./lpisg $s $tw
+if [[ $? == 0 ]]
+then
+	./lpisg $s $tw
+fi
 
 if [[ $t == "twitter" ]]
 then
