@@ -29,9 +29,9 @@
 
 using namespace std;
 
+#include "constraints.h"
 #include "random.h"
 #include "iqsort.h"
-#include "slyce.h"
 #include "value.h"
 #include "sp.h"
 

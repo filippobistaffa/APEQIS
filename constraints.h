@@ -1,6 +1,5 @@
-
-#ifndef SLYCE_H_
-#define SLYCE_H_
+#ifndef CONSTRAINTS_H_
+#define CONSTRAINTS_H_
 
 #define LTDR(X, Y) (GET(dr, *(X)) == GET(dr, *(Y)) ? (*(X)) < (*(Y)) : GET(dr, *(X)) > GET(dr, *(Y)))
 #define LEDR(X, Y) (GET(dr, *(X)) == GET(dr, *(Y)) ? (*(X)) <= (*(Y)) : GET(dr, *(X)) > GET(dr, *(Y)))
@@ -16,4 +15,4 @@ void printc(const agent *c, penny v) {
 
 penny constraints(const edge *g, const agent *adj, const chunk *dr, const meter *sp, IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da);
 
-#endif /* SLYCE_H_ */
+#endif /* CONSTRAINTS_H_ */

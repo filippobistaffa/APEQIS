@@ -208,8 +208,8 @@ penny coalition(agent *c, const chunk *dr, const meter *sp, const edge *g, const
 	return cv;
 }
 
-penny slyce(agent *r, agent *f, agent m, const edge *g, const agent *adj, agent d, const chunk *dr, const meter *sp,
-	     IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
+penny recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, agent d, const chunk *dr, const meter *sp,
+		IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
 	penny ret = 0;
 
@@ -235,7 +235,7 @@ penny slyce(agent *r, agent *f, agent m, const edge *g, const agent *adj, agent 
 				memcpy(nfs, fs, sizeof(agent) * k);
 				QSORT(agent, nr + 1, *nr, LTDR);
 				nbar(fs, k, r, nr, adj, nf, dr);
-				ret += slyce(nr, nf, m - k, g, adj, d + nd, dr, sp, env, model, ea, da);
+				ret += recursive(nr, nf, m - k, g, adj, d + nd, dr, sp, env, model, ea, da);
 			}
 			inittwiddle(k, *f, p);
 			while (!twiddle(&w, &y, &z, p)) {
@@ -246,7 +246,7 @@ penny slyce(agent *r, agent *f, agent m, const edge *g, const agent *adj, agent 
 					memcpy(nfs, fs, sizeof(agent) * k);
 					QSORT(agent, nr + 1, *nr, LTDR);
 					nbar(fs, k, r, nr, adj, nf, dr);
-					ret += slyce(nr, nf, m - k, g, adj, d + nd, dr, sp, env, model, ea, da);
+					ret += recursive(nr, nf, m - k, g, adj, d + nd, dr, sp, env, model, ea, da);
 				}
 			}
 		}
@@ -256,7 +256,7 @@ penny slyce(agent *r, agent *f, agent m, const edge *g, const agent *adj, agent 
 }
 
 penny constraints(const edge *g, const agent *adj, const chunk *dr, const meter *sp,
-		   IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
+		  IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
 	agent *r = (agent *)malloc(sizeof(agent) * (K + 1) * N);
 	agent *f = (agent *)malloc(sizeof(agent) * (N + 1) * N);
@@ -264,7 +264,7 @@ penny constraints(const edge *g, const agent *adj, const chunk *dr, const meter 
 
 	for (agent i = 0; i < N; i++) {
 		r[0] = 0; f[0] = 1; f[1] = i;
-		ret += slyce(r, f, K, g, adj, 0, dr, sp, env, model, ea, da);
+		ret += recursive(r, f, K, g, adj, 0, dr, sp, env, model, ea, da);
 	}
 
 	free(f);
