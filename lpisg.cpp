@@ -16,7 +16,9 @@ void printbuf(const type *buf, unsigned n, const char *name = NULL) {
 __attribute__((always_inline)) inline
 void createedge(edge *g, agent *adj, agent v1, agent v2, edge e, IloEnv &env, IloFloatVarArray &ea) {
 
-	//printf("%u -- %u\n", v1, v2);
+	#ifdef DOT
+	printf("\t%u -- %u [label = \"e_%u,%u\"];\n", v1, v2, v1, v2);
+	#endif
 	g[v1 * N + v2] = g[v2 * N + v1] = e;
 	adj[v1 * N + (adj[v1 * N]++) + 1] = v2;
 	adj[v2 * N + (adj[v2 * N]++) + 1] = v1;
@@ -140,10 +142,16 @@ int main(int argc, char *argv[]) {
 	edge *g = (edge *)calloc(N * N, sizeof(edge));
 	agent *adj = (agent *)calloc(N * N, sizeof(agent));
 
+	#ifdef DOT
+	printf("graph G {\n");
+	#endif
 	#ifdef TWITTER
 	twitter(argv[2], g, adj, dr, env, ea);
 	#else
 	scalefree(g, adj, dr, env, ea);
+	#endif
+	#ifdef DOT
+	printf("}\n\n");
 	#endif
 
 	#ifndef CSV

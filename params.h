@@ -10,6 +10,9 @@
 // Enable debug messages (lots of output, reduces performance)
 //#define DEBUG
 
+// Print DOT representation of graph
+#define DOT
+
 // Output in CSV format
 //#define CSV
 
