@@ -238,6 +238,12 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
+	#ifdef DIFFERENCES
+	puts("\nDifferences:");
+	for (agent i = 0; i < da.getSize(); i++)
+		cout << da[i].getName() << " = " << cplex.getValue(da[i]) << endl;
+	#endif
+
 	env.out() << "\nLP solution elapsed time = " << timer.getTime() * 1000 << "ms" << endl;
 	printf("Overall difference = %.2f\n", dif);
 	printf("Percentage difference = %.2f%%\n", (dif * 1E4) / tv);
