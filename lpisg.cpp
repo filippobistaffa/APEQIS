@@ -196,7 +196,7 @@ int main(int argc, char *argv[]) {
 		expr += da[i];
 
 	#ifdef DEBUG
-	cout << expr << endl;
+	cout << expr << endl << endl;
 	#endif
 
 	model.add(IloMinimize(env, expr));
@@ -226,7 +226,7 @@ int main(int argc, char *argv[]) {
 	printf("%u,%u,%u,%.2f,%.2f,%.2f,%.2f\n",
 	       N, DRIVERSPERC, seed, dif, (dif * 1E4) / tv, dif / da.getSize(), timer.getTime() * 1000);
 	#else
-	puts("Edge values:");
+	puts("\nEdge values:");
 	for (edge i = 0; i < ea.getSize(); i++) {
 		try {
 			const double val = cplex.getValue(ea[i]);
