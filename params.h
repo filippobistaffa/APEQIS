@@ -11,7 +11,7 @@
 //#define DEBUG
 
 // Print DOT representation of graph
-#define DOT
+//#define DOT
 
 // Print d_i variables
 //#define DIFFERENCES
