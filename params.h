@@ -23,7 +23,7 @@
 //#define POSITIVEEDGES
 
 // Compute Shapley values
-#define SHAPLEY
+//#define SHAPLEY
 
 // Enforce individually rational Shapley values
-#define INDIVIDUALLYRATIONAL
+//#define INDIVIDUALLYRATIONAL
