@@ -155,7 +155,7 @@ int main(int argc, char *argv[]) {
 	#endif
 
 	#ifndef CSV
-	puts("Creating LP model...");
+	puts("Creating model...");
 	#endif
 
 	#ifdef DEBUG
@@ -193,7 +193,11 @@ int main(int argc, char *argv[]) {
 
 	IloExpr expr(env);
 	for (agent i = 0; i < da.getSize(); i++)
+		#ifdef LSE
+		expr += da[i] * da[i];
+		#else
 		expr += da[i];
+		#endif
 
 	#ifdef DEBUG
 	cout << expr << endl << endl;
@@ -244,7 +248,7 @@ int main(int argc, char *argv[]) {
 		cout << da[i].getName() << " = " << cplex.getValue(da[i]) << endl;
 	#endif
 
-	env.out() << "\nLP solution elapsed time = " << timer.getTime() * 1000 << "ms" << endl;
+	env.out() << "\nSolution elapsed time = " << timer.getTime() * 1000 << "ms" << endl;
 	printf("Overall difference = %.2f\n", dif);
 	printf("Percentage difference = %.2f%%\n", (dif * 1E4) / tv);
 	printf("Average difference = %.2f\n", dif / da.getSize());

@@ -7,6 +7,9 @@
 #define MAXDRIVERS 1
 #define EPSILON 0.001
 
+// Minimise the sum of the squared errors
+//#define LSE
+
 // Enable debug messages (lots of output, reduces performance)
 //#define DEBUG
 
