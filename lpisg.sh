@@ -9,9 +9,9 @@ basename="twitter/net/twitter-2010"	# Twitter files must be in "twitter/net" sub
 wg="twitter/wg"				# Place WebGraph libraries in "twitter/wg" subdir
 tw=""
 
-usage() { echo -e "Usage: $0 -t <scalefree|twitter> -n <#agents> -s <seed> [-m <barabasi_m>] [-d <drivers_%>] [-p <output_file>]\n-t\tNetwork topology (either scalefree or twitter)\n-n\tNumber of agents\n-s\tSeed\n-d\tDrivers' percentage (optional, default d = 20)\n-m\tParameter m of the Barabasi-Albert model (optional, default m = 2)\n-p\tOutputs a solution file formatted for PK" 1>&2; exit 1; }
+usage() { echo -e "Usage: $0 -t <scalefree|twitter> -n <#agents> -s <seed> [-m <barab_m>] [-d <drivers_%>] [-c <out_file>]\n-t\tNetwork topology (either scalefree or twitter)\n-n\tNumber of agents\n-s\tSeed\n-d\tDrivers' percentage (optional, default d = 20)\n-m\tParameter m of the Barabasi-Albert model (optional, default m = 2)\n-c\tOutputs a solution file formatted for CFSS (optional)" 1>&2; exit 1; }
 
-while getopts ":t:n:s:d:m:p:" o; do
+while getopts ":t:n:s:d:m:c:" o; do
 	case "${o}" in
 	t)
 		t=${OPTARG}
@@ -48,6 +48,16 @@ while getopts ":t:n:s:d:m:p:" o; do
 			usage
 		fi
 		;;
+	c)
+		c=${OPTARG}
+		touch $c 2> /dev/null
+		rc=$?
+		if [[ $rc != 0 ]]
+		then
+			echo -e "${red}Unable to create $c${nc}"
+			exit
+		fi
+		;;
 	\?)
 		echo -e "${red}-$OPTARG is not a valid option!${nc}\n"
 		usage
@@ -64,6 +74,11 @@ fi
 tmp=`mktemp`
 echo "#define N $n" > $tmp
 echo "#define DRIVERSPERC $d" >> $tmp
+if [ ! -z "${c}" ]
+then
+	echo "#define CFSS \"$c\"" >> $tmp
+fi
+
 if [[ $t == "scalefree" ]]
 then
 	echo "#define M $m" >> $tmp

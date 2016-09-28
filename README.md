@@ -11,13 +11,14 @@ Execution
 ----------
 LP-ISG must be executed by means of the [`lpisg.sh`](https://github.com/filippobistaffa/LP-ISG/blob/master/lpisg.sh) script, i.e.,
 ```
-./lpisg.sh -t <scalefree|twitter> -n <#agents> -s <seed> [-m <barabasi_m>] [-d <drivers_%>]
+./lpisg.sh -t <scalefree|twitter> -n <#agents> -s <seed> [-m <barab_m>] [-d <drivers_%>] [-c <out_file>]
 
 -t	Network topology (either scalefree or twitter)
 -n	Number of agents
 -s	Seed
 -d	Drivers' percentage (optional, default d = 20)
 -m	Parameter m of the Barabasi-Albert model (optional, default m = 2)
+-c	Outputs a solution file formatted for CFSS (optional)
 ```
 
 Acknowledgements

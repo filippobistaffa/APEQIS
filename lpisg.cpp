@@ -242,6 +242,24 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
+	#ifdef CFSS
+	FILE *cfss = fopen(CFSS, "w+");
+	for (agent i = 0; i < N; i++)
+		fprintf(cfss, "%f\n", -cplex.getValue(ea[i]));
+	for (agent i = 0; i < N; i++) {
+		for (agent j = 0; j < adj[i * N]; j++) {
+			const agent k = adj[i * N + j + 1];
+			if (k > i) {
+				double val = 0;
+				try { val = -cplex.getValue(ea[g[i * N + k]]); }
+				catch (IloException& e) {}
+				fprintf(cfss, "%u %u %f\n", i, k, val);
+			}
+		}
+	}
+	fclose(cfss);
+	#endif
+
 	#ifdef DIFFERENCES
 	puts("\nDifferences:");
 	for (agent i = 0; i < da.getSize(); i++)
