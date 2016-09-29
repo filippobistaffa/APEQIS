@@ -11,7 +11,7 @@ Execution
 ----------
 APEQIS must be executed by means of the [`apeqis.sh`](apeqis.sh) script, i.e.,
 ```
-./apeqis.sh -t <scalefree|twitter> -n <#agents> -s <seed> [-m <barab_m>] [-d <drivers_%>] [-c <out_file>]
+./apeqis.sh -t <scalefree|twitter> -n <#agents> -s <seed> [-m <barab_m>] [-d <drivers%>] [-c <out_file>]
 
 -t	Network topology (either scalefree or twitter)
 -n	Number of agents
