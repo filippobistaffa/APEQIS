@@ -106,7 +106,7 @@ fi
 make -j
 if [[ $? == 0 ]]
 then
-	./lpisg $s $tw
+	time -p ./lpisg $s $tw
 fi
 
 if [[ $t == "twitter" ]]
