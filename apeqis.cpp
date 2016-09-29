@@ -232,7 +232,18 @@ int main(int argc, char *argv[]) {
 	}
 
 	timer.stop();
-	double dif = cplex.getObjValue();
+	double dif = 0;
+
+	#ifdef DIFFERENCES
+	puts("\nDifferences:");
+	#endif
+	for (agent i = 0; i < da.getSize(); i++) {
+		const double val = cplex.getValue(da[i]);
+		dif += val;
+		#ifdef DIFFERENCES
+		cout << da[i].getName() << " = " << val << endl;
+		#endif
+	}
 
 	#ifdef CSV
 	printf("%u,%u,%u,%.2f,%.2f,%.2f,%.2f\n",
@@ -266,12 +277,6 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	fclose(cfss);
-	#endif
-
-	#ifdef DIFFERENCES
-	puts("\nDifferences:");
-	for (agent i = 0; i < da.getSize(); i++)
-		cout << da[i].getName() << " = " << cplex.getValue(da[i]) << endl;
 	#endif
 
 	env.out() << "\nSolution elapsed time = " << timer.getTime() * 1000 << "ms" << endl;
