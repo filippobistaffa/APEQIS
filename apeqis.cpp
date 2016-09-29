@@ -118,14 +118,6 @@ int main(int argc, char *argv[]) {
 
 	shuffle(dra, N, sizeof(agent));
 
-	#ifdef LEADERS
-	FILE *lead = fopen(LEADERS, "w+");
-	fprintf(lead, "static id l[%u] = { ", N);
-	for (agent i = 0; i < N - 1; i++) fprintf(lead, "%u, ", dra[i]);
-	fprintf(lead, "%u };", dra[N - 1]);
-	fclose(lead);
-	#endif
-
 	for (agent i = 0; i < N; i++)
 		if (dra[i]) SET(dr, i);
 
@@ -271,7 +263,7 @@ int main(int argc, char *argv[]) {
 	#ifdef CFSS
 	FILE *cfss = fopen(CFSS, "w+");
 	for (agent i = 0; i < N; i++)
-		fprintf(cfss, "%f\n", -cplex.getValue(ea[i]));
+		fprintf(cfss, "%s%f\n", GET(dr, i) ? "*" : "", -cplex.getValue(ea[i]));
 	for (agent i = 0; i < N; i++) {
 		for (agent j = 0; j < adj[i * N]; j++) {
 			const agent k = adj[i * N + j + 1];
