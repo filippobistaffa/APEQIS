@@ -1,4 +1,4 @@
-#include "lpisg.h"
+#include "apeqis.h"
 
 typedef int16_t sign;
 static size_t bcm[(N + 1) * (N + 1)], pm[N * N];

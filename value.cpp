@@ -1,4 +1,4 @@
-#include "lpisg.h"
+#include "apeqis.h"
 
 // Minimum of an array using SSE
 

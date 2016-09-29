@@ -1,7 +1,7 @@
 .PHONY: all
 
 ifndef OUT
-OUT=./lpisg
+OUT=./apeqis
 endif
 
 CMP=g++
@@ -41,13 +41,13 @@ exit $$ret ;\
 fi
 endef
 
-all: lpisg
+all: apeqis
 	@true
 
 -include ${DEPSUBDIR}/*.d
 
-lpisg: ${COBJSUBDIR}/lpisg.o ${COBJSUBDIR}/sp.o ${COBJSUBDIR}/value.o ${COBJSUBDIR}/constraints.o ${COBJSUBDIR}/random.o
-	@${ECHOLD} lpisg
+apeqis: ${COBJSUBDIR}/apeqis.o ${COBJSUBDIR}/sp.o ${COBJSUBDIR}/value.o ${COBJSUBDIR}/constraints.o ${COBJSUBDIR}/random.o
+	@${ECHOLD} apeqis
 	@${CMP} ${OPT} ${LDIR} $^ ${LINK} -o ${OUT}
 
 ${COBJSUBDIR}/constraints.o: constraints.cpp
@@ -62,7 +62,7 @@ ${COBJSUBDIR}/sp.o: sp.cpp
 ${COBJSUBDIR}/random.o: random.c
 	@$(compilec)
 
-${COBJSUBDIR}/lpisg.o: lpisg.cpp
+${COBJSUBDIR}/apeqis.o: apeqis.cpp
 	@$(compilec)
 
 clean:
