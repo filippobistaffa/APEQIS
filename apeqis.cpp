@@ -232,18 +232,25 @@ int main(int argc, char *argv[]) {
 	}
 
 	timer.stop();
+	double difbuf[da.getSize()];
 	double dif = 0;
 
 	#ifdef DIFFERENCES
 	puts("\nDifferences:");
 	#endif
 	for (agent i = 0; i < da.getSize(); i++) {
-		const double val = cplex.getValue(da[i]);
-		dif += val;
+		difbuf[i] = cplex.getValue(da[i]);
+		dif += difbuf[i];
 		#ifdef DIFFERENCES
 		cout << da[i].getName() << " = " << val << endl;
 		#endif
 	}
+
+	QSORT(double, difbuf, da.getSize(), GT);
+	double topdif = 0;
+
+	for (agent i = 0; i < N; i++)
+		topdif += difbuf[i];
 
 	#ifdef CSV
 	printf("%u,%u,%u,%.2f,%.2f,%.2f,%.2f\n",
@@ -287,6 +294,7 @@ int main(int argc, char *argv[]) {
 	#else
 	printf("Average difference = %.2f\n", dif / da.getSize());
 	#endif
+	printf("Sum of the %u highest differences = %.2f\n", N, topdif);
 	#endif
 
 	#ifdef SHAPLEY
