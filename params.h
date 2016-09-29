@@ -32,4 +32,4 @@
 //#define INDIVIDUALLYRATIONAL
 
 // Write leaders header for CFSS
-//#define LEADERS "../CFSS/leaders.h"
+#define LEADERS "../CFSS/leaders.h"
