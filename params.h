@@ -25,6 +25,9 @@
 // Force positive edge values
 //#define POSITIVEEDGES
 
+// Force equality among singletons
+//#define SINGLETONS
+
 // Compute Shapley values
 //#define SHAPLEY
 

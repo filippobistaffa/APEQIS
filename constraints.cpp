@@ -204,6 +204,9 @@ penny coalition(agent *c, const chunk *dr, const meter *sp, const edge *g, const
 
 	model.add(expr - d <= 0.01 * cv);
 	model.add(expr + d >= 0.01 * cv);
+	#ifdef SINGLETONS
+	if (*c == 1) model.add(d == 0);
+	#endif
 	expr.end();
 	return cv;
 }
