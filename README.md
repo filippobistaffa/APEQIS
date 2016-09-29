@@ -1,6 +1,8 @@
 APEQIS: APproximately EQuivalent IS-represented cooperative games
 ===================
 
+<p align="center"><img src="http://i.imgur.com/4GUDUKS.jpg" width="500" /></p>
+
 Requirements
 ----------
 APEQIS requires `g++` to compile, and relies on [IBM CPLEX](https://www-01.ibm.com/software/commerce/optimization/cplex-optimizer) to solve the LP model. In order to compile against CPLEX, `INC` and `LDIR` inside [`Makefile`](Makefile)  must be set to point to the `include` and `lib` folders of CPLEX.
