@@ -282,7 +282,11 @@ int main(int argc, char *argv[]) {
 	env.out() << "\nSolution elapsed time = " << timer.getTime() * 1000 << "ms" << endl;
 	printf("Overall difference = %.2f\n", dif);
 	printf("Percentage difference = %.2f%%\n", (dif * 1E4) / tv);
+	#ifdef SINGLETONS
+	printf("Average difference (excluding singletons) = %.2f\n", dif / (da.getSize() - N));
+	#else
 	printf("Average difference = %.2f\n", dif / da.getSize());
+	#endif
 	#endif
 
 	#ifdef SHAPLEY
