@@ -118,6 +118,14 @@ int main(int argc, char *argv[]) {
 
 	shuffle(dra, N, sizeof(agent));
 
+	#ifdef LEADERS
+	FILE *lead = fopen(LEADERS, "w+");
+	fprintf(lead, "static id l[%u] = { ", N);
+	for (agent i = 0; i < N - 1; i++) fprintf(lead, "%u, ", dra[i]);
+	fprintf(lead, "%u };", dra[N - 1]);
+	fclose(lead);
+	#endif
+
 	for (agent i = 0; i < N; i++)
 		if (dra[i]) SET(dr, i);
 

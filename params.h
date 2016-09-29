@@ -30,3 +30,6 @@
 
 // Enforce individually rational Shapley values
 //#define INDIVIDUALLYRATIONAL
+
+// Write leaders header for CFSS
+//#define LEADERS "../CFSS/leaders.h"
