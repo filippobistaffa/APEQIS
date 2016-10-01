@@ -8,7 +8,7 @@
 #define EPSILON 0.001
 
 // Minimise the sum of the squared errors
-//#define LSE
+#define LSE
 
 // Enable debug messages (lots of output, reduces performance)
 //#define DEBUG
@@ -26,7 +26,7 @@
 //#define POSITIVEEDGES
 
 // Force equality among singletons
-//#define SINGLETONS
+#define SINGLETONS
 
 // Compute Shapley values
 //#define SHAPLEY
