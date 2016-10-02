@@ -241,7 +241,11 @@ int main(int argc, char *argv[]) {
 	QSORT(double, difbuf, da.getSize(), GT);
 	double topdif = 0;
 
+	#ifdef SINGLETONS
+	for (agent i = 0; i < N / 2; i++)
+	#else
 	for (agent i = 0; i < N; i++)
+	#endif
 		topdif += difbuf[i];
 
 	#ifdef CSV
@@ -283,10 +287,11 @@ int main(int argc, char *argv[]) {
 	printf("Percentage difference = %.2f%%\n", (dif * 1E4) / tv);
 	#ifdef SINGLETONS
 	printf("Average difference (excluding singletons) = %.2f\n", dif / (da.getSize() - N));
+	printf("Sum of the %u highest differences = %.2f\n", N / 2, topdif);
 	#else
 	printf("Average difference = %.2f\n", dif / da.getSize());
-	#endif
 	printf("Sum of the %u highest differences = %.2f\n", N, topdif);
+	#endif
 	#endif
 
 	#ifdef SHAPLEY
