@@ -1,6 +1,9 @@
 // Maximum coalition size
 #define K 5
 
+// Maximum number of drivers per car
+#define MAXDRIVERS 1
+
 // Minimise the sum of the squared errors
 #define LSE
 
