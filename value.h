@@ -1,6 +1,13 @@
 #ifndef VALUE_H_
 #define VALUE_H_
 
+// Cost parameters
+
+#define CARCOST 100
+#define TICKETCOST 300
+#define PENNYPERLITRE 130
+#define METERSPERLITRE 15000
+
 // Computes the value of a coalition C (assumes only one driver per coalition)
 // C = Coalition ( C[0] = Cardinality, C[1] ... C[C[0]] = Elements )
 // D = Car or not?
