@@ -234,7 +234,7 @@ int main(int argc, char *argv[]) {
 		difbuf[i] = cplex.getValue(da[i]);
 		dif += difbuf[i];
 		#ifdef DIFFERENCES
-		cout << da[i].getName() << " = " << val << endl;
+		cout << da[i].getName() << " = " << difbuf[i] << endl;
 		#endif
 	}
 
