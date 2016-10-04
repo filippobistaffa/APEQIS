@@ -248,6 +248,8 @@ int main(int argc, char *argv[]) {
 	#endif
 		topdif += difbuf[i];
 
+	// Print output
+
 	#ifdef CSV
 	printf("%u,%u,%u,%.2f,%.2f,%.2f,%.2f\n",
 	       N, DRIVERSPERC, seed, dif, (dif * 1E4) / tv, dif / da.getSize(), timer.getTime() * 1000);
@@ -276,6 +278,8 @@ int main(int argc, char *argv[]) {
 	#endif
 	#endif
 
+	// Write output file
+
 	#ifdef CFSS
 	FILE *cfss = fopen(CFSS, "w+");
 	for (agent i = 0; i < N; i++)
@@ -293,6 +297,8 @@ int main(int argc, char *argv[]) {
 	}
 	fclose(cfss);
 	#endif
+
+	// Compute Shapley values
 
 	#ifdef SHAPLEY
 	double sv[N];
