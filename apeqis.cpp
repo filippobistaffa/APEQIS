@@ -264,6 +264,18 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
+	env.out() << "\nSolution elapsed time = " << timer.getTime() * 1000 << "ms" << endl;
+	printf("Overall difference = %.2f\n", dif);
+	printf("Percentage difference = %.2f%%\n", (dif * 1E4) / tv);
+	#ifdef SINGLETONS
+	printf("Average difference (excluding singletons) = %.2f\n", dif / (da.getSize() - N));
+	printf("Sum of the %u highest differences = %.2f\n", N / 2, topdif);
+	#else
+	printf("Average difference = %.2f\n", dif / da.getSize());
+	printf("Sum of the %u highest differences = %.2f\n", N, topdif);
+	#endif
+	#endif
+
 	#ifdef CFSS
 	FILE *cfss = fopen(CFSS, "w+");
 	for (agent i = 0; i < N; i++)
@@ -280,18 +292,6 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	fclose(cfss);
-	#endif
-
-	env.out() << "\nSolution elapsed time = " << timer.getTime() * 1000 << "ms" << endl;
-	printf("Overall difference = %.2f\n", dif);
-	printf("Percentage difference = %.2f%%\n", (dif * 1E4) / tv);
-	#ifdef SINGLETONS
-	printf("Average difference (excluding singletons) = %.2f\n", dif / (da.getSize() - N));
-	printf("Sum of the %u highest differences = %.2f\n", N / 2, topdif);
-	#else
-	printf("Average difference = %.2f\n", dif / da.getSize());
-	printf("Sum of the %u highest differences = %.2f\n", N, topdif);
-	#endif
 	#endif
 
 	#ifdef SHAPLEY
