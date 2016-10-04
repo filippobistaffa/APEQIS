@@ -20,7 +20,7 @@ APEQIS must be executed by means of the [`apeqis.sh`](apeqis.sh) script, i.e.,
 -s	Seed
 -d	Drivers' percentage (optional, default d = 20)
 -m	Parameter m of the Barabasi-Albert model (optional, default m = 2)
--c	Outputs a solution file formatted for CFSS (optional)
+-c	Outputs an input file formatted for CFSS (optional)
 ```
 
 Acknowledgements
