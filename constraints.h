@@ -1,11 +1,8 @@
 #ifndef CONSTRAINTS_H_
 #define CONSTRAINTS_H_
 
-#define LTDR(X, Y) (GET(dr, *(X)) == GET(dr, *(Y)) ? (*(X)) < (*(Y)) : GET(dr, *(X)) > GET(dr, *(Y)))
-#define LEDR(X, Y) (GET(dr, *(X)) == GET(dr, *(Y)) ? (*(X)) <= (*(Y)) : GET(dr, *(X)) > GET(dr, *(Y)))
-
 __attribute__((always_inline)) inline
-void printc(const agent *c, penny v) {
+void printc(const agent *c, value v) {
 
 	agent n = *c;
 	printf("[ ");
@@ -13,6 +10,7 @@ void printc(const agent *c, penny v) {
 	printf("] = %.2f\n", 0.01 * v);
 }
 
-penny constraints(const edge *g, const agent *adj, const chunk *dr, const meter *sp, IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da);
+value constraints(const edge *g, const agent *adj, const chunk *l, value (*cf)(agent *, const chunk *, const void *), const void *data,
+		  IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da);
 
 #endif /* CONSTRAINTS_H_ */

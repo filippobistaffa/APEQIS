@@ -65,6 +65,7 @@ void minsse(meter *b, agent n) {
 
 // Find optimal path given a coalition
 
+__attribute__((always_inline)) inline
 meter minpath(agent *c, agent n, agent dr, const meter *sp) {
 
 	meter r[R5];
@@ -103,4 +104,12 @@ meter minpath(agent *c, agent n, agent dr, const meter *sp) {
 	} while (--dr);
 
 	return min;
+}
+
+#define PATHCOST(p) ROUND(value, (float)(p) / METERSPERLITRE * PENNYPERLITRE)
+
+value srvalue(agent *c, const chunk *l, const void *data) {
+
+	meter *sp = (meter *)data;
+	return GET(l, *(c + 1)) ? (PATHCOST(minpath(c + 1, *c, 1, sp)) + CARCOST) : TICKETCOST;
 }

@@ -83,13 +83,13 @@ void inittwiddle(sign m, sign n, sign *p) {
 }
 
 template <typename type, typename out> __attribute__((always_inline)) inline
-void unionsorted(const type *x, unsigned m, const type *y, unsigned n, type *z, out *o, const chunk *dr) {
+void unionsorted(const type *x, unsigned m, const type *y, unsigned n, type *z, out *o, const chunk *l) {
 
 	*o = 0;
 
 	while (m && n) {
-		if (LTDR(x, y)) { *(z++) = *(x++); m--; }
-		else if (LTDR(y, x)) { *(z++) = *(y++); n--; }
+		if (LTL(x, y)) { *(z++) = *(x++); m--; }
+		else if (LTL(y, x)) { *(z++) = *(y++); n--; }
 		else { *(z++) = *(y++); x++; m--; n--; }
 		(*o)++;
 	}
@@ -100,13 +100,13 @@ void unionsorted(const type *x, unsigned m, const type *y, unsigned n, type *z, 
 }
 
 template <typename type, typename out> __attribute__((always_inline)) inline
-void differencesorted(const type *x, unsigned m, const type *y, unsigned n, type *z, out *o, const chunk *dr) {
+void differencesorted(const type *x, unsigned m, const type *y, unsigned n, type *z, out *o, const chunk *l) {
 
 	*o = 0;
 
 	while (m && n) {
-		if (LTDR(x, y)) { *(z++) = *(x++); m--; (*o)++; }
-		else if (LTDR(y, x)) { y++; n--; }
+		if (LTL(x, y)) { *(z++) = *(x++); m--; (*o)++; }
+		else if (LTL(y, x)) { y++; n--; }
 		else { y++; x++; m--; n--; }
 	}
 
@@ -116,7 +116,7 @@ void differencesorted(const type *x, unsigned m, const type *y, unsigned n, type
 }
 
 template <typename type> __attribute__((always_inline)) inline
-unsigned binarysearch(type x, const type *buf, unsigned n, const chunk *dr) {
+unsigned binarysearch(type x, const type *buf, unsigned n, const chunk *l) {
 
 	if (n) {
 		#define MIDPOINT(_min, _max) (_min + ((_max - _min) / 2))
@@ -124,7 +124,7 @@ unsigned binarysearch(type x, const type *buf, unsigned n, const chunk *dr) {
 
 		while (imin < imax) {
 			imid = MIDPOINT(imin, imax);
-			if (LTDR(buf + imid, &x)) imin = imid + 1;
+			if (LTL(buf + imid, &x)) imin = imid + 1;
 			else imax = imid;
 		}
 
@@ -134,7 +134,7 @@ unsigned binarysearch(type x, const type *buf, unsigned n, const chunk *dr) {
 }
 
 __attribute__((always_inline)) inline
-void neighbours(const agent *f, agent m, const agent *adj, agent *n, const chunk *dr) {
+void neighbours(const agent *f, agent m, const agent *adj, agent *n, const chunk *l) {
 
 	if (m) {
 		agent t[N + 1];
@@ -142,7 +142,7 @@ void neighbours(const agent *f, agent m, const agent *adj, agent *n, const chunk
 		f++;
 
 		while (--m) {
-			unionsorted(n + 1, *n, adj + *f * N + 1, adj[*f * N], t + 1, t, dr);
+			unionsorted(n + 1, *n, adj + *f * N + 1, adj[*f * N], t + 1, t, l);
 			memcpy(n, t, sizeof(agent) * (*t + 1));
 			f++;
 		}
@@ -151,17 +151,17 @@ void neighbours(const agent *f, agent m, const agent *adj, agent *n, const chunk
 }
 
 __attribute__((always_inline)) inline
-void nbar(const agent *f, agent n, const agent *r, const agent *ruf, const agent *adj, agent *nb, const chunk *dr) {
+void nbar(const agent *f, agent n, const agent *r, const agent *ruf, const agent *adj, agent *nb, const chunk *l) {
 
 	agent a[N + 1], b[N + 1];
-	neighbours(f, n, adj, a, dr);
+	neighbours(f, n, adj, a, l);
 	agent i = 0;
-	while (i < *a && LEDR(a + i + 1, ruf + 1)) i++;
+	while (i < *a && LEL(a + i + 1, ruf + 1)) i++;
 	memmove(a + 1, a + i + 1, sizeof(agent) * (*a - i));
 	*a -= i;
-	neighbours(r + 1, *r, adj, nb, dr);
-	unionsorted(nb + 1, *nb, ruf + 1, *ruf, b + 1, b, dr);
-	differencesorted(a + 1, *a, b + 1, *b, nb + 1, nb, dr);
+	neighbours(r + 1, *r, adj, nb, l);
+	unionsorted(nb + 1, *nb, ruf + 1, *ruf, b + 1, b, l);
+	differencesorted(a + 1, *a, b + 1, *b, nb + 1, nb, l);
 }
 
 __attribute__((always_inline)) inline
@@ -176,7 +176,7 @@ unsigned vectorsum(const agent *r, agent n, const chunk *x) {
 }
 
 __attribute__((always_inline)) inline
-penny coalition(agent *c, const chunk *dr, const meter *sp, const edge *g, const agent *adj,
+value coalition(agent *c, const chunk *l, value (*cf)(agent *, const chunk *, const void *), const void *data, const edge *g, const agent *adj,
 	       IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
 	ostringstream ostr;
@@ -190,12 +190,12 @@ penny coalition(agent *c, const chunk *dr, const meter *sp, const edge *g, const
 		expr += ea[v1];
 		for (agent j = 0; j < adj[v1 * N]; j++) {
 			const agent v2 = adj[v1 * N + j + 1];
-			if (v2 > v1 && binarysearch(v2, c + 1, *c, dr) < *c)
+			if (v2 > v1 && binarysearch(v2, c + 1, *c, l) < *c)
 				expr += ea[g[v1 * N + v2]];
 		}
 	}
 
-	const penny cv = COALVALUE(c, GET(dr, c[1]), sp);
+	const value cv = cf(c, l, data);
 
 	#ifdef DEBUG
 	cout << expr << endl;
@@ -211,16 +211,16 @@ penny coalition(agent *c, const chunk *dr, const meter *sp, const edge *g, const
 	return cv;
 }
 
-penny recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, agent d, const chunk *dr, const meter *sp,
+value recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, agent d, const chunk *l, value (*cf)(agent *, const chunk *, const void *), const void *data,
 		IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
-	penny ret = 0;
+	value ret = 0;
 
 	if (*r && (d || *r == 1)) {
 		#ifdef DEBUG
-		printc(r, COALVALUE(r, GET(dr, *(r + 1)), sp));
+		printc(r, COALVALUE(r, GET(l, *(r + 1)), data));
 		#endif
-		ret += coalition(r, dr, sp, g, adj, env, model, ea, da);
+		ret += coalition(r, l, cf, data, g, adj, env, model, ea, da);
 	}
 
 	if (*f && m) {
@@ -233,23 +233,23 @@ penny recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, ag
 			*nr = *r + k;
 			memcpy(nr + 1, r + 1, sizeof(agent) * *r);
 			memcpy(fs, f + *f - k + 1, sizeof(agent) * k);
-			agent nd = vectorsum(fs, k, dr);
+			agent nd = vectorsum(fs, k, l);
 			if (d + nd <= MAXDRIVERS) {
 				memcpy(nfs, fs, sizeof(agent) * k);
-				QSORT(agent, nr + 1, *nr, LTDR);
-				nbar(fs, k, r, nr, adj, nf, dr);
-				ret += recursive(nr, nf, m - k, g, adj, d + nd, dr, sp, env, model, ea, da);
+				QSORT(agent, nr + 1, *nr, LTL);
+				nbar(fs, k, r, nr, adj, nf, l);
+				ret += recursive(nr, nf, m - k, g, adj, d + nd, l, cf, data, env, model, ea, da);
 			}
 			inittwiddle(k, *f, p);
 			while (!twiddle(&w, &y, &z, p)) {
-				nd = nd - GET(dr, fs[z]) + GET(dr, f[w + 1]);
+				nd = nd - GET(l, fs[z]) + GET(l, f[w + 1]);
 				fs[z] = f[w + 1];
 				if (d + nd <= MAXDRIVERS) {
 					memcpy(nr + 1, rt, sizeof(agent) * *r);
 					memcpy(nfs, fs, sizeof(agent) * k);
-					QSORT(agent, nr + 1, *nr, LTDR);
-					nbar(fs, k, r, nr, adj, nf, dr);
-					ret += recursive(nr, nf, m - k, g, adj, d + nd, dr, sp, env, model, ea, da);
+					QSORT(agent, nr + 1, *nr, LTL);
+					nbar(fs, k, r, nr, adj, nf, l);
+					ret += recursive(nr, nf, m - k, g, adj, d + nd, l, cf, data, env, model, ea, da);
 				}
 			}
 		}
@@ -258,16 +258,16 @@ penny recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, ag
 	return ret;
 }
 
-penny constraints(const edge *g, const agent *adj, const chunk *dr, const meter *sp,
+value constraints(const edge *g, const agent *adj, const chunk *l, value (*cf)(agent *, const chunk *, const void *), const void *data,
 		  IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
 	agent *r = (agent *)malloc(sizeof(agent) * (K + 1) * N);
 	agent *f = (agent *)malloc(sizeof(agent) * (N + 1) * N);
-        penny ret = 0;
+        value ret = 0;
 
 	for (agent i = 0; i < N; i++) {
 		r[0] = 0; f[0] = 1; f[1] = i;
-		ret += recursive(r, f, K, g, adj, 0, dr, sp, env, model, ea, da);
+		ret += recursive(r, f, K, g, adj, 0, l, cf, data, env, model, ea, da);
 	}
 
 	free(f);

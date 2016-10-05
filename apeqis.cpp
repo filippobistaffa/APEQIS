@@ -14,22 +14,18 @@ void printbuf(const type *buf, unsigned n, const char *name = NULL) {
 }
 
 __attribute__((always_inline)) inline
-void createedge(edge *g, agent v1, agent v2, edge e, IloEnv &env, IloFloatVarArray &ea) {
+void createedge(edge *g, agent v1, agent v2, edge e) {
 
 	#ifdef DOT
 	printf("\t%u -- %u [label = \"e_%u,%u\"];\n", v1, v2, v1, v2);
 	#endif
 	g[v1 * N + v2] = g[v2 * N + v1] = e;
-
-	ostringstream ostr;
-	ostr << "e_" << v1 << "," << v2;
-	ea.add(IloFloatVar(env, MINEDGEVALUE, FLT_MAX, ostr.str().c_str()));
 }
 
 #ifdef TWITTER
 
 __attribute__((always_inline)) inline
-edge twitter(const char *filename, edge *g, IloEnv &env, IloFloatVarArray &ea) {
+edge twitter(const char *filename, edge *g) {
 
 	#define MAXLINE 1000
 	static char line[MAXLINE];
@@ -42,7 +38,7 @@ edge twitter(const char *filename, edge *g, IloEnv &env, IloFloatVarArray &ea) {
 		const agent v1 = atoi(line);
 		fgets(line, MAXLINE, f);
 		const agent v2 = atoi(line);
-		createedge(g, v1, v2, N + i, env, ea);
+		createedge(g, v1, v2, N + i);
 	}
 
 	fclose(f);
@@ -53,14 +49,14 @@ edge twitter(const char *filename, edge *g, IloEnv &env, IloFloatVarArray &ea) {
 #else
 
 __attribute__((always_inline)) inline
-edge scalefree(edge *g, IloEnv &env, IloFloatVarArray &ea) {
+edge scalefree(edge *g) {
 
 	edge ne = 0;
 	agent deg[N] = {0};
 
 	for (agent i = 1; i <= M; i++) {
 		for (agent j = 0; j < i; j++) {
-			createedge(g, i, j, N + ne, env, ea);
+			createedge(g, i, j, N + ne);
 			deg[i]++;
 			deg[j]++;
 			ne++;
@@ -84,7 +80,7 @@ edge scalefree(edge *g, IloEnv &env, IloFloatVarArray &ea) {
 				}
 				q--;
 				t |= 1UL << q;
-				createedge(g, i, q, N + ne, env, ea);
+				createedge(g, i, q, N + ne);
 				deg[i]++;
 				deg[q]++;
 				ne++;
@@ -100,7 +96,8 @@ edge scalefree(edge *g, IloEnv &env, IloFloatVarArray &ea) {
 int main(int argc, char *argv[]) {
 
 	unsigned seed = atoi(argv[1]);
-	meter *sp = createsp(seed);
+
+	// Create leaders array
 
 	agent la[N] = {0};
 	chunk l[C] = {0};
@@ -113,22 +110,7 @@ int main(int argc, char *argv[]) {
 	for (agent i = 0; i < N; i++)
 		if (la[i]) SET(l, i);
 
-	// CPLEX environment and model
-
-	IloEnv env;
-	IloModel model(env);
-
-	// Variables representing edge values
-
-	IloFloatVarArray ea(env, N);
-	IloFloatVarArray da(env);
-	ostringstream ostr;
-
-	for (agent i = 0; i < N; i++) {
-		ostr << "e_" << i;
-		ea[i] = IloFloatVar(env, MINEDGEVALUE, FLT_MAX, ostr.str().c_str());
-		ostr.str("");
-	}
+	// Create/read graph
 
 	init(seed);
 	edge *g = (edge *)calloc(N * N, sizeof(edge));
@@ -137,189 +119,20 @@ int main(int argc, char *argv[]) {
 	printf("graph G {\n");
 	#endif
 	#ifdef TWITTER
-	edge ne = twitter(argv[2], g, env, ea);
+	edge ne = twitter(argv[2], g);
 	#else
-	edge ne = scalefree(g, env, ea);
+	edge ne = scalefree(g);
 	#endif
 	#ifdef DOT
 	printf("}\n\n");
 	#endif
 
-	agent *adj = creteadj(g, ne, l);
+	meter *sp = createsp(seed);
+	double *w = apeqis(g, ne, l, srvalue, sp);
 
-	#ifndef CSV
-	puts("Creating model...");
-	#endif
-
-	#ifdef DEBUG
-	puts("\nAdjacency lists");
-	for (agent i = 0; i < N; i++)
-		printbuf(adj + i * N + 1, adj[i * N]);
-	puts("\nAdjacency matrix");
-	for (agent i = 0; i < N; i++)
-		printbuf(g + i * N, N);
-	puts("");
-	#endif
-
-	// Create constraints
-
-	const penny tv = constraints(g, adj, l, sp, env, model, ea, da);
-
-	// Create individual rationality constraints
-
-	#ifdef INDIVIDUALLYRATIONAL
-	for (agent i = 0; i < N; i++) {
-		IloExpr expr(env);
-		for (agent j = 0; j < N; j++) {
-			const edge e = g[i * N + j];
-			if (e) expr += 0.5 * ea[e];
-		}
-		#ifdef DEBUG
-		cout << expr << endl;
-		#endif
-		model.add(expr <= 0);
-		expr.end();
-	}
-	#endif
-
-	// Create objective expression
-
-	IloExpr expr(env);
-	for (agent i = 0; i < da.getSize(); i++)
-		#ifdef LSE
-		expr += da[i] * da[i];
-		#else
-		expr += da[i];
-		#endif
-
-	#ifdef DEBUG
-	cout << expr << endl << endl;
-	#endif
-
-	model.add(IloMinimize(env, expr));
-	expr.end();
-
-	#ifndef CSV
-	puts("Starting CPLEX...\n");
-	#endif
-
-	IloCplex cplex(model);
-	IloTimer timer(env);
-	timer.start();
-
-	#ifdef CSV
-	cplex.setOut(env.getNullStream());
-	#endif
-
-	if (!cplex.solve()) {
-		env.out() << "Unable to find a solution" << endl;
-		exit(1);
-	}
-
-	timer.stop();
-	double difbuf[da.getSize()];
-	double dif = 0;
-
-	#ifdef DIFFERENCES
-	puts("\nDifferences:");
-	#endif
-	for (agent i = 0; i < da.getSize(); i++) {
-		difbuf[i] = cplex.getValue(da[i]);
-		dif += difbuf[i];
-		#ifdef DIFFERENCES
-		cout << da[i].getName() << " = " << difbuf[i] << endl;
-		#endif
-	}
-
-	QSORT(double, difbuf, da.getSize(), GT);
-	double topdif = 0;
-
-	#ifdef SINGLETONS
-	for (agent i = 0; i < N / 2; i++)
-	#else
-	for (agent i = 0; i < N; i++)
-	#endif
-		topdif += difbuf[i];
-
-	// Print output
-
-	#ifdef CSV
-	printf("%u,%u,%u,%.2f,%.2f,%.2f,%.2f\n",
-	       N, DRIVERSPERC, seed, dif, (dif * 1E4) / tv, dif / da.getSize(), timer.getTime() * 1000);
-	#else
-	puts("\nEdge values:");
-	for (edge i = 0; i < ea.getSize(); i++) {
-		try {
-			const double val = cplex.getValue(ea[i]);
-			cout << ea[i].getName() << " = " << val << endl;
-		}
-		catch (IloException& e) {
-			cout << ea[i].getName() << " never occurs in a feasible coalition" << endl;
-			e.end();
-		}
-	}
-
-	env.out() << "\nSolution elapsed time = " << timer.getTime() * 1000 << "ms" << endl;
-	printf("Overall difference = %.2f\n", dif);
-	printf("Percentage difference = %.2f%%\n", (dif * 1E4) / tv);
-	#ifdef SINGLETONS
-	printf("Average difference (excluding singletons) = %.2f\n", dif / (da.getSize() - N));
-	printf("Sum of the %u highest differences = %.2f\n", N / 2, topdif);
-	#else
-	printf("Average difference = %.2f\n", dif / da.getSize());
-	printf("Sum of the %u highest differences = %.2f\n", N, topdif);
-	#endif
-	#endif
-
-	// Write output file
-
-	#ifdef CFSS
-	FILE *cfss = fopen(CFSS, "w+");
-	for (agent i = 0; i < N; i++)
-		fprintf(cfss, "%s%f\n", GET(l, i) ? "*" : "", -cplex.getValue(ea[i]));
-	for (agent i = 0; i < N; i++) {
-		for (agent j = 0; j < adj[i * N]; j++) {
-			const agent k = adj[i * N + j + 1];
-			if (k > i) {
-				double val = 0;
-				try { val = -cplex.getValue(ea[g[i * N + k]]); }
-				catch (IloException& e) {}
-				fprintf(cfss, "%u %u %f\n", i, k, val);
-			}
-		}
-	}
-	fclose(cfss);
-	#endif
-
-	// Compute Shapley values
-
-	#ifdef SHAPLEY
-	double sv[N];
-	double sing[N];
-	bool ir = true;
-
-	for (agent i = 0; i < N; i++) {
-		sing[i] = sv[i] = cplex.getValue(ea[i]);
-		for (agent j = 0; j < N; j++) {
-			const edge e = g[i * N + j];
-			try {
-				if (e) sv[i] += cplex.getValue(ea[e]) / 2;
-			}
-			catch (IloException& e) {
-				e.end();
-			}
-		}
-		ir &= sing[i] + EPSILON >= sv[i];
-	}
-
-	printbuf(sv, N, "Shapley values");
-	printbuf(sing, N, "Singleton values");
-	if (ir) puts("Payments are individually rational");
-	#endif
-
-	env.end();
-	free(adj);
+	free(sp);
 	free(g);
+	free(w);
 
 	return 0;
 }
