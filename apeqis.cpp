@@ -14,13 +14,12 @@ void printbuf(const type *buf, unsigned n, const char *name = NULL) {
 }
 
 __attribute__((always_inline)) inline
-void createedge(agent *adj, agent v1, agent v2, IloEnv &env, IloFloatVarArray &ea) {
+void createedge(edge *g, agent v1, agent v2, edge e, IloEnv &env, IloFloatVarArray &ea) {
 
 	#ifdef DOT
 	printf("\t%u -- %u [label = \"e_%u,%u\"];\n", v1, v2, v1, v2);
 	#endif
-	adj[v1 * N + (adj[v1 * N]++) + 1] = v2;
-	adj[v2 * N + (adj[v2 * N]++) + 1] = v1;
+	g[v1 * N + v2] = g[v2 * N + v1] = e;
 
 	ostringstream ostr;
 	ostr << "e_" << v1 << "," << v2;
@@ -30,7 +29,7 @@ void createedge(agent *adj, agent v1, agent v2, IloEnv &env, IloFloatVarArray &e
 #ifdef TWITTER
 
 __attribute__((always_inline)) inline
-edge twitter(const char *filename, agent *adj, const chunk *dr, IloEnv &env, IloFloatVarArray &ea) {
+edge twitter(const char *filename, edge *g, IloEnv &env, IloFloatVarArray &ea) {
 
 	#define MAXLINE 1000
 	static char line[MAXLINE];
@@ -43,13 +42,10 @@ edge twitter(const char *filename, agent *adj, const chunk *dr, IloEnv &env, Ilo
 		const agent v1 = atoi(line);
 		fgets(line, MAXLINE, f);
 		const agent v2 = atoi(line);
-		createedge(adj, v1, v2, env, ea);
+		createedge(g, v1, v2, N + i, env, ea);
 	}
 
 	fclose(f);
-
-	for (agent i = 0; i < N; i++)
-		QSORT(agent, adj + i * N + 1, adj[i * N], LTDR);
 
 	return ne;
 }
@@ -57,14 +53,14 @@ edge twitter(const char *filename, agent *adj, const chunk *dr, IloEnv &env, Ilo
 #else
 
 __attribute__((always_inline)) inline
-edge scalefree(agent *adj, const chunk *dr, IloEnv &env, IloFloatVarArray &ea) {
+edge scalefree(edge *g, IloEnv &env, IloFloatVarArray &ea) {
 
 	edge ne = 0;
 	agent deg[N] = {0};
 
 	for (agent i = 1; i <= M; i++) {
 		for (agent j = 0; j < i; j++) {
-			createedge(adj, i, j, env, ea);
+			createedge(g, i, j, N + ne, env, ea);
 			deg[i]++;
 			deg[j]++;
 			ne++;
@@ -88,7 +84,7 @@ edge scalefree(agent *adj, const chunk *dr, IloEnv &env, IloFloatVarArray &ea) {
 				}
 				q--;
 				t |= 1UL << q;
-				createedge(adj, i, q, env, ea);
+				createedge(g, i, q, N + ne, env, ea);
 				deg[i]++;
 				deg[q]++;
 				ne++;
@@ -96,42 +92,26 @@ edge scalefree(agent *adj, const chunk *dr, IloEnv &env, IloFloatVarArray &ea) {
 		}
 	}
 
-	for (agent i = 0; i < N; i++)
-		QSORT(agent, adj + i * N + 1, adj[i * N], LTDR);
-
 	return ne;
 }
 
 #endif
-
-edge *createg(const agent *adj) {
-
-	edge e = N, *g = (edge *)calloc(N * N, sizeof(edge));
-
-	for (agent v1 = 0; v1 < N; v1++)
-		for (agent i = 0; i < adj[v1 * N]; i++) {
-			const agent v2 = adj[v1 * N + i + 1];
-			if (v1 > v2) g[v1 * N + v2] = e++;
-		}
-
-	return g;
-}
 
 int main(int argc, char *argv[]) {
 
 	unsigned seed = atoi(argv[1]);
 	meter *sp = createsp(seed);
 
-	agent dra[N] = {0};
-	chunk dr[C] = {0};
+	agent la[N] = {0};
+	chunk l[C] = {0};
 
 	for (agent i = 0; i < D; i++)
-		dra[i] = 1;
+		la[i] = 1;
 
-	shuffle(dra, N, sizeof(agent));
+	shuffle(la, N, sizeof(agent));
 
 	for (agent i = 0; i < N; i++)
-		if (dra[i]) SET(dr, i);
+		if (la[i]) SET(l, i);
 
 	// CPLEX environment and model
 
@@ -151,21 +131,21 @@ int main(int argc, char *argv[]) {
 	}
 
 	init(seed);
-	agent *adj = (agent *)calloc(N * N, sizeof(agent));
+	edge *g = (edge *)calloc(N * N, sizeof(edge));
 
 	#ifdef DOT
 	printf("graph G {\n");
 	#endif
 	#ifdef TWITTER
-	twitter(argv[2], adj, dr, env, ea);
+	edge ne = twitter(argv[2], g, env, ea);
 	#else
-	scalefree(adj, dr, env, ea);
+	edge ne = scalefree(g, env, ea);
 	#endif
 	#ifdef DOT
 	printf("}\n\n");
 	#endif
 
-	edge *g = createg(adj);
+	agent *adj = creteadj(g, ne, l);
 
 	#ifndef CSV
 	puts("Creating model...");
@@ -183,7 +163,7 @@ int main(int argc, char *argv[]) {
 
 	// Create constraints
 
-	const penny tv = constraints(g, adj, dr, sp, env, model, ea, da);
+	const penny tv = constraints(g, adj, l, sp, env, model, ea, da);
 
 	// Create individual rationality constraints
 
@@ -296,7 +276,7 @@ int main(int argc, char *argv[]) {
 	#ifdef CFSS
 	FILE *cfss = fopen(CFSS, "w+");
 	for (agent i = 0; i < N; i++)
-		fprintf(cfss, "%s%f\n", GET(dr, i) ? "*" : "", -cplex.getValue(ea[i]));
+		fprintf(cfss, "%s%f\n", GET(l, i) ? "*" : "", -cplex.getValue(ea[i]));
 	for (agent i = 0; i < N; i++) {
 		for (agent j = 0; j < adj[i * N]; j++) {
 			const agent k = adj[i * N + j + 1];

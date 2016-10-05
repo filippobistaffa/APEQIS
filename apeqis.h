@@ -29,6 +29,7 @@
 
 using namespace std;
 
+#include "apelib.h"
 #include "constraints.h"
 #include "random.h"
 #include "iqsort.h"
