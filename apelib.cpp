@@ -131,11 +131,14 @@ double *apeqis(const edge *g, edge ne, const chunk *l, value (*cf)(agent *, cons
 
 	// Generate weights array
 
-	double *w = (double *)calloc(ea.getSize(), sizeof(double));
+	double *w = (double *)malloc(sizeof(double) * ea.getSize());
 
 	for (edge i = 0; i < ea.getSize(); i++) {
 		try { w[i] = cplex.getValue(ea[i]); }
-		catch (IloException& e) { e.end(); }
+		catch (IloException& e) {
+			w[i] = FLT_MAX;
+			e.end();
+		}
 	}
 
 	// Print output
