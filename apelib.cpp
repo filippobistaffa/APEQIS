@@ -12,9 +12,6 @@ agent *creteadj(const edge *g, edge ne, const chunk *l, IloEnv &env, IloFloatVar
 			if (e) {
 				X(ab, e - N) = v1;
 				Y(ab, e - N) = v2;
-				ostringstream ostr;
-				ostr << "e_" << v1 << "," << v2;
-				ea.add(IloFloatVar(env, MINEDGEVALUE, FLT_MAX, ostr.str().c_str()));
 			}
 		}
 
@@ -23,6 +20,9 @@ agent *creteadj(const edge *g, edge ne, const chunk *l, IloEnv &env, IloFloatVar
 	do {
 		adj[a[0] * N + (adj[a[0] * N]++) + 1] = a[1];
 		adj[a[1] * N + (adj[a[1] * N]++) + 1] = a[0];
+		ostringstream ostr;
+		ostr << "e_" << a[0] << "," << a[1];
+		ea.add(IloFloatVar(env, MINEDGEVALUE, FLT_MAX, ostr.str().c_str()));
 		a += 2;
 	} while (--ne);
 
