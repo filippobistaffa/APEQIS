@@ -218,7 +218,7 @@ value recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, ag
 
 	if (*r && (d || *r == 1)) {
 		#ifdef DEBUG
-		printc(r, COALVALUE(r, GET(l, *(r + 1)), data));
+		printc(r, cf(r, l, data));
 		#endif
 		ret += coalition(r, l, cf, data, g, adj, env, model, ea, da);
 	}
