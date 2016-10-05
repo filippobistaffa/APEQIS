@@ -1,18 +1,5 @@
 #include "apeqis.h"
 
-// Print content of buffer
-
-#include <iostream>
-template <typename type>
-__attribute__((always_inline)) inline
-void printbuf(const type *buf, unsigned n, const char *name = NULL) {
-
-	if (name) printf("%s = [ ", name);
-	else printf("[ ");
-	while (n--) std::cout << *(buf++) << " ";
-	printf("]\n");
-}
-
 __attribute__((always_inline)) inline
 void createedge(edge *g, agent v1, agent v2, edge e) {
 
@@ -96,6 +83,7 @@ edge scalefree(edge *g) {
 int main(int argc, char *argv[]) {
 
 	unsigned seed = atoi(argv[1]);
+	meter *sp = createsp(seed);
 
 	// Create leaders array
 
@@ -127,7 +115,6 @@ int main(int argc, char *argv[]) {
 	printf("}\n\n");
 	#endif
 
-	meter *sp = createsp(seed);
 	double *w = apeqis(g, ne, l, srvalue, sp);
 
 	free(sp);
