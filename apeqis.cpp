@@ -14,12 +14,11 @@ void printbuf(const type *buf, unsigned n, const char *name = NULL) {
 }
 
 __attribute__((always_inline)) inline
-void createedge(edge *g, agent *adj, agent v1, agent v2, edge e, IloEnv &env, IloFloatVarArray &ea) {
+void createedge(agent *adj, agent v1, agent v2, IloEnv &env, IloFloatVarArray &ea) {
 
 	#ifdef DOT
 	printf("\t%u -- %u [label = \"e_%u,%u\"];\n", v1, v2, v1, v2);
 	#endif
-	g[v1 * N + v2] = g[v2 * N + v1] = e;
 	adj[v1 * N + (adj[v1 * N]++) + 1] = v2;
 	adj[v2 * N + (adj[v2 * N]++) + 1] = v1;
 
@@ -31,7 +30,7 @@ void createedge(edge *g, agent *adj, agent v1, agent v2, edge e, IloEnv &env, Il
 #ifdef TWITTER
 
 __attribute__((always_inline)) inline
-edge twitter(const char *filename, edge *g, agent *adj, const chunk *dr, IloEnv &env, IloFloatVarArray &ea) {
+edge twitter(const char *filename, agent *adj, const chunk *dr, IloEnv &env, IloFloatVarArray &ea) {
 
 	#define MAXLINE 1000
 	static char line[MAXLINE];
@@ -44,7 +43,7 @@ edge twitter(const char *filename, edge *g, agent *adj, const chunk *dr, IloEnv 
 		const agent v1 = atoi(line);
 		fgets(line, MAXLINE, f);
 		const agent v2 = atoi(line);
-		createedge(g, adj, v1, v2, N + i, env, ea);
+		createedge(adj, v1, v2, env, ea);
 	}
 
 	fclose(f);
@@ -58,14 +57,14 @@ edge twitter(const char *filename, edge *g, agent *adj, const chunk *dr, IloEnv 
 #else
 
 __attribute__((always_inline)) inline
-edge scalefree(edge *g, agent *adj, const chunk *dr, IloEnv &env, IloFloatVarArray &ea) {
+edge scalefree(agent *adj, const chunk *dr, IloEnv &env, IloFloatVarArray &ea) {
 
 	edge ne = 0;
 	agent deg[N] = {0};
 
 	for (agent i = 1; i <= M; i++) {
 		for (agent j = 0; j < i; j++) {
-			createedge(g, adj, i, j, N + ne, env, ea);
+			createedge(adj, i, j, env, ea);
 			deg[i]++;
 			deg[j]++;
 			ne++;
@@ -89,7 +88,7 @@ edge scalefree(edge *g, agent *adj, const chunk *dr, IloEnv &env, IloFloatVarArr
 				}
 				q--;
 				t |= 1UL << q;
-				createedge(g, adj, i, q, N + ne, env, ea);
+				createedge(adj, i, q, env, ea);
 				deg[i]++;
 				deg[q]++;
 				ne++;
@@ -104,6 +103,19 @@ edge scalefree(edge *g, agent *adj, const chunk *dr, IloEnv &env, IloFloatVarArr
 }
 
 #endif
+
+edge *createg(const agent *adj) {
+
+	edge e = N, *g = (edge *)calloc(N * N, sizeof(edge));
+
+	for (agent v1 = 0; v1 < N; v1++)
+		for (agent i = 0; i < adj[v1 * N]; i++) {
+			const agent v2 = adj[v1 * N + i + 1];
+			if (v1 > v2) g[v1 * N + v2] = e++;
+		}
+
+	return g;
+}
 
 int main(int argc, char *argv[]) {
 
@@ -139,20 +151,21 @@ int main(int argc, char *argv[]) {
 	}
 
 	init(seed);
-	edge *g = (edge *)calloc(N * N, sizeof(edge));
 	agent *adj = (agent *)calloc(N * N, sizeof(agent));
 
 	#ifdef DOT
 	printf("graph G {\n");
 	#endif
 	#ifdef TWITTER
-	twitter(argv[2], g, adj, dr, env, ea);
+	twitter(argv[2], adj, dr, env, ea);
 	#else
-	scalefree(g, adj, dr, env, ea);
+	scalefree(adj, dr, env, ea);
 	#endif
 	#ifdef DOT
 	printf("}\n\n");
 	#endif
+
+	edge *g = createg(adj);
 
 	#ifndef CSV
 	puts("Creating model...");
