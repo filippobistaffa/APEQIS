@@ -107,15 +107,15 @@ int main(int argc, char *argv[]) {
 	printf("graph G {\n");
 	#endif
 	#ifdef TWITTER
-	edge ne = twitter(argv[2], g);
+	twitter(argv[2], g);
 	#else
-	edge ne = scalefree(g);
+	scalefree(g);
 	#endif
 	#ifdef DOT
 	printf("}\n\n");
 	#endif
 
-	double *w = apeqis(g, ne, l, srvalue, sp);
+	double *w = apeqis(g, l, srvalue, sp);
 
 	free(sp);
 	free(g);

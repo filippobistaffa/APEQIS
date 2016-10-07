@@ -32,7 +32,7 @@ agent *creteadj(const edge *g, edge ne, const chunk *l, IloEnv &env, IloFloatVar
 	return adj;
 }
 
-double *apeqis(const edge *g, edge ne, const chunk *l, value (*cf)(agent *, const chunk *, const void *), const void *data) {
+double *apeqis(const edge *g, const chunk *l, value (*cf)(agent *, const chunk *, const void *), const void *data) {
 
 	IloEnv env;
 	IloFloatVarArray ea(env, N);
@@ -49,6 +49,12 @@ double *apeqis(const edge *g, edge ne, const chunk *l, value (*cf)(agent *, cons
 		ea[i] = IloFloatVar(env, MINEDGEVALUE, FLT_MAX, ostr.str().c_str());
 		ostr.str("");
 	}
+
+	edge ne = 0;
+
+	for (agent i = 0; i < N; i++)
+		for (agent j = i + 1; j < N; j++)
+			if (g[i * N + j]) ne++;
 
 	agent *adj = creteadj(g, ne, l, env, ea);
 
