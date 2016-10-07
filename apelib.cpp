@@ -32,7 +32,14 @@ agent *creteadj(const edge *g, edge ne, const chunk *l, IloEnv &env, IloFloatVar
 	return adj;
 }
 
-double *apeqis(const edge *g, const chunk *l, value (*cf)(agent *, const chunk *, const void *), const void *data) {
+double *apeqis(const edge *g, value (*cf)(agent *, const chunk *, void *), void *data, const chunk *l) {
+
+	chunk *tl;
+
+	if (!l) {
+		tl = (chunk *)malloc(sizeof(chunk) * C);
+		ONES(tl, N, C);
+	}
 
 	IloEnv env;
 	IloFloatVarArray ea(env, N);
@@ -56,7 +63,7 @@ double *apeqis(const edge *g, const chunk *l, value (*cf)(agent *, const chunk *
 		for (agent j = i + 1; j < N; j++)
 			if (g[i * N + j]) ne++;
 
-	agent *adj = creteadj(g, ne, l, env, ea);
+	agent *adj = creteadj(g, ne, l ? l : tl, env, ea);
 
 	#ifndef CSV
 	puts("Creating model...");
@@ -74,7 +81,7 @@ double *apeqis(const edge *g, const chunk *l, value (*cf)(agent *, const chunk *
 
 	// Create constraints
 
-	const value tv = constraints(g, adj, l, cf, data, env, model, ea, da);
+	const value tv = constraints(g, adj, l ? l : tl, cf, data, env, model, ea, da);
 
 	// Create objective expression
 
@@ -168,6 +175,7 @@ double *apeqis(const edge *g, const chunk *l, value (*cf)(agent *, const chunk *
 	#endif
 
 	env.end();
+	if (!l) free(tl);
 	free(adj);
 
 	// Write output file

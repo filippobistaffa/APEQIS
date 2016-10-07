@@ -15,6 +15,6 @@ void printbuf(const type *buf, unsigned n, const char *name = NULL) {
 	printf("]\n");
 }
 
-double *apeqis(const edge *g, const chunk *l, value (*cf)(agent *, const chunk *, const void *), const void *data = NULL);
+double *apeqis(const edge *g, value (*cf)(agent *, const chunk *, void *), void *data = NULL, const chunk *l = NULL);
 
 #endif /* APELIB_H_ */

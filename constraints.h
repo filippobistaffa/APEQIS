@@ -10,7 +10,7 @@ void printc(const agent *c, value v) {
 	printf("] = %.2f\n", 0.01 * v);
 }
 
-value constraints(const edge *g, const agent *adj, const chunk *l, value (*cf)(agent *, const chunk *, const void *), const void *data,
+value constraints(const edge *g, const agent *adj, const chunk *l, value (*cf)(agent *, const chunk *, void *), void *data,
 		  IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da);
 
 #endif /* CONSTRAINTS_H_ */

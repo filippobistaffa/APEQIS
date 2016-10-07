@@ -115,7 +115,7 @@ int main(int argc, char *argv[]) {
 	printf("}\n\n");
 	#endif
 
-	double *w = apeqis(g, l, srvalue, sp);
+	double *w = apeqis(g, srvalue, sp, l);
 
 	free(sp);
 	free(g);

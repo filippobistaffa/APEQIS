@@ -176,7 +176,7 @@ unsigned vectorsum(const agent *r, agent n, const chunk *x) {
 }
 
 __attribute__((always_inline)) inline
-value coalition(agent *c, const chunk *l, value (*cf)(agent *, const chunk *, const void *), const void *data, const edge *g, const agent *adj,
+value coalition(agent *c, const chunk *l, value (*cf)(agent *, const chunk *, void *), void *data, const edge *g, const agent *adj,
 	       IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
 	ostringstream ostr;
@@ -211,7 +211,7 @@ value coalition(agent *c, const chunk *l, value (*cf)(agent *, const chunk *, co
 	return cv;
 }
 
-value recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, agent d, const chunk *l, value (*cf)(agent *, const chunk *, const void *), const void *data,
+value recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, agent d, const chunk *l, value (*cf)(agent *, const chunk *, void *), void *data,
 		IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
 	value ret = 0;
@@ -258,7 +258,7 @@ value recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, ag
 	return ret;
 }
 
-value constraints(const edge *g, const agent *adj, const chunk *l, value (*cf)(agent *, const chunk *, const void *), const void *data,
+value constraints(const edge *g, const agent *adj, const chunk *l, value (*cf)(agent *, const chunk *, void *), void *data,
 		  IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
 	agent *r = (agent *)malloc(sizeof(agent) * (K + 1) * N);
