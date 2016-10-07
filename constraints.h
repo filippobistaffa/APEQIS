@@ -11,6 +11,6 @@ void printc(const agent *c, value v) {
 }
 
 value constraints(const edge *g, const agent *adj, const chunk *l, value (*cf)(agent *, const chunk *, void *), void *data,
-		  IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da);
+		  IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da, agent maxc, agent maxl);
 
 #endif /* CONSTRAINTS_H_ */

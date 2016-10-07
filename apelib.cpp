@@ -32,7 +32,7 @@ agent *creteadj(const edge *g, edge ne, const chunk *l, IloEnv &env, IloFloatVar
 	return adj;
 }
 
-double *apeqis(const edge *g, value (*cf)(agent *, const chunk *, void *), void *data, const chunk *l) {
+double *apeqis(const edge *g, value (*cf)(agent *, const chunk *, void *), void *data, const chunk *l, agent maxc, agent maxl) {
 
 	chunk *tl;
 
@@ -81,7 +81,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, const chunk *, void *), void 
 
 	// Create constraints
 
-	const value tv = constraints(g, adj, l ? l : tl, cf, data, env, model, ea, da);
+	const value tv = constraints(g, adj, l ? l : tl, cf, data, env, model, ea, da, maxc, maxl);
 
 	// Create objective expression
 
