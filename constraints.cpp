@@ -209,11 +209,11 @@ value coalition(agent *c, const chunk *l, value (*cf)(agent *, const chunk *, vo
 		if (*c == 1) model.add(d == 0);
 		#endif
 		expr.end();
-		return 0;
+		return cv;
 	}
 
 	expr.end();
-	return cv;
+	return 0;
 }
 
 value recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, agent d, const chunk *l, value (*cf)(agent *, const chunk *, void *), void *data,
