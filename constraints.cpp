@@ -263,11 +263,14 @@ value constraints(const edge *g, const agent *adj, const chunk *l, value (*cf)(a
 
 	agent *r = (agent *)malloc(sizeof(agent) * (maxc + 1) * N);
 	agent *f = (agent *)malloc(sizeof(agent) * (N + 1) * N);
-        value ret = 0;
+	agent zero[N] = {0};
+	value ret = 0;
 
 	for (agent i = 0; i < N; i++) {
-		r[0] = 0; f[0] = 1; f[1] = i;
-		ret += recursive(r, f, maxc, g, adj, 0, l, cf, data, env, model, ea, da, maxc, maxl);
+		if (memcmp(g + i * N, zero, sizeof(agent) * N)) {
+			r[0] = 0; f[0] = 1; f[1] = i;
+			ret += recursive(r, f, maxc, g, adj, 0, l, cf, data, env, model, ea, da, maxc, maxl);
+		}
 	}
 
 	free(f);
