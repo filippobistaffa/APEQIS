@@ -179,10 +179,6 @@ __attribute__((always_inline)) inline
 value coalition(agent *c, const chunk *l, value (*cf)(agent *, const chunk *, void *), void *data, const edge *g, const agent *adj,
 	       IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
-	ostringstream ostr;
-	ostr << "d_" << dn++;
-	IloFloatVar d = IloFloatVar(env, 0, FLT_MAX, ostr.str().c_str());
-	da.add(d);
 	IloExpr expr(env);
 
 	for (agent i = 0; i < *c; i++) {
@@ -202,11 +198,20 @@ value coalition(agent *c, const chunk *l, value (*cf)(agent *, const chunk *, vo
 	printf("cv = %.2f\n", 0.01 * cv);
 	#endif
 
-	model.add(expr - d <= 0.01 * cv);
-	model.add(expr + d >= 0.01 * cv);
-	#ifdef SINGLETONS
-	if (*c == 1) model.add(d == 0);
-	#endif
+	if (!isnan(cv)) {
+		ostringstream ostr;
+		ostr << "d_" << dn++;
+		IloFloatVar d = IloFloatVar(env, 0, FLT_MAX, ostr.str().c_str());
+		da.add(d);
+		model.add(expr - d <= cv);
+		model.add(expr + d >= cv);
+		#ifdef SINGLETONS
+		if (*c == 1) model.add(d == 0);
+		#endif
+		expr.end();
+		return 0;
+	}
+
 	expr.end();
 	return cv;
 }
