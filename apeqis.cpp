@@ -50,23 +50,25 @@ edge scalefree(edge *g) {
 		}
 	}
 
-	agent t = 0;
+	chunk t[C] = { 0 };
+	chunk t1[C] = { 0 };
 
 	for (agent i = M + 1; i < N; i++) {
-		t &= ~((1UL << i) - 1);
+		ONES(t1, i, C);
+		MASKANDNOT(t, t1, t, C);
 		for (agent j = 0; j < M; j++) {
 			agent d = 0;
 			for (agent h = 0; h < i; h++)
-				if (!((t >> h) & 1)) d += deg[h];
+				if (!GET(t, h)) d += deg[h];
 			if (d > 0) {
 				int p = nextInt(d);
 				agent q = 0;
 				while (p >= 0) {
-					if (!((t >> q) & 1)) p = p - deg[q];
+					if (!GET(t, q)) p = p - deg[q];
 					q++;
 				}
 				q--;
-				t |= 1UL << q;
+				SET(t, q);
 				createedge(g, i, q, N + ne);
 				deg[i]++;
 				deg[q]++;
