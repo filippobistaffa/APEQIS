@@ -1,5 +1,5 @@
-#ifndef LPISG_H_
-#define LPISG_H_
+#ifndef APEQIS_H_
+#define APEQIS_H_
 
 #include <omp.h>
 #include <stdio.h>
@@ -36,4 +36,4 @@ using namespace std;
 #include "value.h"
 #include "sp.h"
 
-#endif /* LPISG_H_ */
+#endif /* APEQIS_H_ */
