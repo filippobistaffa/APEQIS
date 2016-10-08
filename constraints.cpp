@@ -1,10 +1,10 @@
 #include "apeqis.h"
 
 typedef int16_t sign;
-static size_t bcm[(N + 1) * (N + 1)], pm[N * N];
+//static size_t bcm[(N + 1) * (N + 1)], pm[N * N];
 static size_t dn;
 
-#define P(_s, _i) (pm[(_s) * N + (_i)])
+/*#define P(_s, _i) (pm[(_s) * N + (_i)])
 #define BC(_n, _m) (bcm[(_n) * (N + 1) + (_m)])
 
 void filltables() {
@@ -14,7 +14,7 @@ void filltables() {
 	for (agent i = 1; i < N; i++) P(i, 1) = 1ULL;
 	for (agent i = 2; i < N; i++) P(1, i) = i;
 	for (agent i = 2; i < N; i++) for (agent j = 2; j < N; j++) P(i, j) = P(i - 1, j) + P(i, j - 1);
-}
+}*/
 
 __attribute__((always_inline)) inline
 sign twiddle(sign *x, sign *y, sign *z, sign *p) {
