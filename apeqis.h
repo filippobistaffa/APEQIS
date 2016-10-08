@@ -13,7 +13,11 @@
 // Cplex headers
 #include <ilcplex/ilocplex.h>
 
+#ifdef APE_SUBDIR
+#include "../instance.h"
+#else
 #include "instance.h"
+#endif
 #include "params.h"
 #include "macros.h"
 #include "types.h"
