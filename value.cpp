@@ -106,10 +106,10 @@ meter minpath(agent *c, agent n, agent dr, const meter *sp) {
 	return min;
 }
 
-#define PATHCOST(p) ROUND(value, (float)(p) / METERSPERLITRE * PENNYPERLITRE)
+#define PATHCOST(p) ((float)(p) / METERSPERLITRE * PENNYPERLITRE)
 
 value srvalue(agent *c, const chunk *l, void *data) {
 
 	meter *sp = (meter *)data;
-	return GET(l, *(c + 1)) ? (PATHCOST(minpath(c + 1, *c, 1, sp)) + CARCOST) : TICKETCOST;
+	return 0.01 * (GET(l, *(c + 1)) ? (PATHCOST(minpath(c + 1, *c, 1, sp)) + CARCOST) : TICKETCOST);
 }

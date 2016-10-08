@@ -195,7 +195,7 @@ value coalition(agent *c, const chunk *l, value (*cf)(agent *, const chunk *, vo
 
 	#ifdef APE_DEBUG
 	cout << expr << endl;
-	printf("cv = %.2f\n", 0.01 * cv);
+	//printf("cv = %.2f\n", cv);
 	#endif
 
 	if (!isnan(cv)) {

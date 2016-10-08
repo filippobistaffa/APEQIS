@@ -7,7 +7,7 @@ void printc(const agent *c, value v) {
 	agent n = *c;
 	printf("[ ");
 	while (n--) printf("%u ", *(++c));
-	printf("] = %.2f\n", 0.01 * v);
+	printf("] = %.2f\n", v);
 }
 
 value constraints(const edge *g, const agent *adj, const chunk *l, value (*cf)(agent *, const chunk *, void *), void *data,
