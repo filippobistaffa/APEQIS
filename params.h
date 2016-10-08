@@ -24,9 +24,3 @@
 
 // Force equality among singletons
 #define SINGLETONS
-
-// Compute Shapley values
-//#define SHAPLEY
-
-// Enforce individually rational Shapley values
-//#define INDIVIDUALLYRATIONAL
