@@ -70,7 +70,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, const chunk *, void *),
 	puts("Creating model...");
 	#endif
 
-	#ifdef DEBUG
+	#ifdef APE_DEBUG
 	puts("\nAdjacency lists");
 	for (agent i = 0; i < N; i++)
 		printbuf(adj + i * N + 1, adj[i * N]);
@@ -94,7 +94,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, const chunk *, void *),
 		expr += da[i];
 		#endif
 
-	#ifdef DEBUG
+	#ifdef APE_DEBUG
 	cout << expr << endl << endl;
 	#endif
 

@@ -197,7 +197,7 @@ value coalition(agent *c, const chunk *l, value (*cf)(agent *, const chunk *, vo
 
 	const value cv = cf(c, l, data);
 
-	#ifdef DEBUG
+	#ifdef APE_DEBUG
 	cout << expr << endl;
 	printf("cv = %.2f\n", 0.01 * cv);
 	#endif
@@ -217,7 +217,7 @@ value recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, ag
 	value ret = 0;
 
 	if (*r && (d || *r == 1)) {
-		#ifdef DEBUG
+		#ifdef APE_DEBUG
 		printc(r, cf(r, l, data));
 		#endif
 		ret += coalition(r, l, cf, data, g, adj, env, model, ea, da);
