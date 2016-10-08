@@ -5,15 +5,13 @@ agent *creteadj(const edge *g, edge ne, const chunk *l, IloEnv &env, IloFloatVar
 
 	agent *adj = (agent *)calloc(N * N, sizeof(agent));
 	agent ab[2 * ne];
-	edge ei = 0;
 
 	for (agent v1 = 0; v1 < N; v1++)
 		for (agent v2 = v1 + 1; v2 < N; v2++) {
 			const edge e = g[v1 * N + v2];
 			if (e) {
-				X(ab, ei) = v1;
-				Y(ab, ei) = v2;
-				ei++;
+				X(ab, e - N) = v1;
+				Y(ab, e - N) = v2;
 			}
 		}
 
