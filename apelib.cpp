@@ -194,5 +194,9 @@ double *apeqis(const edge *g, value (*cf)(agent *, const chunk *, void *),
 	fclose(cfss);
 	#endif
 
+	#ifdef APE_NOERROR
+	assert(dif < EPSILON);
+	#endif
+
 	return w;
 }

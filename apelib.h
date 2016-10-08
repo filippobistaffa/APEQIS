@@ -4,6 +4,8 @@
 #define LTL(X, Y) (GET(l, *(X)) == GET(l, *(Y)) ? (*(X)) < (*(Y)) : GET(l, *(X)) > GET(l, *(Y)))
 #define LEL(X, Y) (GET(l, *(X)) == GET(l, *(Y)) ? (*(X)) <= (*(Y)) : GET(l, *(X)) > GET(l, *(Y)))
 
+#define EPSILON 0.01
+
 #ifndef PRINTBUF
 #define PRINTBUF
 
