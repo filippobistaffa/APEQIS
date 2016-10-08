@@ -31,6 +31,12 @@
 #define MINEDGEVALUE (-FLT_MAX)
 #endif
 
+#ifdef UNFEASIBLE
+#define UNFEASIBLEVALUE FLT_MAX
+#else
+#define UNFEASIBLEVALUE 0
+#endif
+
 using namespace std;
 
 #include "apelib.h"

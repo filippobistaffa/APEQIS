@@ -150,7 +150,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, const chunk *, void *),
 	for (edge i = 0; i < ea.getSize(); i++) {
 		try { w[i] = cplex.getValue(ea[i]); }
 		catch (IloException& e) {
-			w[i] = FLT_MAX;
+			w[i] = UNFEASIBLEVALUE;
 			e.end();
 		}
 	}
