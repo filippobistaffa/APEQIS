@@ -14,7 +14,7 @@
 
 #define CARCOST 100
 #define TICKETCOST 300
-#define PENNYPERLITRE 130
+#define CENTSPERLITRE 130
 #define METERSPERLITRE 15000
 
 #define R5 2520
@@ -23,6 +23,6 @@
 
 // Computes the value of a coalition C (assumes only one driver per coalition)
 
-value srvalue(agent *c, const chunk *l, void *data);
+value srvalue(agent *c, agent nl, void *sp);
 
 #endif /* VALUE_H_ */

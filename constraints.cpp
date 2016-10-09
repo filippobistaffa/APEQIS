@@ -176,7 +176,7 @@ unsigned vectorsum(const agent *r, agent n, const chunk *x) {
 }
 
 __attribute__((always_inline)) inline
-value coalition(agent *c, const chunk *l, value (*cf)(agent *, const chunk *, void *), void *data, const edge *g, const agent *adj,
+value coalition(agent *c, agent d, const chunk *l, value (*cf)(agent *, agent, void *), void *data, const edge *g, const agent *adj,
 		IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
 	IloExpr expr(env);
@@ -191,7 +191,7 @@ value coalition(agent *c, const chunk *l, value (*cf)(agent *, const chunk *, vo
 		}
 	}
 
-	const value cv = cf(c, l, data);
+	const value cv = cf(c, d, data);
 
 	#ifdef APE_DEBUG
 	cout << expr << endl;
@@ -216,16 +216,16 @@ value coalition(agent *c, const chunk *l, value (*cf)(agent *, const chunk *, vo
 	return 0;
 }
 
-value recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, agent d, const chunk *l, value (*cf)(agent *, const chunk *, void *), void *data,
+value recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, agent d, const chunk *l, value (*cf)(agent *, agent, void *), void *data,
 		IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da, agent maxc, agent maxl) {
 
 	value ret = 0;
 
 	if (*r && (d || *r == 1)) {
 		#ifdef APE_DEBUG
-		printc(r, cf(r, l, data));
+		printc(r, cf(r, d, data));
 		#endif
-		ret += coalition(r, l, cf, data, g, adj, env, model, ea, da);
+		ret += coalition(r, d, l, cf, data, g, adj, env, model, ea, da);
 	}
 
 	if (*f && m) {
@@ -263,7 +263,7 @@ value recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, ag
 	return ret;
 }
 
-value constraints(const edge *g, const agent *adj, const chunk *l, value (*cf)(agent *, const chunk *, void *), void *data,
+value constraints(const edge *g, const agent *adj, const chunk *l, value (*cf)(agent *, agent, void *), void *data,
 		  IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da, agent maxc, agent maxl) {
 
 	agent *r = (agent *)malloc(sizeof(agent) * (maxc + 1) * N);
