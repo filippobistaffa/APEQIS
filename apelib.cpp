@@ -165,9 +165,9 @@ double *apeqis(const edge *g, value (*cf)(agent *, const chunk *, void *),
 		cout << ea[i].getName() << " = " << w[i] << endl;
 	env.out() << "\nSolution elapsed time = " << timer.getTime() * 1000 << "ms" << endl;
 	printf("Overall difference = %.2f\n", dif);
-	printf("Percentage difference = %.2f%%\n", (dif * 100) / tv);
+	printf("Percentage difference = %.2f%%\n", dif < EPSILON ? 0 : (dif * 100) / tv);
 	#ifdef SINGLETONS
-	printf("Average difference (excluding singletons) = %.2f\n", dif / (da.getSize() - N));
+	printf("Average difference (excluding singletons) = %.2f\n", dif < EPSILON ? 0 : dif / (da.getSize() - N));
 	printf("Sum of the %u highest differences = %.2f\n", N / 2, topdif);
 	#else
 	printf("Average difference = %.2f\n", dif / da.getSize());
