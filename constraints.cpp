@@ -177,7 +177,7 @@ unsigned vectorsum(const agent *r, agent n, const chunk *x) {
 
 __attribute__((always_inline)) inline
 value coalition(agent *c, const chunk *l, value (*cf)(agent *, const chunk *, void *), void *data, const edge *g, const agent *adj,
-	       IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
+		IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
 
 	IloExpr expr(env);
 
