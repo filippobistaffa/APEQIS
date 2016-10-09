@@ -106,10 +106,23 @@ meter minpath(agent *c, agent n, agent dr, const meter *sp) {
 	return min;
 }
 
+template <typename type>
+__attribute__((always_inline)) inline
+unsigned maskcount(const type *buf, unsigned n, const chunk *mask) {
+
+	unsigned ret = 0;
+	do {
+		ret += GET(mask, *buf);
+		buf++;
+	} while (--n);
+	return ret;
+}
+
 #define PATHCOST(p) ((float)(p) / METERSPERLITRE * PENNYPERLITRE)
 
 value srvalue(agent *c, const chunk *l, void *data) {
 
 	meter *sp = (meter *)data;
-	return 0.01 * (GET(l, *(c + 1)) ? (PATHCOST(minpath(c + 1, *c, 1, sp)) + CARCOST) : TICKETCOST);
+	const agent nl = maskcount(c + 1, *c, l);
+	return 0.01 * (GET(l, *(c + 1)) ? (PATHCOST(minpath(c + 1, *c, nl, sp)) + CARCOST) : TICKETCOST);
 }
