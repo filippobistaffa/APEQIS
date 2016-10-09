@@ -10,8 +10,10 @@ OPTIM=-Ofast -march=native -funroll-loops -funsafe-loop-optimizations -falign-fu
 NOOPTIM=-O0 -march=native -fopenmp
 DBG=-g ${NOOPTIM}
 
-INC=-DIL_STD -I/opt/ibm/ILOG/CPLEX_Studio1263/cplex/include -I/opt/ibm/ILOG/CPLEX_Studio1263/concert/include
-LDIR=-L/opt/ibm/ILOG/CPLEX_Studio1263/concert/lib/x86-64_linux/static_pic -L/opt/ibm/ILOG/CPLEX_Studio1263/cplex/lib/x86-64_linux/static_pic
+CPLEXROOT=/opt/ibm/ILOG/CPLEX_Studio1263
+
+INC=-DIL_STD -I${CPLEXROOT}/cplex/include -I${CPLEXROOT}/concert/include
+LDIR=-L${CPLEXROOT}/concert/lib/x86-64_linux/static_pic -L${CPLEXROOT}/cplex/lib/x86-64_linux/static_pic
 LINK=-lconcert -lilocplex -lcplex
 
 COBJSUBDIR=cobj
