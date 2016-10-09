@@ -8,7 +8,6 @@
 #include <string.h>
 #include <limits.h>
 #include <sys/time.h>
-#include <immintrin.h>
 
 // Cplex headers
 #include <ilcplex/ilocplex.h>

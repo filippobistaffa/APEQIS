@@ -1,15 +1,21 @@
 #ifndef VALUE_H_
 #define VALUE_H_
 
+// Headers
+
+#include <limits.h>
+#include <immintrin.h>
+
+#include "instance.h"
+#include "macros.h"
+#include "types.h"
+
 // Cost parameters
 
 #define CARCOST 100
 #define TICKETCOST 300
 #define PENNYPERLITRE 130
 #define METERSPERLITRE 15000
-
-#define DIST(dx, dy) (sqrt((dx) * (dx) + (dy) * (dy)))
-#define ROUND(type, i) ((type)(i))
 
 #define R5 2520
 #define R4 90

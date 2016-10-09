@@ -12,6 +12,9 @@
 #define X(V, I) ((V)[2 * (I)])
 #define Y(V, I) ((V)[2 * (I) + 1])
 
+#define ROUND(TYPE, I) ((TYPE)(I))
+#define DIST(DX, DY) (sqrt((DX) * (DX) + (DY) * (DY)))
+
 #define DIVBPC(X) ((X) / BITSPERCHUNK)
 #define MODBPC(X) ((X) % BITSPERCHUNK)
 #define CEILBPC(X) CEIL(X, BITSPERCHUNK)
@@ -53,6 +56,7 @@
 #ifndef PRINTBUF
 #define PRINTBUF
 
+#include <stdio.h>
 #include <iostream>
 template <typename type>
 __attribute__((always_inline)) inline
