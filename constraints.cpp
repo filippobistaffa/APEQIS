@@ -1,4 +1,4 @@
-#include "apeqis.h"
+#include "constraints.h"
 
 typedef int16_t sign;
 //static size_t bcm[(N + 1) * (N + 1)], pm[N * N];
@@ -199,7 +199,7 @@ value coalition(agent *c, const chunk *l, value (*cf)(agent *, const chunk *, vo
 	#endif
 
 	if (!isnan(cv)) {
-		ostringstream ostr;
+		std::ostringstream ostr;
 		ostr << "d_" << dn++;
 		IloFloatVar d = IloFloatVar(env, 0, FLT_MAX, ostr.str().c_str());
 		da.add(d);
@@ -234,7 +234,7 @@ value recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, ag
 		memcpy(rt, r + 1, sizeof(agent) * *r);
 		sign w, y, z, p[N + 2];
 
-		for (k = 1; k <= min(*f, m); k++) {
+		for (k = 1; k <= MIN(*f, m); k++) {
 			*nr = *r + k;
 			memcpy(nr + 1, r + 1, sizeof(agent) * *r);
 			memcpy(fs, f + *f - k + 1, sizeof(agent) * k);

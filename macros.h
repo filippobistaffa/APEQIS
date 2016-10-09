@@ -6,6 +6,8 @@
 
 #define LT(X, Y) (*(X) < *(Y))
 #define LE(X, Y) (*(X) <= *(Y))
+#define LTL(X, Y) (GET(l, *(X)) == GET(l, *(Y)) ? (*(X)) < (*(Y)) : GET(l, *(X)) > GET(l, *(Y)))
+#define LEL(X, Y) (GET(l, *(X)) == GET(l, *(Y)) ? (*(X)) <= (*(Y)) : GET(l, *(X)) > GET(l, *(Y)))
 #define GT(X, Y) (*(X) > *(Y))
 #define GE(X, Y) (*(X) >= *(Y))
 
@@ -53,9 +55,6 @@
 
 // Prints the content given buffer
 
-#ifndef PRINTBUF
-#define PRINTBUF
-
 #include <stdio.h>
 #include <iostream>
 template <typename type>
@@ -70,7 +69,5 @@ void printbuf(const type *buf, unsigned n, const char *name = NULL, const char *
 	}
 	printf("]%s", (after) ? after : "\n");
 }
-
-#endif
 
 #endif  /* MACROS_H_ */

@@ -1,6 +1,24 @@
 #ifndef CONSTRAINTS_H_
 #define CONSTRAINTS_H_
 
+// Headers
+
+#include <ilcplex/ilocplex.h>
+#include <float.h>
+
+#ifdef APE_SUBDIR
+#include "../instance.h"
+#include "../types.h"
+#else
+#include "instance.h"
+#include "types.h"
+#endif
+#include "params.h"
+#include "macros.h"
+#include "iqsort.h"
+
+using namespace std;
+
 __attribute__((always_inline)) inline
 void printc(const agent *c, value v) {
 
