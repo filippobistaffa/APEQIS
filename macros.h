@@ -1,6 +1,8 @@
 #ifndef MACROS_H_
 #define MACROS_H_
 
+#define EPSILON 0.01
+
 #define MAX(X, Y) ((X) > (Y) ? (X) : (Y))
 #define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
 

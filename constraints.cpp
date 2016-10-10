@@ -198,7 +198,7 @@ value coalition(agent *c, agent d, const chunk *l, value (*cf)(agent *, agent, v
 	//printf("cv = %.2f\n", cv);
 	#endif
 
-	if (!isnan(cv)) {
+	if (cv < FLT_MAX - EPSILON) {
 		std::ostringstream ostr;
 		ostr << "d_" << dn++;
 		IloFloatVar d = IloFloatVar(env, 0, FLT_MAX, ostr.str().c_str());

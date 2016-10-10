@@ -20,7 +20,6 @@
 
 using namespace std;
 
-#define EPSILON 0.01
 #define C CEILBPC(N)
 
 #ifdef POSITIVEEDGES
@@ -29,7 +28,7 @@ using namespace std;
 #define MINEDGEVALUE (-FLT_MAX)
 #endif
 
-#ifdef UNFEASIBLE
+#ifdef APE_UNFEASIBLE
 #define UNFEASIBLEVALUE FLT_MAX
 #else
 #define UNFEASIBLEVALUE 0
