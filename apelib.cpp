@@ -66,7 +66,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	agent *adj = creteadj(g, ne, l ? l : tl, env, ea);
 
-	#ifndef CSV
+	#ifndef APE_SILENT
 	puts("Creating model...");
 	#endif
 
@@ -82,7 +82,10 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	// Create constraints
 
-	const value tv = constraints(g, adj, l ? l : tl, cf, data, env, model, ea, da, maxc, maxl);
+	#ifndef APE_SILENT
+	const value tv =
+	#endif
+	constraints(g, adj, l ? l : tl, cf, data, env, model, ea, da, maxc, maxl);
 
 	// Create objective expression
 
@@ -101,7 +104,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	model.add(IloMinimize(env, expr));
 	expr.end();
 
-	#ifndef CSV
+	#ifndef APE_SILENT
 	puts("Starting CPLEX...\n");
 	#endif
 
@@ -109,7 +112,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	IloTimer timer(env);
 	timer.start();
 
-	#ifdef CSV
+	#ifdef APE_SILENT
 	cplex.setOut(env.getNullStream());
 	#endif
 
@@ -159,7 +162,9 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	#ifdef CSV
 	printf("%u,%.2f,%.2f,%.2f,%.2f\n", N, dif, (dif * 1E4) / tv, dif / da.getSize(), timer.getTime() * 1000);
-	#else
+	#endif
+
+	#ifndef APE_SILENT
 	puts("\nEdge values:");
 	for (edge i = 0; i < ea.getSize(); i++)
 		cout << ea[i].getName() << " = " << w[i] << endl;

@@ -34,6 +34,10 @@ using namespace std;
 #define UNFEASIBLEVALUE 0
 #endif
 
+#ifdef CSV
+#define APE_SILENT
+#endif
+
 double *apeqis(const edge *g, value (*cf)(agent *, agent, void *), void *data = NULL,
 	       const chunk *l = NULL, agent maxc = N, agent maxl = N);
 
