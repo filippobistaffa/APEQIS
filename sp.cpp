@@ -112,7 +112,7 @@ meter astar(place start, place dest, place nodes, const id *idx, const place *ad
 	free(g);
 
 	fputs("Invalid instance: points are not reachable\n", stderr);
-	exit(1);
+	exit(EXIT_FAILURE);
 	return 0;
 }
 
