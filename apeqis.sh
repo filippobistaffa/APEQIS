@@ -16,35 +16,35 @@ while getopts ":t:n:s:d:m:c:" o; do
 	t)
 		t=${OPTARG}
 		if ! [[ $t == "scalefree" || $t == "twitter" ]] ; then
-			echo -e "${red}Network topology must be either scalefree or twitter!${nc}\n"
+			echo -e "${red}Network topology must be either scalefree or twitter!${nc}\n" 1>&2
 			usage
 		fi
 		;;
 	n)
 		n=${OPTARG}
 		if ! [[ $n =~ $re ]] ; then
-			echo -e "${red}Number of agents must be a number!${nc}\n"
+			echo -e "${red}Number of agents must be a number!${nc}\n" 1>&2
 			usage
 		fi
 		;;
 	s)
 		s=${OPTARG}
 		if ! [[ $s =~ $re ]] ; then
-			echo -e "${red}Seed must be a number!${nc}\n"
+			echo -e "${red}Seed must be a number!${nc}\n" 1>&2
 			usage
 		fi
 		;;
 	d)
 		d=${OPTARG}
 		if ! [[ $d =~ $re ]] ; then
-			echo -e "${red}Drivers' percentage must be a number!${nc}\n"
+			echo -e "${red}Drivers' percentage must be a number!${nc}\n" 1>&2
 			usage
 		fi
 		;;
 	m)
 		m=${OPTARG}
 		if ! [[ $m =~ $re ]] ; then
-			echo -e "${red}Parameter m must be a number!${nc}\n"
+			echo -e "${red}Parameter m must be a number!${nc}\n" 1>&2
 			usage
 		fi
 		;;
@@ -54,12 +54,12 @@ while getopts ":t:n:s:d:m:c:" o; do
 		rc=$?
 		if [[ $rc != 0 ]]
 		then
-			echo -e "${red}Unable to create $c${nc}"
+			echo -e "${red}Unable to create $c${nc}" 1>&2
 			exit
 		fi
 		;;
 	\?)
-		echo -e "${red}-$OPTARG is not a valid option!${nc}\n"
+		echo -e "${red}-$OPTARG is not a valid option!${nc}\n" 1>&2
 		usage
 		;;
 	esac
@@ -67,7 +67,7 @@ done
 shift $((OPTIND-1))
 
 if [ -z "${t}" ] || [ -z "${n}" ] || [ -z "${s}" ]; then
-	echo -e "${red}Missing one or more required options!${nc}\n"
+	echo -e "${red}Missing one or more required options!${nc}\n" 1>&2
 	usage
 fi
 
