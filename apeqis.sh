@@ -56,6 +56,8 @@ while getopts ":t:n:s:d:m:c:" o; do
 		then
 			echo -e "${red}Unable to create $c${nc}" 1>&2
 			exit
+		else
+			rm $c
 		fi
 		;;
 	\?)
