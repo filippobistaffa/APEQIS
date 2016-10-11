@@ -8,6 +8,7 @@
 
 #ifdef APE_SUBDIR
 #include "../instance.h"
+#include "../params.h"
 #include "../types.h"
 #else
 #include "instance.h"
