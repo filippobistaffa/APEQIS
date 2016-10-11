@@ -17,7 +17,7 @@
 //#define DIFFERENCES
 
 // Output in CSV format
-//#define CSV
+//#define APE_CSV
 
 // Force positive edge values
 //#define POSITIVEEDGES

@@ -160,7 +160,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	// Print output
 
-	#ifdef CSV
+	#ifdef APE_CSV
 	printf("%u,%.2f,%.2f,%.2f,%.2f\n", N, dif, (dif * 1E4) / tv, dif / da.getSize(), timer.getTime() * 1000);
 	#endif
 
