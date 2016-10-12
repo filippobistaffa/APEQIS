@@ -95,7 +95,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	const size_t ncols = ne + _N + cnt[0];
 
 	#ifndef APE_SILENT
-	printf("\nA\n%zu rows\n%zu columns\n%zu ones\n%zu bytes\n\n", nrows, ncols, nvals, sizeof(uword) * (2 * nvals + ncols + 1));
+	printf("\nA\n%zu rows\n%zu columns\n%zu ones\n%zu bytes\n\n", nrows, ncols, nvals, sizeof(float) * nvals + sizeof(uword) * (nvals + ncols + 1));
 	#endif
 
 	fvec *vals = new fvec(nvals);
