@@ -60,7 +60,7 @@ unsigned maskcount(const type *buf, unsigned n, const chunk *mask) {
 	return ret;
 }
 
-void coalitions(const edge *g, void (*cf)(const agent *, const edge *, const agent *, const chunk *, void *),
+void coalitions(const edge *g, void (*cf)(agent *, agent, const edge *, const agent *, const chunk *, void *),
 		void *data = NULL, agent maxc = _N, const chunk *l = NULL, agent maxl = _N);
 
 #endif /* COAL_H_ */

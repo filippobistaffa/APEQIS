@@ -113,10 +113,10 @@ void nbar(const agent *f, agent n, const agent *r, const agent *ruf, const agent
 }
 
 void recursive(agent *r, agent *f, agent m, agent maxc, const edge *g, const agent *adj, agent d, const chunk *l, agent maxl,
-	       void (*cf)(const agent *, const edge *, const agent *, const chunk *, void *), void *data) {
+	       void (*cf)(agent *, agent, const edge *, const agent *, const chunk *, void *), void *data) {
 
 	if (*r && (d || *r == 1))
-		cf(r, g, adj, l, data);
+		cf(r, d, g, adj, l, data);
 
 	if (*f && m) {
 
@@ -151,7 +151,7 @@ void recursive(agent *r, agent *f, agent m, agent maxc, const edge *g, const age
 	}
 }
 
-void coalitions(const edge *g, void (*cf)(const agent *, const edge *, const agent *, const chunk *, void *),
+void coalitions(const edge *g, void (*cf)(agent *, agent, const edge *, const agent *, const chunk *, void *),
 		void *data, agent maxc, const chunk *l, agent maxl) {
 
 	chunk *tl;

@@ -25,6 +25,7 @@
 #include "coal.h"
 
 using namespace std;
+using namespace arma;
 
 #define _C CEILBPC(_N)
 
@@ -38,7 +39,14 @@ using namespace std;
 #define APE_SILENT
 #endif
 
-double *apeqis(const edge *g, value (*cf)(agent *, agent, void *), void *data = NULL,
+typedef struct {
+	value (*cf)(agent *, agent, void *);
+	void *cfdata;
+	sp_fmat *mat;
+	value tv;
+} funcdata;
+
+double *apeqis(const edge *g, value (*cf)(agent *, agent, void *), void *cfdata = NULL,
 	       const chunk *l = NULL, agent maxc = _N, agent maxl = _N);
 
 #endif /* APELIB_H_ */

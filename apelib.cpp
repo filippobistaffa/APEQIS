@@ -1,7 +1,15 @@
 #include "apelib.h"
 
+void creatematrix(agent *c, agent nl, const edge *g, const agent *adj, const chunk *l, void *data) {
+
+	funcdata *fd = (funcdata *)data;
+	printbuf(c + 1, *c, NULL, NULL, " = ");
+	value cv = fd->cf(c, nl, data);
+	printf("%.2f\n", cv);
+}
+
 double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
-	       void *data, const chunk *l, agent maxc, agent maxl) {
+	       void *cfdata, const chunk *l, agent maxc, agent maxl) {
 
 	chunk *tl;
 
@@ -32,18 +40,23 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	puts("");
 	#endif
 
-	// Create constraints
+	// Create sparse matrix
 
-	/*#ifndef APE_SILENT
-	const value tv =
-	#endif
-	constraints(g, adj, l ? l : tl, cf, data, env, model, ea, da, maxc, maxl);*/
+	sp_fmat *mat = new sp_fmat();
+	funcdata *fd = (funcdata *)malloc(sizeof(funcdata));
+	fd->cfdata = cfdata;
+	fd->mat = mat;
+	fd->cf = cf;
 
-	// Create objective expression
+	coalitions(g, creatematrix, fd, K, l ? l : tl, MAXDRIVERS);
+
+	free(fd);
 
 	#ifndef APE_SILENT
 	puts("Starting CUDA solver...\n");
 	#endif
+
+	delete mat;
 
 	/*double dif = 0;
 	double difbuf[da.getSize()];
