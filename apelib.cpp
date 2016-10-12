@@ -75,7 +75,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		printbuf(adj + i * _N + 1, adj[i * _N]);
 	puts("\nAdjacency matrix");
 	for (agent i = 0; i < _N; i++)
-		printbuf(g + i * _N, _N, NULL, "% 2u");
+		printbuf(g + i * _N, _N, NULL, "% 3u");
 	puts("");
 	#endif
 
