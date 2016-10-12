@@ -75,7 +75,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		printbuf(adj + i * _N + 1, adj[i * _N]);
 	puts("\nAdjacency matrix");
 	for (agent i = 0; i < _N; i++)
-		printbuf(g + i * _N, _N);
+		printbuf(g + i * _N, _N, NULL, "% 2u");
 	puts("");
 	#endif
 
@@ -89,7 +89,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	const size_t nrows = cnt[0];
 	const size_t ncols = ne + _N + cnt[0];
 
-	#ifdef APE_DEBUG
+	#ifndef APE_SILENT
 	printf("A\n%zu rows\n%zu columns\n%zu ones\n%zu bytes\n\n", nrows, ncols, nvals, sizeof(unsigned) * (2 * nvals + ncols + 1));
 	#endif
 
@@ -114,17 +114,18 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	sp_umat spmat(*(fd->locs), *vals);
 
-	#ifdef APE_DEBUG
+	#ifdef PRINTDENSE
 	puts("A as dense matrix");
 	umat *dmat = new umat(spmat);
 	dmat->raw_print();
 	delete dmat;
+	#endif
+
 	#ifdef PRINTCCS
-	puts("\nA as CCS arrays");
+	puts("A as CCS arrays");
 	printbuf(spmat.values, nvals, "val");
 	printbuf(spmat.row_indices, nvals, "row");
 	printbuf(spmat.col_ptrs, ncols + 1, "col");
-	#endif
 	puts("");
 	#endif
 
