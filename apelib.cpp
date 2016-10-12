@@ -124,11 +124,11 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	puts("Creating sparse matrix...");
 	#endif
 
-	sp_umat spmat(*(fd->locs), *vals);
+	sp_umat A(*(fd->locs), *vals);
 
 	#ifdef PRINTDENSE
 	puts("A as dense matrix");
-	umat *dmat = new umat(spmat);
+	umat *dmat = new umat(A);
 	dmat->raw_print();
 	delete dmat;
 	#endif
