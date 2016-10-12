@@ -5,7 +5,7 @@
 #include "params.h"
 #include "types.h"
 
-#define D (N * DRIVERSPERC / 100)
+#define _D (_N * DRIVERSPERC / 100)
 
 using namespace std;
 

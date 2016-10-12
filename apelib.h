@@ -6,6 +6,11 @@
 #include <stdlib.h>
 #include <float.h>
 
+// Armadillo library
+
+#include <iostream>
+#include <armadillo>
+
 #ifdef APE_SUBDIR
 #include "../instance.h"
 #include "../params.h"
@@ -21,7 +26,7 @@
 
 using namespace std;
 
-#define C CEILBPC(N)
+#define _C CEILBPC(_N)
 
 #ifdef APE_UNFEASIBLE
 #define UNFEASIBLEVALUE FLT_MAX
@@ -29,11 +34,11 @@ using namespace std;
 #define UNFEASIBLEVALUE 0
 #endif
 
-#ifdef CSV
+#ifdef APE_CSV
 #define APE_SILENT
 #endif
 
 double *apeqis(const edge *g, value (*cf)(agent *, agent, void *), void *data = NULL,
-	       const chunk *l = NULL, agent maxc = N, agent maxl = N);
+	       const chunk *l = NULL, agent maxc = _N, agent maxl = _N);
 
 #endif /* APELIB_H_ */

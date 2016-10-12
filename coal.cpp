@@ -1,18 +1,18 @@
 #include "coal.h"
 
 typedef int16_t sign;
-//static size_t bcm[(N + 1) * (N + 1)], pm[N * N];
+//static size_t bcm[(_N + 1) * (_N + 1)], pm[_N * _N];
 
-/*#define P(_s, _i) (pm[(_s) * N + (_i)])
-#define BC(_n, _m) (bcm[(_n) * (N + 1) + (_m)])
+/*#define P(_s, _i) (pm[(_s) * _N + (_i)])
+#define BC(_n, _m) (bcm[(_n) * (_N + 1) + (_m)])
 
 void filltables() {
 
-	for (agent i = 0; i <= N; i++) BC(i, 0) = BC(i, i) = 1ULL;
-	for (agent i = 1; i <= N; i++) for (agent j = 1; j < i; j++) BC(i, j) = BC(i - 1, j - 1) + BC(i - 1, j);
-	for (agent i = 1; i < N; i++) P(i, 1) = 1ULL;
-	for (agent i = 2; i < N; i++) P(1, i) = i;
-	for (agent i = 2; i < N; i++) for (agent j = 2; j < N; j++) P(i, j) = P(i - 1, j) + P(i, j - 1);
+	for (agent i = 0; i <= _N; i++) BC(i, 0) = BC(i, i) = 1ULL;
+	for (agent i = 1; i <= _N; i++) for (agent j = 1; j < i; j++) BC(i, j) = BC(i - 1, j - 1) + BC(i - 1, j);
+	for (agent i = 1; i < _N; i++) P(i, 1) = 1ULL;
+	for (agent i = 2; i < _N; i++) P(1, i) = i;
+	for (agent i = 2; i < _N; i++) for (agent j = 2; j < _N; j++) P(i, j) = P(i - 1, j) + P(i, j - 1);
 }*/
 
 __attribute__((always_inline)) inline
@@ -85,12 +85,12 @@ __attribute__((always_inline)) inline
 void neighbours(const agent *f, agent m, const agent *adj, agent *n, const chunk *l) {
 
 	if (m) {
-		agent t[N + 1];
-		memcpy(n, adj + *f * N, sizeof(agent) * (adj[*f * N] + 1));
+		agent t[_N + 1];
+		memcpy(n, adj + *f * _N, sizeof(agent) * (adj[*f * _N] + 1));
 		f++;
 
 		while (--m) {
-			unionsorted(n + 1, *n, adj + *f * N + 1, adj[*f * N], t + 1, t, l);
+			unionsorted(n + 1, *n, adj + *f * _N + 1, adj[*f * _N], t + 1, t, l);
 			memcpy(n, t, sizeof(agent) * (*t + 1));
 			f++;
 		}
@@ -101,7 +101,7 @@ void neighbours(const agent *f, agent m, const agent *adj, agent *n, const chunk
 __attribute__((always_inline)) inline
 void nbar(const agent *f, agent n, const agent *r, const agent *ruf, const agent *adj, agent *nb, const chunk *l) {
 
-	agent a[N + 1], b[N + 1];
+	agent a[_N + 1], b[_N + 1];
 	neighbours(f, n, adj, a, l);
 	agent i = 0;
 	while (i < *a && LEL(a + i + 1, ruf + 1)) i++;
@@ -120,9 +120,9 @@ void recursive(agent *r, agent *f, agent m, agent maxc, const edge *g, const age
 
 	if (*f && m) {
 
-		agent k, *nr = r + maxc + 1, *nf = f + N + 1, *nfs = nr + *r + 1, fs[N], rt[N];
+		agent k, *nr = r + maxc + 1, *nf = f + _N + 1, *nfs = nr + *r + 1, fs[_N], rt[_N];
 		memcpy(rt, r + 1, sizeof(agent) * *r);
-		sign w, y, z, p[N + 2];
+		sign w, y, z, p[_N + 2];
 
 		for (k = 1; k <= MIN(*f, m); k++) {
 			*nr = *r + k;
@@ -157,23 +157,23 @@ void coalitions(const edge *g, void (*cf)(const agent *, const edge *, const age
 	chunk *tl;
 
 	if (!l) {
-		tl = (chunk *)malloc(sizeof(chunk) * C);
-		ONES(tl, N, C);
+		tl = (chunk *)malloc(sizeof(chunk) * _C);
+		ONES(tl, _N, _C);
 	}
 
-	agent *r = (agent *)malloc(sizeof(agent) * (maxc + 1) * N);
-	agent *f = (agent *)malloc(sizeof(agent) * (N + 1) * N);
+	agent *r = (agent *)malloc(sizeof(agent) * (maxc + 1) * _N);
+	agent *f = (agent *)malloc(sizeof(agent) * (_N + 1) * _N);
 	edge ne = 0;
 
-	for (agent i = 0; i < N; i++)
-		for (agent j = i + 1; j < N; j++)
-			if (g[i * N + j]) ne++;
+	for (agent i = 0; i < _N; i++)
+		for (agent j = i + 1; j < _N; j++)
+			if (g[i * _N + j]) ne++;
 
-	agent *adj = createadj<N>(g, ne, l ? l : tl);
-	edge zero[N] = {0};
+	agent *adj = createadj<_N>(g, ne, l ? l : tl);
+	edge zero[_N] = {0};
 
-	for (agent i = 0; i < N; i++) {
-		if (memcmp(g + i * N, zero, sizeof(agent) * N)) {
+	for (agent i = 0; i < _N; i++) {
+		if (memcmp(g + i * _N, zero, sizeof(agent) * _N)) {
 			r[0] = 0; f[0] = 1; f[1] = i;
 			recursive(r, f, maxc, maxc, g, adj, 0, l ? l : tl, maxl, cf, data);
 		}

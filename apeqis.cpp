@@ -6,7 +6,7 @@ void createedge(edge *g, agent v1, agent v2, edge e) {
 	#ifdef DOT
 	printf("\t%u -- %u [label = \"e_%u,%u\"];\n", v1, v2, v1, v2);
 	#endif
-	g[v1 * N + v2] = g[v2 * N + v1] = e;
+	g[v1 * _N + v2] = g[v2 * _N + v1] = e;
 }
 
 #ifdef TWITTER
@@ -25,7 +25,7 @@ edge twitter(const char *filename, edge *g) {
 		const agent v1 = atoi(line);
 		fgets(line, MAXLINE, f);
 		const agent v2 = atoi(line);
-		createedge(g, v1, v2, N + i);
+		createedge(g, v1, v2, _N + i);
 	}
 
 	fclose(f);
@@ -39,24 +39,24 @@ __attribute__((always_inline)) inline
 edge scalefree(edge *g) {
 
 	edge ne = 0;
-	agent deg[N] = {0};
+	agent deg[_N] = {0};
 
-	for (agent i = 1; i <= M; i++) {
+	for (agent i = 1; i <= _M; i++) {
 		for (agent j = 0; j < i; j++) {
-			createedge(g, i, j, N + ne);
+			createedge(g, i, j, _N + ne);
 			deg[i]++;
 			deg[j]++;
 			ne++;
 		}
 	}
 
-	chunk t[C] = { 0 };
-	chunk t1[C] = { 0 };
+	chunk t[_C] = { 0 };
+	chunk t1[_C] = { 0 };
 
-	for (agent i = M + 1; i < N; i++) {
-		ONES(t1, i, C);
-		MASKANDNOT(t, t1, t, C);
-		for (agent j = 0; j < M; j++) {
+	for (agent i = _M + 1; i < _N; i++) {
+		ONES(t1, i, _C);
+		MASKANDNOT(t, t1, t, _C);
+		for (agent j = 0; j < _M; j++) {
 			agent d = 0;
 			for (agent h = 0; h < i; h++)
 				if (!GET(t, h)) d += deg[h];
@@ -69,7 +69,7 @@ edge scalefree(edge *g) {
 				}
 				q--;
 				SET(t, q);
-				createedge(g, i, q, N + ne);
+				createedge(g, i, q, _N + ne);
 				deg[i]++;
 				deg[q]++;
 				ne++;
@@ -89,21 +89,21 @@ int main(int argc, char *argv[]) {
 
 	// Create leaders array
 
-	agent la[N] = {0};
-	chunk l[C] = {0};
+	agent la[_N] = {0};
+	chunk l[_C] = {0};
 
-	for (agent i = 0; i < D; i++)
+	for (agent i = 0; i < _D; i++)
 		la[i] = 1;
 
-	shuffle(la, N, sizeof(agent));
+	shuffle(la, _N, sizeof(agent));
 
-	for (agent i = 0; i < N; i++)
+	for (agent i = 0; i < _N; i++)
 		if (la[i]) SET(l, i);
 
 	// Create/read graph
 
 	init(seed);
-	edge *g = (edge *)calloc(N * N, sizeof(edge));
+	edge *g = (edge *)calloc(_N * _N, sizeof(edge));
 
 	#ifdef DOT
 	printf("graph G {\n");

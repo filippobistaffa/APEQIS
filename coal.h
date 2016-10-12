@@ -3,6 +3,7 @@
 
 // Headers
 
+#include <stdlib.h>
 #include "instance.h"
 #include "macros.h"
 #include "types.h"
@@ -10,7 +11,7 @@
 #include "iqsort.h"
 #include "sorted.h"
 
-#define C CEILBPC(N)
+#define _C CEILBPC(_N)
 
 template <agent n>
 __attribute__((always_inline)) inline
@@ -60,6 +61,6 @@ unsigned maskcount(const type *buf, unsigned n, const chunk *mask) {
 }
 
 void coalitions(const edge *g, void (*cf)(const agent *, const edge *, const agent *, const chunk *, void *),
-		void *data = NULL, agent maxc = N, const chunk *l = NULL, agent maxl = N);
+		void *data = NULL, agent maxc = _N, const chunk *l = NULL, agent maxl = _N);
 
 #endif /* COAL_H_ */

@@ -74,7 +74,7 @@ if [ -z "${t}" ] || [ -z "${n}" ] || [ -z "${s}" ]; then
 fi
 
 tmp=`mktemp`
-echo "#define N $n" > $tmp
+echo "#define _N $n" > $tmp
 echo "#define DRIVERSPERC $d" >> $tmp
 if [ ! -z "${c}" ]
 then
@@ -83,7 +83,7 @@ fi
 
 if [[ $t == "scalefree" ]]
 then
-	echo "#define M $m" >> $tmp
+	echo "#define _M $m" >> $tmp
 else
 	echo "#define TWITTER" >> $tmp
 	tw=`mktemp`

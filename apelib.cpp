@@ -6,17 +6,17 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	chunk *tl;
 
 	if (!l) {
-		tl = (chunk *)malloc(sizeof(chunk) * C);
-		ONES(tl, N, C);
+		tl = (chunk *)malloc(sizeof(chunk) * _C);
+		ONES(tl, _N, _C);
 	}
 
 	edge ne = 0;
 
-	for (agent i = 0; i < N; i++)
-		for (agent j = i + 1; j < N; j++)
-			if (g[i * N + j]) ne++;
+	for (agent i = 0; i < _N; i++)
+		for (agent j = i + 1; j < _N; j++)
+			if (g[i * _N + j]) ne++;
 
-	agent *adj = createadj<N>(g, ne, l ? l : tl);
+	agent *adj = createadj<_N>(g, ne, l ? l : tl);
 
 	#ifndef APE_SILENT
 	puts("Creating model...");
@@ -24,11 +24,11 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	#ifdef APE_DEBUG
 	puts("\nAdjacency lists");
-	for (agent i = 0; i < N; i++)
-		printbuf(adj + i * N + 1, adj[i * N]);
+	for (agent i = 0; i < _N; i++)
+		printbuf(adj + i * _N + 1, adj[i * _N]);
 	puts("\nAdjacency matrix");
-	for (agent i = 0; i < N; i++)
-		printbuf(g + i * N, N);
+	for (agent i = 0; i < _N; i++)
+		printbuf(g + i * _N, _N);
 	puts("");
 	#endif
 
@@ -63,15 +63,15 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	double topdif = 0;
 
 	#ifdef SINGLETONS
-	for (agent i = 0; i < N / 2; i++)
+	for (agent i = 0; i < _N / 2; i++)
 	#else
-	for (agent i = 0; i < N; i++)
+	for (agent i = 0; i < _N; i++)
 	#endif
 		topdif += difbuf[i];*/
 
 	// Generate weights array
 
-	double *w = (double *)malloc(sizeof(double) * (ne + N));
+	double *w = (double *)malloc(sizeof(double) * (ne + _N));
 
 	/*for (edge i = 0; i < ea.getSize(); i++) {
 		w[i] = UNFEASIBLEVALUE;
@@ -80,7 +80,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	// Print output
 
 	#ifdef APE_CSV
-	//printf("%u,%.2f,%.2f,%.2f,%.2f\n", N, dif, (dif * 1E4) / tv, dif / da.getSize(), timer.getTime() * 1000);
+	//printf("%u,%.2f,%.2f,%.2f,%.2f\n", _N, dif, (dif * 1E4) / tv, dif / da.getSize(), timer.getTime() * 1000);
 	#endif
 
 	#ifndef APE_SILENT
@@ -91,11 +91,11 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	printf("Overall difference = %.2f\n", dif);
 	printf("Percentage difference = %.2f%%\n", dif < EPSILON ? 0 : (dif * 100) / tv);
 	#ifdef SINGLETONS
-	printf("Average difference (excluding singletons) = %.2f\n", dif < EPSILON ? 0 : dif / (da.getSize() - N));
-	printf("Sum of the %u highest differences = %.2f\n", N / 2, topdif);
+	printf("Average difference (excluding singletons) = %.2f\n", dif < EPSILON ? 0 : dif / (da.getSize() - _N));
+	printf("Sum of the %u highest differences = %.2f\n", _N / 2, topdif);
 	#else
 	printf("Average difference = %.2f\n", dif / da.getSize());
-	printf("Sum of the %u highest differences = %.2f\n", N, topdif);
+	printf("Sum of the %u highest differences = %.2f\n", _N, topdif);
 	#endif*/
 	#endif
 
@@ -106,12 +106,12 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	#ifdef CFSS
 	FILE *cfss = fopen(CFSS, "w+");
-	for (agent i = 0; i < N; i++)
+	for (agent i = 0; i < _N; i++)
 		fprintf(cfss, "%s%f\n", GET(l, i) ? "*" : "", -w[i]);
-	for (agent i = 0; i < N; i++) {
-		for (agent j = 0; j < adj[i * N]; j++) {
-			const agent k = adj[i * N + j + 1];
-			if (k > i) fprintf(cfss, "%u %u %f\n", i, k, -w[g[i * N + k]]);
+	for (agent i = 0; i < _N; i++) {
+		for (agent j = 0; j < adj[i * _N]; j++) {
+			const agent k = adj[i * _N + j + 1];
+			if (k > i) fprintf(cfss, "%u %u %f\n", i, k, -w[g[i * _N + k]]);
 		}
 	}
 	fclose(cfss);

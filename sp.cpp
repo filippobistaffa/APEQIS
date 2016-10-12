@@ -150,7 +150,7 @@ meter *createsp(unsigned seed) {
 
 	f = fopen(SS, "rb");
 	fread(&pool, sizeof(uint16_t), 1, f);
-	//printf("%u possible agents, choosing %u\n", pool, N);
+	//printf("%u possible agents, choosing %u\n", pool, _N);
 
 	place *stops = (place *)malloc(sizeof(place) * 2 * pool);
 	fread(stops, sizeof(place), 2 * pool, f);
@@ -158,7 +158,7 @@ meter *createsp(unsigned seed) {
 
 	srand(seed);
 	shuffle(stops, pool, sizeof(place) * 2);
-	stops = (place *)realloc(stops, sizeof(place) * 2 * N);
+	stops = (place *)realloc(stops, sizeof(place) * 2 * _N);
 	dist *ds = (dist *)calloc(nodes * nodes, sizeof(dist));
 
 	for (place i = 0; i < nodes; i++)
@@ -168,14 +168,14 @@ meter *createsp(unsigned seed) {
 			ds[i * nodes + j] = ds[j * nodes + i] = DIST(dx, dy);
 		}
 
-	meter *sp = (meter *)calloc(4 * N * N, sizeof(meter));
+	meter *sp = (meter *)calloc(4 * _N * _N, sizeof(meter));
 	//printf("Using %u threads\n", omp_get_max_threads());
 
 	//#pragma omp parallel for schedule(dynamic) private(i)
-	for (agent i = 0; i < 2 * N; i++) {
-		sp[i * 2 * N + i] = UINT32_MAX;
-		for (agent j = i + 1; j < 2 * N; j++)
-			sp[i * 2 * N + j] = sp[j * 2 * N + i] = astar(stops[i], stops[j], nodes, idx, adj, ds);
+	for (agent i = 0; i < 2 * _N; i++) {
+		sp[i * 2 * _N + i] = UINT32_MAX;
+		for (agent j = i + 1; j < 2 * _N; j++)
+			sp[i * 2 * _N + j] = sp[j * 2 * _N + i] = astar(stops[i], stops[j], nodes, idx, adj, ds);
 	}
 
 	free(stops);
