@@ -9,18 +9,42 @@ void count(agent *c, agent nl, const edge *g, const agent *adj, const chunk *l, 
 
 	// Increase non-zero element counter
 	cnt[1] += *c;
-	for (agent i = 0; i < *c; i++)
-		for (agent j = i + 1; j < *c; j++)
-			if (g[i * _N + j]) cnt[1]++;
+	for (agent i = 0; i < *c; i++) {
+		const agent v1 = c[i + 1];
+		for (agent j = i + 1; j < *c; j++) {
+			const agent v2 = c[j + 1];
+			if (g[v1 * _N + v2]) cnt[1]++;
+		}
+	}
+}
+
+__attribute__((always_inline)) inline
+void setlocation(agent i, agent j, size_t *idx, umat *locs) {
+
+	(*locs)(0, *idx) = i;
+	(*locs)(1, *idx) = j;
+	(*idx)++;
 }
 
 void locations(agent *c, agent nl, const edge *g, const agent *adj, const chunk *l, void *data) {
 
 	funcdata *fd = (funcdata *)data;
-	printbuf(c + 1, *c, NULL, NULL, " = ");
 	value cv = fd->cf(c, nl, fd->cfdata);
-	printf("%.2f\n", cv);
 	fd->tv += cv;
+	//printbuf(c + 1, *c, NULL, NULL, " = ");
+	//printf("%.2f\n", cv);
+
+	for (agent i = 0; i < *c; i++) {
+		const agent v1 = c[i + 1];
+		setlocation(fd->rowidx, v1, &(fd->locidx), fd->locs);
+		for (agent j = i + 1; j < *c; j++) {
+			const agent v2 = c[j + 1];
+			if (g[v1 * _N + v2])
+				setlocation(fd->rowidx, g[v1 * _N + v2], &(fd->locidx), fd->locs);
+		}
+	}
+
+	fd->rowidx++;
 }
 
 double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
@@ -59,21 +83,50 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	size_t cnt[2] = { 0, 0 };
 	coalitions(g, count, cnt, K, l ? l : tl, MAXDRIVERS);
-	printbuf(cnt, 2, "cnt");
 
-	// #rows = #coalitions, #columns = #variables = #edges + #autoloops + dif
+	// #rows = #coalitions, #columns = #variables = #edges + #autoloops + (#dif = #coalitions)
+	const size_t nvals = cnt[0] + cnt[1];
+	const size_t nrows = cnt[0];
+	const size_t ncols = ne + _N + cnt[0];
 
-	sp_fmat *mat = new sp_fmat(cnt[0], ne + _N + 1);
-	uvec *vals = new uvec(cnt[0] + cnt[1]);
+	#ifdef APE_DEBUG
+	printf("A\n%zu rows\n%zu columns\n%zu ones\n%zu bytes\n\n", nrows, ncols, nvals, sizeof(unsigned) * (2 * nvals + ncols + 1));
+	#endif
+
+	uvec *vals = new uvec(nvals);
+	vals->ones();
 
 	// Create sparse matrix
 
 	funcdata *fd = (funcdata *)malloc(sizeof(funcdata));
-	fd->locs = new umat(2, cnt[0] + cnt[1]);
+
+	fd->locs = new umat(2, nvals);
+	fd->rowidx = 0;
+	fd->locidx = 0;
+
 	fd->cfdata = cfdata;
 	fd->cf = cf;
 
 	coalitions(g, locations, fd, K, l ? l : tl, MAXDRIVERS);
+
+	for (size_t i = 0; i < cnt[0]; ++i)
+		setlocation(i, ne + _N + i, &(fd->locidx), fd->locs);
+
+	sp_umat spmat(*(fd->locs), *vals);
+
+	#ifdef APE_DEBUG
+	puts("A as dense matrix");
+	umat *dmat = new umat(spmat);
+	dmat->raw_print();
+	delete dmat;
+	#ifdef PRINTCCS
+	puts("\nA as CCS arrays");
+	printbuf(spmat.values, nvals, "val");
+	printbuf(spmat.row_indices, nvals, "row");
+	printbuf(spmat.col_ptrs, ncols + 1, "col");
+	#endif
+	puts("");
+	#endif
 
 	delete fd->locs;
 	delete vals;
@@ -82,8 +135,6 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	#ifndef APE_SILENT
 	puts("Starting CUDA solver...\n");
 	#endif
-
-	delete mat;
 
 	/*double dif = 0;
 	double difbuf[da.getSize()];

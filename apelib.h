@@ -40,10 +40,14 @@ using namespace arma;
 #endif
 
 typedef struct {
+
 	value (*cf)(agent *, agent, void *);
 	void *cfdata;
 	value tv;
+
+	size_t rowidx, locidx;
 	umat *locs;
+
 } funcdata;
 
 double *apeqis(const edge *g, value (*cf)(agent *, agent, void *), void *cfdata = NULL,
