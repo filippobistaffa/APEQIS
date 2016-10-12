@@ -130,14 +130,16 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	sp_fmat A(*(fd->locs), *vals);
 
-	#ifdef PRINTDENSE
-	puts("A as dense matrix");
-	umat *dmat = new umat(A);
-	dmat->raw_print();
-	delete dmat;
-	#endif
+	//#ifdef PRINTDENSE
+	//puts("");
+	//puts("A as dense matrix");
+	//umat *dmat = new umat(A);
+	//dmat->raw_print();
+	//delete dmat;
+	//#endif
 
 	#ifdef PRINTCCS
+	puts("");
 	puts("A as CCS arrays");
 	printbuf(A.values, nvals, "val");
 	printbuf(A.row_indices, nvals, "row");
