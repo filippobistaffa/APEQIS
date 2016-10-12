@@ -1,5 +1,7 @@
 .PHONY: all
 
+CUDAARCH=sm_52
+
 ifndef OUT
 OUT=./apeqis
 endif
@@ -9,18 +11,19 @@ WARN=-Wall -Wno-unused-result -Wno-deprecated-declarations -Wno-sign-compare -Wn
 OPTIM=-Ofast -march=native -funroll-loops -funsafe-loop-optimizations -falign-functions=16 -falign-loops=16 -fopenmp
 NOOPTIM=-O0 -march=native -fopenmp
 DBG=-g ${NOOPTIM}
+CUOPT=--use_fast_math -arch=${CUDAARCH} -D_FORCE_INLINES
 
-CPLEXROOT=/opt/ibm/ILOG/CPLEX_Studio1263
+INC=
+LDIR=
+LINK=
 
-INC=-DIL_STD -I${CPLEXROOT}/cplex/include -I${CPLEXROOT}/concert/include
-LDIR=-L${CPLEXROOT}/concert/lib/x86-64_linux/static_pic -L${CPLEXROOT}/cplex/lib/x86-64_linux/static_pic
-LINK=-lconcert -lilocplex -lcplex
-
+CUOBJSUBDIR=cuobj
 COBJSUBDIR=cobj
 DEPSUBDIR=dep
 
 ECHOCC=>&2 echo "[\033[01;33m CC \033[0m]"
 ECHOLD=>&2 echo "[\033[01;36m LD \033[0m]"
+ECHONVCC=>&2 echo "[\033[01;32mNVCC\033[0m]"
 
 OPT=${NOOPTIM} # Put desired optimisation level here
 
@@ -36,6 +39,25 @@ rm $$tmp ;\
 mkdir -p ${COBJSUBDIR} ;\
 cd ${COBJSUBDIR} ;\
 ${CMP} ${DEFS} -c ${INC} ${OPT} ${WARN} ../$< ;\
+else \
+ret=$$? ;\
+rm $$tmp ;\
+exit $$ret ;\
+fi
+endef
+
+define compilecuda
+${ECHONVCC} $(notdir $<) ;\
+mkdir -p ${DEPSUBDIR} ;\
+tmp=`mktemp` ;\
+${CMP} ${INC} -MM -D __CUDACC__ ${OPT} $(basename $<).h >> $$tmp ;\
+if [ $$? -eq 0 ] ;\
+then echo -n "${CUOBJSUBDIR}/" > ${DEPSUBDIR}/$(notdir $<).d ;\
+cat $$tmp >> ${DEPSUBDIR}/$(notdir $<).d ;\
+rm $$tmp ;\
+mkdir -p ${CUOBJSUBDIR} ;\
+cd ${CUOBJSUBDIR} ;\
+nvcc -std=c++11 -c ${INC} ${CUOPT} ../$< ;\
 else \
 ret=$$? ;\
 rm $$tmp ;\
@@ -70,6 +92,9 @@ ${COBJSUBDIR}/random.o: random.c
 ${COBJSUBDIR}/apeqis.o: apeqis.cpp
 	@$(compilec)
 
+${CUOBJSUBDIR}/cgls.o: cgls.cu
+	@$(compilecuda)
+
 clean:
 	@echo "Removing subdirectories..."
-	@rm -rf ${COBJSUBDIR} ${DEPSUBDIR}
+	@rm -rf ${COBJSUBDIR} ${CUOBJSUBDIR} ${DEPSUBDIR}
