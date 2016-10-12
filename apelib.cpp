@@ -1,6 +1,20 @@
 #include "apelib.h"
 
-void creatematrix(agent *c, agent nl, const edge *g, const agent *adj, const chunk *l, void *data) {
+void count(agent *c, agent nl, const edge *g, const agent *adj, const chunk *l, void *data) {
+
+	size_t *cnt = (size_t *)data;
+
+	// Increase row counter
+	cnt[0]++;
+
+	// Increase non-zero element counter
+	cnt[1] += *c;
+	for (agent i = 0; i < *c; i++)
+		for (agent j = i + 1; j < *c; j++)
+			if (g[i * _N + j]) cnt[1]++;
+}
+
+void locations(agent *c, agent nl, const edge *g, const agent *adj, const chunk *l, void *data) {
 
 	funcdata *fd = (funcdata *)data;
 	printbuf(c + 1, *c, NULL, NULL, " = ");
@@ -41,16 +55,28 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	puts("");
 	#endif
 
+	// Count rows and non-zero elements
+
+	size_t cnt[2] = { 0, 0 };
+	coalitions(g, count, cnt, K, l ? l : tl, MAXDRIVERS);
+	printbuf(cnt, 2, "cnt");
+
+	// #rows = #coalitions, #columns = #variables = #edges + #autoloops + dif
+
+	sp_fmat *mat = new sp_fmat(cnt[0], ne + _N + 1);
+	uvec *vals = new uvec(cnt[0] + cnt[1]);
+
 	// Create sparse matrix
 
-	sp_fmat *mat = new sp_fmat();
 	funcdata *fd = (funcdata *)malloc(sizeof(funcdata));
+	fd->locs = new umat(2, cnt[0] + cnt[1]);
 	fd->cfdata = cfdata;
-	fd->mat = mat;
 	fd->cf = cf;
 
-	coalitions(g, creatematrix, fd, K, l ? l : tl, MAXDRIVERS);
+	coalitions(g, locations, fd, K, l ? l : tl, MAXDRIVERS);
 
+	delete fd->locs;
+	delete vals;
 	free(fd);
 
 	#ifndef APE_SILENT
