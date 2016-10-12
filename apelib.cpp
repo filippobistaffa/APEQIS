@@ -112,6 +112,10 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	for (size_t i = 0; i < cnt[0]; ++i)
 		setlocation(i, ne + _N + i, &(fd->locidx), fd->locs);
 
+	#ifndef APE_SILENT
+	puts("Creating sparse matrix");
+	#endif
+
 	sp_umat spmat(*(fd->locs), *vals);
 
 	#ifdef PRINTDENSE
