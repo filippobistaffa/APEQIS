@@ -98,7 +98,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	printf("\nA\n%zu rows\n%zu columns\n%zu ones\n%zu bytes\n\n", nrows, ncols, nvals, sizeof(uword) * (2 * nvals + ncols + 1));
 	#endif
 
-	uvec *vals = new uvec(nvals);
+	fvec *vals = new fvec(nvals);
 	vals->ones();
 
 	// Create sparse matrix
@@ -128,7 +128,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	puts("Creating sparse matrix...");
 	#endif
 
-	sp_umat A(*(fd->locs), *vals);
+	sp_fmat A(*(fd->locs), *vals);
 
 	#ifdef PRINTDENSE
 	puts("A as dense matrix");
