@@ -4,7 +4,7 @@ void creatematrix(agent *c, agent nl, const edge *g, const agent *adj, const chu
 
 	funcdata *fd = (funcdata *)data;
 	printbuf(c + 1, *c, NULL, NULL, " = ");
-	value cv = fd->cf(c, nl, data);
+	value cv = fd->cf(c, nl, fd->cfdata);
 	printf("%.2f\n", cv);
 }
 
