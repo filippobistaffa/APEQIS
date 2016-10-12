@@ -63,11 +63,11 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		for (agent j = i + 1; j < _N; j++)
 			if (g[i * _N + j]) ne++;
 
-	agent *adj = createadj<_N>(g, ne, l ? l : tl);
-
 	#ifndef APE_SILENT
-	puts("Creating model...");
+	puts("Creating adjacendy lists...");
 	#endif
+
+	agent *adj = createadj<_N>(g, ne, l ? l : tl);
 
 	#ifdef APE_DEBUG
 	puts("\nAdjacency lists");
@@ -77,6 +77,10 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	for (agent i = 0; i < _N; i++)
 		printbuf(g + i * _N, _N, NULL, "% 3u");
 	puts("");
+	#endif
+
+	#ifndef APE_SILENT
+	puts("Counting matrix non-zero elements...");
 	#endif
 
 	// Count rows and non-zero elements
@@ -90,13 +94,17 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	const size_t ncols = ne + _N + cnt[0];
 
 	#ifndef APE_SILENT
-	printf("A\n%zu rows\n%zu columns\n%zu ones\n%zu bytes\n\n", nrows, ncols, nvals, sizeof(uword) * (2 * nvals + ncols + 1));
+	printf("\nA\n%zu rows\n%zu columns\n%zu ones\n%zu bytes\n\n", nrows, ncols, nvals, sizeof(uword) * (2 * nvals + ncols + 1));
 	#endif
 
 	uvec *vals = new uvec(nvals);
 	vals->ones();
 
 	// Create sparse matrix
+
+	#ifndef APE_SILENT
+	puts("Computing elements' locations..");
+	#endif
 
 	funcdata *fd = (funcdata *)malloc(sizeof(funcdata));
 
@@ -113,7 +121,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		setlocation(i, ne + _N + i, &(fd->locidx), fd->locs);
 
 	#ifndef APE_SILENT
-	puts("Creating sparse matrix");
+	puts("Creating sparse matrix...");
 	#endif
 
 	sp_umat spmat(*(fd->locs), *vals);
