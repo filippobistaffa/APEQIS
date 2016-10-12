@@ -139,9 +139,9 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	#ifdef PRINTCCS
 	puts("A as CCS arrays");
-	printbuf(spmat.values, nvals, "val");
-	printbuf(spmat.row_indices, nvals, "row");
-	printbuf(spmat.col_ptrs, ncols + 1, "col");
+	printbuf(A.values, nvals, "val");
+	printbuf(A.row_indices, nvals, "row");
+	printbuf(A.col_ptrs, ncols + 1, "col");
 	puts("");
 	#endif
 
