@@ -30,6 +30,7 @@ void locations(agent *c, agent nl, const edge *g, const agent *adj, const chunk 
 
 	funcdata *fd = (funcdata *)data;
 	value cv = fd->cf(c, nl, fd->cfdata);
+	fd->b[fd->rowidx] = cv;
 	fd->tv += cv;
 	//printbuf(c + 1, *c, NULL, NULL, " = ");
 	//printf("%.2f\n", cv);
@@ -107,6 +108,9 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	#endif
 
 	funcdata *fd = (funcdata *)malloc(sizeof(funcdata));
+	value *b = (value *)malloc(sizeof(value) * nrows);
+	fd->tv = 0;
+	fd->b = b;
 
 	fd->locs = new umat(2, nvals);
 	fd->rowidx = 0;
@@ -172,6 +176,8 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	for (agent i = 0; i < _N; i++)
 	#endif
 		topdif += difbuf[i];*/
+
+	free(b);
 
 	// Generate weights array
 

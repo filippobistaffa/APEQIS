@@ -43,7 +43,7 @@ typedef struct {
 
 	value (*cf)(agent *, agent, void *);
 	void *cfdata;
-	value tv;
+	value *b, tv;
 
 	size_t rowidx, locidx;
 	umat *locs;
