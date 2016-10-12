@@ -90,7 +90,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	const size_t ncols = ne + _N + cnt[0];
 
 	#ifndef APE_SILENT
-	printf("A\n%zu rows\n%zu columns\n%zu ones\n%zu bytes\n\n", nrows, ncols, nvals, sizeof(unsigned) * (2 * nvals + ncols + 1));
+	printf("A\n%zu rows\n%zu columns\n%zu ones\n%zu bytes\n\n", nrows, ncols, nvals, sizeof(uword) * (2 * nvals + ncols + 1));
 	#endif
 
 	uvec *vals = new uvec(nvals);
