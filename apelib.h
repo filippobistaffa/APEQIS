@@ -3,7 +3,7 @@
 
 // Headers
 
-#include <ilcplex/ilocplex.h>
+#include <stdlib.h>
 #include <float.h>
 
 #ifdef APE_SUBDIR
@@ -17,17 +17,11 @@
 #include "params.h"
 #include "macros.h"
 #include "iqsort.h"
-#include "constraints.h"
+#include "coal.h"
 
 using namespace std;
 
 #define C CEILBPC(N)
-
-#ifdef POSITIVEEDGES
-#define MINEDGEVALUE 0
-#else
-#define MINEDGEVALUE (-FLT_MAX)
-#endif
 
 #ifdef APE_UNFEASIBLE
 #define UNFEASIBLEVALUE FLT_MAX

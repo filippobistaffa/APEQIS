@@ -48,14 +48,14 @@ all: apeqis
 
 -include ${DEPSUBDIR}/*.d
 
-apeqis: ${COBJSUBDIR}/apeqis.o ${COBJSUBDIR}/sp.o ${COBJSUBDIR}/value.o ${COBJSUBDIR}/constraints.o ${COBJSUBDIR}/random.o ${COBJSUBDIR}/apelib.o
+apeqis: ${COBJSUBDIR}/apeqis.o ${COBJSUBDIR}/sp.o ${COBJSUBDIR}/value.o ${COBJSUBDIR}/random.o ${COBJSUBDIR}/apelib.o ${COBJSUBDIR}/coal.o
 	@${ECHOLD} apeqis
 	@${CMP} ${OPT} ${LDIR} $^ ${LINK} -o ${OUT}
 
 ${COBJSUBDIR}/apelib.o: apelib.cpp
 	@$(compilec)
 
-${COBJSUBDIR}/constraints.o: constraints.cpp
+${COBJSUBDIR}/coal.o: coal.cpp
 	@$(compilec)
 
 ${COBJSUBDIR}/value.o: value.cpp
