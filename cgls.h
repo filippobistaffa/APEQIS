@@ -5,8 +5,8 @@
 
 #include "types.h"
 
-#define TOLERANCE 1e-14
-#define MAXITERATIONS 200
+#define TOLERANCE 1e-6
+#define MAXITERATIONS 500
 #define CGLSDEBUG true
 
 unsigned cudacgls(const value *val, const unsigned *ptr, const unsigned *ind,
