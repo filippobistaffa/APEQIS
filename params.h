@@ -29,7 +29,7 @@
 #define PRINTDENSE
 
 // Print A matrix in CCS form
-#define PRINTCCS
+//#define PRINTCCS
 
 // Print B vector
-#define PRINTB
+//#define PRINTB
