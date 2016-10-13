@@ -162,8 +162,6 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	value *w = (value *)malloc(sizeof(value) * ncols);
 	cudacgls(A.values, A.col_ptrs, A.row_indices, nrows, ncols, nvals, b, w);
 
-	printbuf(w, ncols, "Weights");
-
 	/*double dif = 0;
 	double difbuf[da.getSize()];
 
@@ -203,10 +201,10 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	#endif
 
 	#ifndef APE_SILENT
-	/*puts("\nEdge values:");
-	for (edge i = 0; i < ea.getSize(); i++)
-		cout << ea[i].getName() << " = " << w[i] << endl;
-	env.out() << "\nSolution elapsed time = " << timer.getTime() * 1000 << "ms" << endl;
+	puts("Edge values:");
+	for (edge i = 0; i < ncols; i++)
+		cout << "w[" << i << "] = " << w[i] << endl;
+	/*env.out() << "\nSolution elapsed time = " << timer.getTime() * 1000 << "ms" << endl;
 	printf("Overall difference = %.2f\n", dif);
 	printf("Percentage difference = %.2f%%\n", dif < EPSILON ? 0 : (dif * 100) / tv);
 	#ifdef SINGLETONS
