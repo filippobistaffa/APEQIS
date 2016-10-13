@@ -126,6 +126,9 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	#endif
 
 	sp_fmat A(*(fd->locs), *vals);
+	delete fd->locs;
+	delete vals;
+	free(fd);
 
 	//#ifdef PRINTDENSE
 	//puts("");
@@ -143,10 +146,6 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	printbuf(A.col_ptrs, ncols + 1, "col");
 	puts("");
 	#endif
-
-	delete fd->locs;
-	delete vals;
-	free(fd);
 
 	#ifndef APE_SILENT
 	puts("Starting CUDA solver...\n");
