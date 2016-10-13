@@ -130,7 +130,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	delete vals;
 	free(fd);
 
-	#if defined PRINTDENSE || defined PRINTCCS
+	#if defined PRINTDENSE || defined PRINTCCS || defined PRINTB
 	puts("");
 	#endif
 
@@ -147,6 +147,11 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	printbuf(A.values, nvals, "val");
 	printbuf(A.row_indices, nvals, "row_idx");
 	printbuf(A.col_ptrs, ncols + 1, "col_ptr");
+	puts("");
+	#endif
+
+	#ifdef PRINTB
+	printbuf(b, nrows, "b");
 	puts("");
 	#endif
 
