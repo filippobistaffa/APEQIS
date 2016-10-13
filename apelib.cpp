@@ -64,6 +64,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		for (agent j = i + 1; j < _N; j++)
 			if (g[i * _N + j]) ne++;
 
+	#ifndef APE_SILENT
 	agent a[2 * ne];
 	for (agent i = 0; i < _N; i++)
 		for (agent j = i + 1; j < _N; j++)
@@ -72,7 +73,6 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 				Y(a, g[i * _N + j] - _N) = j;
 			}
 
-	#ifndef APE_SILENT
 	puts("Creating adjacendy lists...");
 	#endif
 
@@ -208,7 +208,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		// Print output
 
 		#ifdef APE_CSV
-		//printf("%u,%.2f,%.2f,%.2f,%.2f\n", _N, dif, (dif * 1E4) / tv, dif / da.getSize(), timer.getTime() * 1000);
+		printf("%u,%f,%f,%f,%f\n", _N, dif, (dif * 1E4) / tv, dif / nrows, rt);
 		#endif
 
 		#ifndef APE_SILENT
