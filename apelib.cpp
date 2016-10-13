@@ -48,7 +48,7 @@ void locations(agent *c, agent nl, const edge *g, const agent *adj, const chunk 
 	fd->rowidx++;
 }
 
-double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
+value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	       void *cfdata, const chunk *l, agent maxc, agent maxl) {
 
 	chunk *tl;
@@ -154,6 +154,8 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	puts("Starting CUDA solver...\n");
 	#endif
 
+	value *w = (value *)malloc(sizeof(value) * ncols);
+
 	/*double dif = 0;
 	double difbuf[da.getSize()];
 
@@ -181,8 +183,6 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	free(b);
 
 	// Generate weights array
-
-	double *w = (double *)malloc(sizeof(double) * (ne + _N));
 
 	/*for (edge i = 0; i < ea.getSize(); i++) {
 		w[i] = UNFEASIBLEVALUE;
