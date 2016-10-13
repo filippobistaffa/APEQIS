@@ -2,7 +2,7 @@
 #include "cgls.cuh"
 
 unsigned cudacgls(const value *val, const unsigned *ptr, const unsigned *ind, const unsigned m,
-		  const unsigned n, const unsigned nnz, value *b, value *x, float *rt) {
+		  const unsigned n, const unsigned nnz, value *b, value *x, float *rt, bool quiet) {
 
 	cudaEvent_t start, stop;
 	cudaEventCreate(&start);
@@ -28,7 +28,7 @@ unsigned cudacgls(const value *val, const unsigned *ptr, const unsigned *ind, co
 	// Solve LS problem
 
 	unsigned rc = cgls::Solve<value, cgls::CSC>(d_val, d_ptr, d_ind, m, n, nnz, d_b, d_x,
-						    0, TOLERANCE, MAXITERATIONS, !CGLSDEBUG);
+						    0, TOLERANCE, MAXITERATIONS, quiet);
 
 	// Store vector of differences in b
 	// b = A * x - b
@@ -50,7 +50,7 @@ unsigned cudacgls(const value *val, const unsigned *ptr, const unsigned *ind, co
 	cudaFree(d_b);
 	cudaFree(d_x);
 
-	if (CGLSDEBUG) puts("");
+	if (!quiet) puts("");
 
 	return rc;
 }

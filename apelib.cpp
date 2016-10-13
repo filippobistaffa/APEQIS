@@ -207,13 +207,16 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	#ifndef APE_SILENT
 	puts("Starting CUDA solver...\n");
+	const bool quiet = false;
+	#else
+	const bool quiet = true;
 	#endif
 
 	float rt;
 	#ifdef SINGLETONS
-	unsigned rc = cudacgls(A.values, A.col_ptrs, A.row_indices, nrows, ncols, nvals, b, w + _N, &rt);
+	unsigned rc = cudacgls(A.values, A.col_ptrs, A.row_indices, nrows, ncols, nvals, b, w + _N, &rt, quiet);
 	#else
-	unsigned rc = cudacgls(A.values, A.col_ptrs, A.row_indices, nrows, ncols, nvals, b, w, &rt);
+	unsigned rc = cudacgls(A.values, A.col_ptrs, A.row_indices, nrows, ncols, nvals, b, w, &rt, quiet);
 	#endif
 
 	value dif = 0, topdif = 0;
