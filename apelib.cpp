@@ -128,6 +128,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	fd->cf = cf;
 
 	coalitions(g, locations, fd, K, l ? l : tl, MAXDRIVERS);
+	value tv = fd->tv;
 
 	#ifndef APE_SILENT
 	puts("Creating sparse matrix...");
@@ -178,7 +179,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	puts("Differences:");
 	#endif
 	for (agent i = 0; i < nrows; i++) {
-		difbuf[i] = b[i];
+		difbuf[i] = abs(b[i]);
 		dif += difbuf[i];
 		#ifdef DIFFERENCES
 		cout << "d_" << i << " = " << difbuf[i] << endl;
@@ -200,12 +201,6 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	free(b);
 
-	// Generate weights array
-
-	/*for (edge i = 0; i < ea.getSize(); i++) {
-		w[i] = UNFEASIBLEVALUE;
-	}*/
-
 	// Print output
 
 	#ifdef APE_CSV
@@ -219,15 +214,15 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	for (edge i = _N; i < ncols; i++)
 		cout << "e_" << X(a, i - _N) << "," << Y(a, i - _N) << " = " << w[i] << endl;
 	cout << "\nSolution elapsed time = " << rt << "ms" << endl;
-	/*printf("Overall difference = %.2f\n", dif);
+	printf("Overall difference = %.2f\n", dif);
 	printf("Percentage difference = %.2f%%\n", dif < EPSILON ? 0 : (dif * 100) / tv);
 	#ifdef SINGLETONS
-	printf("Average difference (excluding singletons) = %.2f\n", dif < EPSILON ? 0 : dif / (da.getSize() - _N));
+	printf("Average difference (excluding singletons) = %.2f\n", dif < EPSILON ? 0 : dif / (nrows - _N));
 	printf("Sum of the %u highest differences = %.2f\n", _N / 2, topdif);
 	#else
-	printf("Average difference = %.2f\n", dif / da.getSize());
+	printf("Average difference = %.2f\n", dif / nrows);
 	printf("Sum of the %u highest differences = %.2f\n", _N, topdif);
-	#endif*/
+	#endif
 	#endif
 
 	if (!l) free(tl);
