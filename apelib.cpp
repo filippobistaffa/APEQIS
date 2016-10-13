@@ -155,6 +155,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	#endif
 
 	value *w = (value *)malloc(sizeof(value) * ncols);
+	cudacgls(A.values, A.col_ptrs, A.row_indices, nrows, ncols, nvals, b, w);
 
 	/*double dif = 0;
 	double difbuf[da.getSize()];

@@ -15,7 +15,7 @@ CUOPT=--use_fast_math -arch=${CUDAARCH} -m64 -D_FORCE_INLINES
 
 INC=
 LDIR=
-LINK=
+LINK=-lcublas -lcusparse
 
 CUOBJSUBDIR=cuobj
 COBJSUBDIR=cobj
@@ -70,9 +70,9 @@ all: apeqis
 
 -include ${DEPSUBDIR}/*.d
 
-apeqis: ${COBJSUBDIR}/apeqis.o ${COBJSUBDIR}/sp.o ${COBJSUBDIR}/value.o ${COBJSUBDIR}/random.o ${COBJSUBDIR}/apelib.o ${COBJSUBDIR}/coal.o
+apeqis: ${COBJSUBDIR}/apeqis.o ${COBJSUBDIR}/sp.o ${COBJSUBDIR}/value.o ${COBJSUBDIR}/random.o ${COBJSUBDIR}/apelib.o ${COBJSUBDIR}/coal.o ${CUOBJSUBDIR}/cgls.o
 	@${ECHOLD} apeqis
-	@${CMP} ${OPT} ${LDIR} $^ ${LINK} -o ${OUT}
+	@nvcc ${CUOPT} ${LDIR} $^ ${LINK} -o ${OUT}
 
 ${COBJSUBDIR}/apelib.o: apelib.cpp
 	@$(compilec)
