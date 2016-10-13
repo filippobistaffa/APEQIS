@@ -167,8 +167,9 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	puts("Starting CUDA solver...\n");
 	#endif
 
+	float rt;
 	value *w = (value *)malloc(sizeof(value) * ncols);
-	cudacgls(A.values, A.col_ptrs, A.row_indices, nrows, ncols, nvals, b, w);
+	cudacgls(A.values, A.col_ptrs, A.row_indices, nrows, ncols, nvals, b, w, &rt);
 
 	double dif = 0;
 	double difbuf[nrows];
@@ -217,8 +218,8 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		cout << "e_" << i << " = " << w[i] << endl;
 	for (edge i = _N; i < ncols; i++)
 		cout << "e_" << X(a, i - _N) << "," << Y(a, i - _N) << " = " << w[i] << endl;
-	/*env.out() << "\nSolution elapsed time = " << timer.getTime() * 1000 << "ms" << endl;
-	printf("Overall difference = %.2f\n", dif);
+	cout << "\nSolution elapsed time = " << rt << "ms" << endl;
+	/*printf("Overall difference = %.2f\n", dif);
 	printf("Percentage difference = %.2f%%\n", dif < EPSILON ? 0 : (dif * 100) / tv);
 	#ifdef SINGLETONS
 	printf("Average difference (excluding singletons) = %.2f\n", dif < EPSILON ? 0 : dif / (da.getSize() - _N));
