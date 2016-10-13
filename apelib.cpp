@@ -64,6 +64,14 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		for (agent j = i + 1; j < _N; j++)
 			if (g[i * _N + j]) ne++;
 
+	agent a[2 * ne];
+	for (agent i = 0; i < _N; i++)
+		for (agent j = i + 1; j < _N; j++)
+			if (g[i * _N + j]) {
+				X(a, g[i * _N + j] - _N) = i;
+				Y(a, g[i * _N + j] - _N) = j;
+			}
+
 	#ifndef APE_SILENT
 	puts("Creating adjacendy lists...");
 	#endif
@@ -202,8 +210,10 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	#ifndef APE_SILENT
 	puts("Edge values:");
-	for (edge i = 0; i < ncols; i++)
-		cout << "w[" << i << "] = " << w[i] << endl;
+	for (agent i = 0; i < _N; i++)
+		cout << "e_" << i << " = " << w[i] << endl;
+	for (edge i = _N; i < ncols; i++)
+		cout << "e_" << X(a, i - _N) << "," << Y(a, i - _N) << " = " << w[i] << endl;
 	/*env.out() << "\nSolution elapsed time = " << timer.getTime() * 1000 << "ms" << endl;
 	printf("Overall difference = %.2f\n", dif);
 	printf("Percentage difference = %.2f%%\n", dif < EPSILON ? 0 : (dif * 100) / tv);
