@@ -5,7 +5,7 @@
 
 #include "types.h"
 
-#define TOLERANCE 1e-6
+#define TOLERANCE 1e-14
 #define MAXITERATIONS 200
 #define CGLSDEBUG true
 
