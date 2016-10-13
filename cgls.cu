@@ -2,7 +2,11 @@
 #include "cgls.cuh"
 
 unsigned cudacgls(const value *val, const unsigned *ptr, const unsigned *ind, const unsigned m,
-		  const unsigned n, const unsigned nnz, value *b, value *x) {
+		  const unsigned n, const unsigned nnz, value *b, value *x, float *rt) {
+
+	cudaEvent_t start, stop;
+	cudaEventCreate(&start);
+	cudaEventCreate(&stop);
 
 	value *d_val, *d_b, *d_x;
 	int *d_ptr, *d_ind;
@@ -19,6 +23,10 @@ unsigned cudacgls(const value *val, const unsigned *ptr, const unsigned *ind, co
 	memcpy(d_b, b, sizeof(value) * m);
 	memset(d_x, 0, sizeof(value) * n);
 
+	cudaEventRecord(start);
+
+	// Solve LS problem
+
 	unsigned rc = cgls::Solve<value, cgls::CSC>(d_val, d_ptr, d_ind, m, n, nnz, d_b, d_x,
 						    0, TOLERANCE, MAXITERATIONS, !CGLSDEBUG);
 
@@ -28,6 +36,9 @@ unsigned cudacgls(const value *val, const unsigned *ptr, const unsigned *ind, co
 	cgls::Spmv<value, cgls::CSC> spA(m, n, nnz, d_val, d_ptr, d_ind);
 	spA('n', 1, d_x, -1, d_b);
 
+	cudaEventRecord(stop);
+	cudaEventSynchronize(stop);
+	cudaEventElapsedTime(rt, start, stop);
 	cudaDeviceSynchronize();
 
 	memcpy(b, d_b, sizeof(value) * m);
