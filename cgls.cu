@@ -2,7 +2,7 @@
 #include "cgls.cuh"
 
 unsigned cudacgls(const value *val, const unsigned *ptr, const unsigned *ind, const unsigned m,
-		  const unsigned n, const unsigned nnz, const value *b, value *x) {
+		  const unsigned n, const unsigned nnz, value *b, value *x) {
 
 	value *d_val, *d_b, *d_x;
 	int *d_ptr, *d_ind;
@@ -19,10 +19,18 @@ unsigned cudacgls(const value *val, const unsigned *ptr, const unsigned *ind, co
 	memcpy(d_b, b, sizeof(value) * m);
 	memset(d_x, 0, sizeof(value) * n);
 
-	unsigned rc = cgls::Solve<value, cgls::CSC>(d_val, d_ptr, d_ind, (int)m, (int)n, (int)nnz,
-						    d_b, d_x, 0, TOLERANCE, MAXITERATIONS, !CGLSDEBUG);
+	unsigned rc = cgls::Solve<value, cgls::CSC>(d_val, d_ptr, d_ind, m, n, nnz, d_b, d_x,
+						    0, TOLERANCE, MAXITERATIONS, !CGLSDEBUG);
+
+	// Store vector of differences in b
+	// b = A * x - b
+
+	cgls::Spmv<value, cgls::CSC> spA(m, n, nnz, d_val, d_ptr, d_ind);
+	spA('n', 1, d_x, -1, d_b);
 
 	cudaDeviceSynchronize();
+
+	memcpy(b, d_b, sizeof(value) * m);
 	memcpy(x, d_x, sizeof(value) * n);
 
 	cudaFree(d_val);

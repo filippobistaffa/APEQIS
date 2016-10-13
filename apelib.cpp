@@ -170,21 +170,24 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	value *w = (value *)malloc(sizeof(value) * ncols);
 	cudacgls(A.values, A.col_ptrs, A.row_indices, nrows, ncols, nvals, b, w);
 
-	/*double dif = 0;
-	double difbuf[da.getSize()];
+	double dif = 0;
+	double difbuf[nrows];
 
 	#ifdef DIFFERENCES
-	puts("\nDifferences:");
+	puts("Differences:");
 	#endif
-	for (agent i = 0; i < da.getSize(); i++) {
-		difbuf[i] = cplex.getValue(da[i]);
+	for (agent i = 0; i < nrows; i++) {
+		difbuf[i] = b[i];
 		dif += difbuf[i];
 		#ifdef DIFFERENCES
-		cout << da[i].getName() << " = " << difbuf[i] << endl;
+		cout << "d_" << i << " = " << difbuf[i] << endl;
 		#endif
 	}
+	#ifdef DIFFERENCES
+	puts("");
+	#endif
 
-	QSORT(double, difbuf, da.getSize(), GT);
+	QSORT(double, difbuf, nrows, GT);
 	double topdif = 0;
 
 	#ifdef SINGLETONS
@@ -192,7 +195,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	#else
 	for (agent i = 0; i < _N; i++)
 	#endif
-		topdif += difbuf[i];*/
+		topdif += difbuf[i];
 
 	free(b);
 

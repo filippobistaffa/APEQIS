@@ -9,6 +9,6 @@
 #define MAXITERATIONS 200
 #define CGLSDEBUG true
 
-unsigned cudacgls(const value *val, const unsigned *ptr, const unsigned *ind, unsigned m, unsigned n, unsigned nnz, const value *b, value *x);
+unsigned cudacgls(const value *val, const unsigned *ptr, const unsigned *ind, unsigned m, unsigned n, unsigned nnz, value *b, value *x);
 
 #endif /* CGLS_H_ */
