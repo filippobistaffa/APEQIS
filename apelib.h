@@ -46,6 +46,9 @@ typedef struct {
 	value (*cf)(agent *, agent, void *);
 	void *cfdata;
 	value *b, tv;
+	#ifdef SINGLETONS
+	value *s;
+	#endif
 
 	size_t rowidx, locidx;
 	umat *locs;

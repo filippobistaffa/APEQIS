@@ -2,13 +2,19 @@
 
 void count(agent *c, agent nl, const edge *g, const agent *adj, const chunk *l, void *data) {
 
+	#ifdef SINGLETONS
+	if (*c == 1) return;
+	#endif
+
 	size_t *cnt = (size_t *)data;
 
 	// Increase row counter
 	cnt[0]++;
 
 	// Increase non-zero element counter
+	#ifndef SINGLETONS
 	cnt[1] += *c;
+	#endif
 	for (agent i = 0; i < *c; i++) {
 		const agent v1 = c[i + 1];
 		for (agent j = i + 1; j < *c; j++) {
@@ -30,18 +36,31 @@ void locations(agent *c, agent nl, const edge *g, const agent *adj, const chunk 
 
 	funcdata *fd = (funcdata *)data;
 	value cv = fd->cf(c, nl, fd->cfdata);
-	fd->b[fd->rowidx] = cv;
 	fd->tv += cv;
 	//printbuf(c + 1, *c, NULL, NULL, " = ");
 	//printf("%.2f\n", cv);
 
+	#ifdef SINGLETONS
+	if (*c == 1) return;
+	#endif
+
+	fd->b[fd->rowidx] = cv;
+
 	for (agent i = 0; i < *c; i++) {
 		const agent v1 = c[i + 1];
+		#ifdef SINGLETONS
+		fd->b[fd->rowidx] -= fd->s[v1];
+		#else
 		setlocation(fd->rowidx, v1, &(fd->locidx), fd->locs);
+		#endif
 		for (agent j = i + 1; j < *c; j++) {
 			const agent v2 = c[j + 1];
 			if (g[v1 * _N + v2])
+				#ifndef SINGLETONS
 				setlocation(fd->rowidx, g[v1 * _N + v2], &(fd->locidx), fd->locs);
+				#else
+				setlocation(fd->rowidx, g[v1 * _N + v2] - _N, &(fd->locidx), fd->locs);
+				#endif
 		}
 	}
 
@@ -97,13 +116,30 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	size_t cnt[2] = { 0, 0 };
 	coalitions(g, count, cnt, K, l ? l : tl, MAXDRIVERS);
 
-	// #rows = #coalitions, #columns = #variables = #edges + #autoloops + (#dif = #coalitions)
+	// #rows = #coalitions, #columns = #variables = #edges + #autoloops (only if SINGLETONS is not defined)
 	const size_t nvals = cnt[1];
 	const size_t nrows = cnt[0];
+	#ifdef SINGLETONS
+	const size_t ncols = ne;
+	#else
 	const size_t ncols = ne + _N;
+	#endif
 
 	#ifndef APE_SILENT
 	printf("\nA\n%zu rows\n%zu columns\n%zu ones\n%zu bytes\n\n", nrows, ncols, nvals, sizeof(float) * nvals + sizeof(uword) * (nvals + ncols + 1));
+	#endif
+
+	#ifdef SINGLETONS
+	value *w = (value *)malloc(sizeof(value) * (ncols + _N));
+	#else
+	value *w = (value *)malloc(sizeof(value) * ncols);
+	#endif
+
+	#ifdef SINGLETONS
+	for (agent i = 0; i < _N; i++) {
+		agent c[] = { 1, i };
+		w[i] = cf(c, GET(l, i), cfdata);
+	}
 	#endif
 
 	fvec *vals = new fvec(nvals);
@@ -119,6 +155,9 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	value *b = (value *)malloc(sizeof(value) * nrows);
 	fd->tv = 0;
 	fd->b = b;
+	#ifdef SINGLETONS
+	fd->s = w;
+	#endif
 
 	fd->locs = new umat(2, nvals);
 	fd->rowidx = 0;
@@ -164,13 +203,18 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	puts("");
 	#endif
 
+	//exit(0);
+
 	#ifndef APE_SILENT
 	puts("Starting CUDA solver...\n");
 	#endif
 
 	float rt;
-	value *w = (value *)malloc(sizeof(value) * ncols);
+	#ifdef SINGLETONS
+	unsigned rc = cudacgls(A.values, A.col_ptrs, A.row_indices, nrows, ncols, nvals, b, w + _N, &rt);
+	#else
 	unsigned rc = cudacgls(A.values, A.col_ptrs, A.row_indices, nrows, ncols, nvals, b, w, &rt);
+	#endif
 
 	value dif = 0, topdif = 0;
 	value difbuf[nrows];
@@ -221,7 +265,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		printf("Overall difference = %.2f\n", dif);
 		printf("Percentage difference = %.2f%%\n", dif < EPSILON ? 0 : (dif * 100) / tv);
 		#ifdef SINGLETONS
-		printf("Average difference (excluding singletons) = %.2f\n", dif < EPSILON ? 0 : dif / (nrows - _N));
+		printf("Average difference (excluding singletons) = %.2f\n", dif < EPSILON ? 0 : dif / nrows);
 		printf("Sum of the %u highest differences = %.2f\n", _N / 2, topdif);
 		#else
 		printf("Average difference = %.2f\n", dif / nrows);
