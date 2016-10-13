@@ -68,7 +68,7 @@ void locations(agent *c, agent nl, const edge *g, const agent *adj, const chunk 
 }
 
 value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
-	       void *cfdata, const chunk *l, agent maxc, agent maxl) {
+	      void *cfdata, const chunk *l, agent maxc, agent maxl) {
 
 	chunk *tl;
 
