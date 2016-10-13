@@ -6,7 +6,7 @@ ifndef OUT
 OUT=./apeqis
 endif
 
-CMP=g++ -std=c++11
+CMP=g++ #-std=c++11
 WARN=-Wall -Wno-unused-result -Wno-deprecated-declarations -Wno-sign-compare -Wno-maybe-uninitialized
 OPTIM=-Ofast -march=native -funroll-loops -funsafe-loop-optimizations -falign-functions=16 -falign-loops=16 -fopenmp
 NOOPTIM=-O0 -march=native -fopenmp
