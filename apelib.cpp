@@ -171,8 +171,8 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	value *w = (value *)malloc(sizeof(value) * ncols);
 	cudacgls(A.values, A.col_ptrs, A.row_indices, nrows, ncols, nvals, b, w, &rt);
 
-	double dif = 0;
-	double difbuf[nrows];
+	value dif = 0;
+	value difbuf[nrows];
 
 	#ifdef DIFFERENCES
 	puts("Differences:");
@@ -188,8 +188,8 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	puts("");
 	#endif
 
-	QSORT(double, difbuf, nrows, GT);
-	double topdif = 0;
+	QSORT(value, difbuf, nrows, GT);
+	value topdif = 0;
 
 	#ifdef SINGLETONS
 	for (agent i = 0; i < _N / 2; i++)
