@@ -215,7 +215,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		puts("Edge values:");
 		for (agent i = 0; i < _N; i++)
 			cout << "e_" << i << " = " << w[i] << endl;
-		for (edge i = _N; i < ncols; i++)
+		for (edge i = _N; i < _N + ne; i++)
 			cout << "e_" << X(a, i - _N) << "," << Y(a, i - _N) << " = " << w[i] << endl;
 		cout << "\nSolution elapsed time = " << rt << "ms" << endl;
 		printf("Overall difference = %.2f\n", dif);
