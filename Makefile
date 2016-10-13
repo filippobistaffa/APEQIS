@@ -11,7 +11,7 @@ WARN=-Wall -Wno-unused-result -Wno-deprecated-declarations -Wno-sign-compare -Wn
 OPTIM=-Ofast -march=native -funroll-loops -funsafe-loop-optimizations -falign-functions=16 -falign-loops=16 -fopenmp
 NOOPTIM=-O0 -march=native -fopenmp
 DBG=-g ${NOOPTIM}
-CUOPT=--use_fast_math -arch=${CUDAARCH} -D_FORCE_INLINES
+CUOPT=--use_fast_math -arch=${CUDAARCH} -m64 -D_FORCE_INLINES
 
 INC=
 LDIR=
