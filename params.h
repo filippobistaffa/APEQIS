@@ -10,11 +10,14 @@
 // Enable debug messages (lots of output, reduces performance)
 #define APE_DEBUG
 
+// Enable coloured output
+#define COLOURS
+
 // Print DOT representation of graph
 //#define DOT
 
 // Print d_i variables
-//#define DIFFERENCES
+#define DIFFERENCES
 
 // Output in CSV format
 //#define APE_CSV
@@ -23,7 +26,7 @@
 //#define POSITIVEEDGES
 
 // Force equality among singletons
-#define SINGLETONS
+//#define SINGLETONS
 
 // Print A matrix in dense form
 #define PRINTDENSE

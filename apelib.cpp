@@ -170,82 +170,95 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	float rt;
 	value *w = (value *)malloc(sizeof(value) * ncols);
-	cudacgls(A.values, A.col_ptrs, A.row_indices, nrows, ncols, nvals, b, w, &rt);
+	unsigned rc = cudacgls(A.values, A.col_ptrs, A.row_indices, nrows, ncols, nvals, b, w, &rt);
 
-	value dif = 0;
+	value dif = 0, topdif = 0;
 	value difbuf[nrows];
 
-	#ifdef DIFFERENCES
-	puts("Differences:");
-	#endif
-	for (agent i = 0; i < nrows; i++) {
-		difbuf[i] = abs(b[i]);
-		dif += difbuf[i];
+	if (!rc) {
+
 		#ifdef DIFFERENCES
-		cout << "d_" << i << " = " << difbuf[i] << endl;
+		puts("Differences:");
 		#endif
+		for (agent i = 0; i < nrows; i++) {
+			difbuf[i] = abs(b[i]);
+			dif += difbuf[i];
+			#ifdef DIFFERENCES
+			cout << "d_" << i << " = " << difbuf[i] << endl;
+			#endif
+		}
+		#ifdef DIFFERENCES
+		puts("");
+		#endif
+
+		QSORT(value, difbuf, nrows, GT);
+
+		#ifdef SINGLETONS
+		for (agent i = 0; i < _N / 2; i++)
+		#else
+		for (agent i = 0; i < _N; i++)
+		#endif
+			topdif += difbuf[i];
 	}
-	#ifdef DIFFERENCES
-	puts("");
-	#endif
-
-	QSORT(value, difbuf, nrows, GT);
-	value topdif = 0;
-
-	#ifdef SINGLETONS
-	for (agent i = 0; i < _N / 2; i++)
-	#else
-	for (agent i = 0; i < _N; i++)
-	#endif
-		topdif += difbuf[i];
 
 	free(b);
 
-	// Print output
+	if (!rc) {
 
-	#ifdef APE_CSV
-	//printf("%u,%.2f,%.2f,%.2f,%.2f\n", _N, dif, (dif * 1E4) / tv, dif / da.getSize(), timer.getTime() * 1000);
-	#endif
+		// Print output
 
-	#ifndef APE_SILENT
-	puts("Edge values:");
-	for (agent i = 0; i < _N; i++)
-		cout << "e_" << i << " = " << w[i] << endl;
-	for (edge i = _N; i < ncols; i++)
-		cout << "e_" << X(a, i - _N) << "," << Y(a, i - _N) << " = " << w[i] << endl;
-	cout << "\nSolution elapsed time = " << rt << "ms" << endl;
-	printf("Overall difference = %.2f\n", dif);
-	printf("Percentage difference = %.2f%%\n", dif < EPSILON ? 0 : (dif * 100) / tv);
-	#ifdef SINGLETONS
-	printf("Average difference (excluding singletons) = %.2f\n", dif < EPSILON ? 0 : dif / (nrows - _N));
-	printf("Sum of the %u highest differences = %.2f\n", _N / 2, topdif);
-	#else
-	printf("Average difference = %.2f\n", dif / nrows);
-	printf("Sum of the %u highest differences = %.2f\n", _N, topdif);
-	#endif
-	#endif
+		#ifdef APE_CSV
+		//printf("%u,%.2f,%.2f,%.2f,%.2f\n", _N, dif, (dif * 1E4) / tv, dif / da.getSize(), timer.getTime() * 1000);
+		#endif
+
+		#ifndef APE_SILENT
+		puts("Edge values:");
+		for (agent i = 0; i < _N; i++)
+			cout << "e_" << i << " = " << w[i] << endl;
+		for (edge i = _N; i < ncols; i++)
+			cout << "e_" << X(a, i - _N) << "," << Y(a, i - _N) << " = " << w[i] << endl;
+		cout << "\nSolution elapsed time = " << rt << "ms" << endl;
+		printf("Overall difference = %.2f\n", dif);
+		printf("Percentage difference = %.2f%%\n", dif < EPSILON ? 0 : (dif * 100) / tv);
+		#ifdef SINGLETONS
+		printf("Average difference (excluding singletons) = %.2f\n", dif < EPSILON ? 0 : dif / (nrows - _N));
+		printf("Sum of the %u highest differences = %.2f\n", _N / 2, topdif);
+		#else
+		printf("Average difference = %.2f\n", dif / nrows);
+		printf("Sum of the %u highest differences = %.2f\n", _N, topdif);
+		#endif
+		#endif
+	}
 
 	if (!l) free(tl);
 	free(adj);
 
 	// Write output file
 
-	#ifdef CFSS
-	FILE *cfss = fopen(CFSS, "w+");
-	for (agent i = 0; i < _N; i++)
-		fprintf(cfss, "%s%f\n", GET(l, i) ? "*" : "", -w[i]);
-	for (agent i = 0; i < _N; i++) {
-		for (agent j = 0; j < adj[i * _N]; j++) {
-			const agent k = adj[i * _N + j + 1];
-			if (k > i) fprintf(cfss, "%u %u %f\n", i, k, -w[g[i * _N + k]]);
-		}
-	}
-	fclose(cfss);
-	#endif
+	if (!rc) {
 
-	#ifdef APE_NOERROR
-	assert(dif < EPSILON);
-	#endif
+		#ifdef CFSS
+		FILE *cfss = fopen(CFSS, "w+");
+		for (agent i = 0; i < _N; i++)
+			fprintf(cfss, "%s%f\n", GET(l, i) ? "*" : "", -w[i]);
+		for (agent i = 0; i < _N; i++) {
+			for (agent j = 0; j < adj[i * _N]; j++) {
+				const agent k = adj[i * _N + j + 1];
+				if (k > i) fprintf(cfss, "%u %u %f\n", i, k, -w[g[i * _N + k]]);
+			}
+		}
+		fclose(cfss);
+		#endif
+
+		#ifdef APE_NOERROR
+		assert(dif < EPSILON);
+		#endif
+	}
+
+	if (rc) {
+		fprintf(stderr, RED("ERROR: exit code of CGLS = %u\n"), rc);
+		return NULL;
+	}
 
 	return w;
 }

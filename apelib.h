@@ -20,6 +20,7 @@
 #include "types.h"
 #endif
 #include "params.h"
+#include "colours.h"
 #include "macros.h"
 #include "iqsort.h"
 #include "coal.h"

@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
 
 	free(sp);
 	free(g);
-	free(w);
+	if (w) free(w);
 
 	return 0;
 }
