@@ -31,5 +31,7 @@ unsigned cudacgls(const value *val, const unsigned *ptr, const unsigned *ind, co
 	cudaFree(d_b);
 	cudaFree(d_x);
 
+	if (CGLSDEBUG) puts("");
+
 	return rc;
 }
