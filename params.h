@@ -24,3 +24,12 @@
 
 // Force equality among singletons
 #define SINGLETONS
+
+// Print A matrix in dense form
+#define PRINTDENSE
+
+// Print A matrix in CCS form
+#define PRINTCCS
+
+// Print B vector
+#define PRINTB
