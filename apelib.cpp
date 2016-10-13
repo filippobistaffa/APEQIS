@@ -90,9 +90,9 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	coalitions(g, count, cnt, K, l ? l : tl, MAXDRIVERS);
 
 	// #rows = #coalitions, #columns = #variables = #edges + #autoloops + (#dif = #coalitions)
-	const size_t nvals = cnt[0] + cnt[1];
+	const size_t nvals = cnt[1];
 	const size_t nrows = cnt[0];
-	const size_t ncols = ne + _N + cnt[0];
+	const size_t ncols = ne + _N;
 
 	#ifndef APE_SILENT
 	printf("\nA\n%zu rows\n%zu columns\n%zu ones\n%zu bytes\n\n", nrows, ncols, nvals, sizeof(float) * nvals + sizeof(uword) * (nvals + ncols + 1));
@@ -120,9 +120,6 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	fd->cf = cf;
 
 	coalitions(g, locations, fd, K, l ? l : tl, MAXDRIVERS);
-
-	for (size_t i = 0; i < cnt[0]; ++i)
-		setlocation(i, ne + _N + i, &(fd->locidx), fd->locs);
 
 	#ifndef APE_SILENT
 	puts("Creating sparse matrix...");
