@@ -5,7 +5,7 @@ APEQIS: APproximately EQuivalent IS-represented cooperative games
 
 Requirements
 ----------
-APEQIS requires `g++` to compile, and relies on [IBM CPLEX](https://www-01.ibm.com/software/commerce/optimization/cplex-optimizer) to solve the LP model. In order to compile against CPLEX, `INC` and `LDIR` inside [`Makefile`](Makefile)  must be set to point to the `include` and `lib` folders of CPLEX.
+APEQIS requires `g++` and [CUDA](http://www.nvidia.com/object/cuda_home_new.html) to compile and execute. CUDA 6.0 or newer is required as APEQIS uses [Unified Memory](https://devblogs.nvidia.com/parallelforall/unified-memory-in-cuda-6/). Before compiling and executing APEQIS, it is necessary to adjust the `CUDAARCH` compilation parameter (i.e., the compute capabilities of the GPU) within the [`Makefile`](Makefile). The correct value can be printed by means of the `smquery` utility.
 
 In order to employ Twitter as network topology, `java` must be installed on the system, and the [Twitter GitHub repository](https://github.com/filippobistaffa/twitter) must be `git clone`'d inside APEQIS's root directory.
 
