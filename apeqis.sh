@@ -75,6 +75,7 @@ fi
 
 tmp=`mktemp`
 echo "#define _N $n" > $tmp
+echo "#define CORES `grep -c ^processor /proc/cpuinfo`" >> $tmp
 echo "#define DRIVERSPERC $d" >> $tmp
 if [ ! -z "${c}" ]
 then

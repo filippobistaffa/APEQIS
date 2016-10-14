@@ -1,6 +1,18 @@
 #include "apelib.h"
 
-void count(agent *c, agent nl, const edge *g, const agent *adj, const chunk *l, void *data) {
+template <typename type>
+__attribute__((always_inline)) inline
+void exclprefixsum(const type *hi, type *ho, unsigned hn) {
+
+	if (hn) {
+		ho[0] = 0;
+		for (unsigned i = 1; i < hn; i++)
+			ho[i] = hi[i - 1] + ho[i - 1];
+	}
+}
+
+template <typename type>
+void count(agent *c, agent nl, const edge *g, const agent *adj, const chunk *l, type *data) {
 
 	#ifdef SINGLETONS
 	if (*c == 1) return;
@@ -25,20 +37,25 @@ void count(agent *c, agent nl, const edge *g, const agent *adj, const chunk *l, 
 }
 
 __attribute__((always_inline)) inline
-void setlocation(agent i, agent j, size_t *idx, umat *locs) {
+void setlocation(agent i, agent j, size_t *idx, size_t rowoff, size_t valoff, umat *locs) {
 
-	(*locs)(0, *idx) = i;
-	(*locs)(1, *idx) = j;
+	(*locs)(0, valoff + *idx) = rowoff + i;
+	(*locs)(1, valoff + *idx) = j;
 	(*idx)++;
 }
 
-void locations(agent *c, agent nl, const edge *g, const agent *adj, const chunk *l, void *data) {
+template <typename type>
+void locations(agent *c, agent nl, const edge *g, const agent *adj, const chunk *l, type *data) {
 
 	funcdata *fd = (funcdata *)data;
 	value cv = fd->cf(c, nl, fd->cfdata);
 	fd->tv += cv;
-	//printbuf(c + 1, *c, NULL, NULL, " = ");
-	//printf("%.2f\n", cv);
+	/*#pragma omp critical
+	{
+		printf("%u: ", omp_get_thread_num());
+		printbuf(c + 1, *c, NULL, NULL, " = ");
+		printf("%.2f\n", cv);
+	}*/
 
 	#ifdef SINGLETONS
 	if (*c == 1) return;
@@ -51,15 +68,15 @@ void locations(agent *c, agent nl, const edge *g, const agent *adj, const chunk 
 		#ifdef SINGLETONS
 		fd->b[fd->rowidx] -= fd->s[v1];
 		#else
-		setlocation(fd->rowidx, v1, &(fd->locidx), fd->locs);
+		setlocation(fd->rowidx, v1, &(fd->locidx), fd->rowoff, fd->valoff, fd->locs);
 		#endif
 		for (agent j = i + 1; j < *c; j++) {
 			const agent v2 = c[j + 1];
 			if (g[v1 * _N + v2])
 				#ifndef SINGLETONS
-				setlocation(fd->rowidx, g[v1 * _N + v2], &(fd->locidx), fd->locs);
+				setlocation(fd->rowidx, g[v1 * _N + v2], &(fd->locidx), fd->rowoff, fd->valoff, fd->locs);
 				#else
-				setlocation(fd->rowidx, g[v1 * _N + v2] - _N, &(fd->locidx), fd->locs);
+				setlocation(fd->rowidx, g[v1 * _N + v2] - _N, &(fd->locidx), fd->rowoff, fd->valoff, fd->locs);
 				#endif
 		}
 	}
@@ -107,18 +124,41 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	puts("");
 	#endif
 
+	// Count rows and non-zero elements
+
 	#ifndef APE_SILENT
 	puts("Counting matrix non-zero elements...");
 	#endif
 
-	// Count rows and non-zero elements
+	size_t *cnt[_T];
 
-	size_t cnt[2] = { 0, 0 };
-	COALITIONS(g, count, cnt, K, l ? l : tl, MAXDRIVERS);
+	for (agent t = 0; t < _T; ++t)
+		cnt[t] = (size_t *)calloc(_T, sizeof(size_t));
+
+	#ifdef PARALLEL
+	printf("Using %u threads...\n", _T);
+	parcoalitions(g, count, cnt, K, l ? l : tl, MAXDRIVERS);
+	#else
+	coalitions(g, count, cnt[0], K, l ? l : tl, MAXDRIVERS);
+	#endif
+
+	size_t valcnt[_T], rowcnt[_T];
+	size_t nvals = 0, nrows = 0;
+
+	for (agent t = 0; t < _T; ++t) {
+		nrows += rowcnt[t] = cnt[t][0];
+		nvals += valcnt[t] = cnt[t][1];
+	}
+
+	for (agent t = 0; t < _T; ++t)
+		free(cnt[t]);
+
+	size_t valpfx[_T], rowpfx[_T];
+	exclprefixsum(rowcnt, rowpfx, _T);
+	exclprefixsum(valcnt, valpfx, _T);
 
 	// #rows = #coalitions, #columns = #variables = #edges + #autoloops (only if SINGLETONS is not defined)
-	const size_t nvals = cnt[1];
-	const size_t nrows = cnt[0];
+
 	#ifdef SINGLETONS
 	const size_t ncols = ne;
 	#else
@@ -142,41 +182,57 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	}
 	#endif
 
-	fvec *vals = new fvec(nvals);
-	vals->ones();
-
 	// Create sparse matrix
 
 	#ifndef APE_SILENT
 	puts("Computing elements' locations..");
 	#endif
 
-	funcdata *fd = (funcdata *)malloc(sizeof(funcdata));
+	funcdata *fd[_T];
 	value *b = (value *)malloc(sizeof(value) * nrows);
-	fd->tv = 0;
-	fd->b = b;
-	#ifdef SINGLETONS
-	fd->s = w;
+	umat *locs = new umat(2, nvals);
+
+	for (agent t = 0; t < _T; ++t) {
+		fd[t] = (funcdata *)malloc(sizeof(funcdata));
+		fd[t]->b = b + rowpfx[t];
+		fd[t]->tv = 0;
+		#ifdef SINGLETONS
+		fd[t]->s = w;
+		#endif
+		fd[t]->locs = locs;
+		fd[t]->valoff = valpfx[t];
+		fd[t]->rowoff = rowpfx[t];
+		fd[t]->rowidx = 0;
+		fd[t]->locidx = 0;
+		fd[t]->cfdata = cfdata;
+		fd[t]->cf = cf;
+	}
+
+	#ifdef PARALLEL
+	printf("Using %u threads...\n", _T);
+	parcoalitions(g, locations, fd, K, l ? l : tl, MAXDRIVERS);
+	#else
+	coalitions(g, locations, fd[0], K, l ? l : tl, MAXDRIVERS);
 	#endif
 
-	fd->locs = new umat(2, nvals);
-	fd->rowidx = 0;
-	fd->locidx = 0;
+	value tv = 0;
 
-	fd->cfdata = cfdata;
-	fd->cf = cf;
-
-	COALITIONS(g, locations, fd, K, l ? l : tl, MAXDRIVERS);
-	value tv = fd->tv;
+	for (agent t = 0; t < _T; ++t) {
+		tv += fd[t]->tv;
+		free(fd[t]);
+	}
 
 	#ifndef APE_SILENT
 	puts("Creating sparse matrix...");
 	#endif
 
-	sp_fmat A(*(fd->locs), *vals);
-	delete fd->locs;
+	fvec *vals = new fvec(nvals);
+	vals->ones();
+
+	sp_fmat A(*locs, *vals);
+
+	delete locs;
 	delete vals;
-	free(fd);
 
 	#if defined PRINTDENSE || defined PRINTCCS || defined PRINTB
 	puts("");
@@ -202,8 +258,6 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	printbuf(b, nrows, "b");
 	puts("");
 	#endif
-
-	//exit(0);
 
 	#ifndef APE_SILENT
 	puts("Starting CUDA solver...\n");

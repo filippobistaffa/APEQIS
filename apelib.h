@@ -37,12 +37,6 @@ using namespace arma;
 #define UNFEASIBLEVALUE 0
 #endif
 
-#ifdef PARALLEL
-#define COALITIONS parcoalitions
-#else
-#define COALITIONS coalitions
-#endif
-
 #ifdef APE_CSV
 #define APE_SILENT
 #endif
@@ -57,11 +51,12 @@ typedef struct {
 	#endif
 
 	size_t rowidx, locidx;
+	size_t rowoff, valoff;
 	umat *locs;
 
 } funcdata;
 
 value *apeqis(const edge *g, value (*cf)(agent *, agent, void *), void *cfdata = NULL,
-	       const chunk *l = NULL, agent maxc = _N, agent maxl = _N);
+	      const chunk *l = NULL, agent maxc = _N, agent maxl = _N);
 
 #endif /* APELIB_H_ */
