@@ -6,18 +6,11 @@
 #include <omp.h>
 #include <stdlib.h>
 #include "instance.h"
-#include "params.h"
 #include "macros.h"
 #include "types.h"
 
 #include "iqsort.h"
 #include "sorted.h"
-
-#ifdef PARALLEL
-#define _T CORES
-#else
-#define _T 1
-#endif
 
 #define _C CEILBPC(_N)
 #define P(_s, _i) (pm[(_s) * _N + (_i)])

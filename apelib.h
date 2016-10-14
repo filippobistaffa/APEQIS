@@ -19,6 +19,7 @@
 #include "instance.h"
 #include "types.h"
 #endif
+
 #include "params.h"
 #include "colours.h"
 #include "macros.h"
@@ -35,6 +36,12 @@ using namespace arma;
 #define UNFEASIBLEVALUE FLT_MAX
 #else
 #define UNFEASIBLEVALUE 0
+#endif
+
+#ifdef PARALLEL
+#define _T CORES
+#else
+#define _T 1
 #endif
 
 #ifdef APE_CSV
