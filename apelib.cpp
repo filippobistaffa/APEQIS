@@ -114,7 +114,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	// Count rows and non-zero elements
 
 	size_t cnt[2] = { 0, 0 };
-	coalitions(g, count, cnt, K, l ? l : tl, MAXDRIVERS);
+	COALITIONS(g, count, cnt, K, l ? l : tl, MAXDRIVERS);
 
 	// #rows = #coalitions, #columns = #variables = #edges + #autoloops (only if SINGLETONS is not defined)
 	const size_t nvals = cnt[1];
@@ -166,7 +166,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	fd->cfdata = cfdata;
 	fd->cf = cf;
 
-	coalitions(g, locations, fd, K, l ? l : tl, MAXDRIVERS);
+	COALITIONS(g, locations, fd, K, l ? l : tl, MAXDRIVERS);
 	value tv = fd->tv;
 
 	#ifndef APE_SILENT

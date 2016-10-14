@@ -37,6 +37,12 @@ using namespace arma;
 #define UNFEASIBLEVALUE 0
 #endif
 
+#ifdef PARALLEL
+#define COALITIONS parcoalitions
+#else
+#define COALITIONS coalitions
+#endif
+
 #ifdef APE_CSV
 #define APE_SILENT
 #endif

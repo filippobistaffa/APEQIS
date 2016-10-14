@@ -7,6 +7,9 @@
 // Minimise the sum of the squared errors
 #define LSE
 
+// Enable parallelism
+#define PARALLEL
+
 // Enable debug messages (lots of output, reduces performance)
 #define APE_DEBUG
 
