@@ -247,7 +247,6 @@ void parcoalitions(const edge *g, void (*cf)(agent *, agent, const edge *, const
 		   void *data, agent maxc, const chunk *l, agent maxl) {
 
 	initpar();
-
 	chunk *tl;
 
 	if (!l) {
