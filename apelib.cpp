@@ -138,7 +138,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	#ifdef SINGLETONS
 	for (agent i = 0; i < _N; i++) {
 		agent c[] = { 1, i };
-		w[i] = cf(c, GET(l, i), cfdata);
+		w[i] = cf(c, GET(l ? l : tl, i), cfdata);
 	}
 	#endif
 
