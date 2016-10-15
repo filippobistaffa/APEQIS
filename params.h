@@ -29,7 +29,7 @@
 //#define POSITIVEEDGES
 
 // Force equality among singletons
-//#define SINGLETONS
+#define SINGLETONS
 
 // Print A matrix in dense form
 //#define PRINTDENSE
