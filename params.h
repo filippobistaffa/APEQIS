@@ -11,7 +11,7 @@
 #define PARALLEL
 
 // Enable debug messages (lots of output, reduces performance)
-#define APE_DEBUG
+//#define APE_DEBUG
 
 // Enable coloured output
 #define COLOURS
@@ -20,7 +20,7 @@
 //#define DOT
 
 // Print d_i variables
-#define DIFFERENCES
+//#define DIFFERENCES
 
 // Output in CSV format
 //#define APE_CSV
@@ -32,7 +32,7 @@
 //#define SINGLETONS
 
 // Print A matrix in dense form
-#define PRINTDENSE
+//#define PRINTDENSE
 
 // Print A matrix in CCS form
 //#define PRINTCCS
