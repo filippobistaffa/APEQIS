@@ -136,7 +136,9 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		cnt[t] = (size_t *)calloc(_T, sizeof(size_t));
 
 	#ifdef PARALLEL
+	#ifndef APE_SILENT
 	printf("Using %u threads...\n", _T);
+	#endif
 	parcoalitions(g, count, cnt, K, l ? l : tl, MAXDRIVERS);
 	#else
 	coalitions(g, count, cnt[0], K, l ? l : tl, MAXDRIVERS);
@@ -209,7 +211,9 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	}
 
 	#ifdef PARALLEL
+	#ifndef APE_SILENT
 	printf("Using %u threads...\n", _T);
+	#endif
 	parcoalitions(g, locations, fd, K, l ? l : tl, MAXDRIVERS);
 	#else
 	coalitions(g, locations, fd[0], K, l ? l : tl, MAXDRIVERS);
