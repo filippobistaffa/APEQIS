@@ -5,7 +5,7 @@
 
 #include "types.h"
 
-#define TOLERANCE 1e-6
+#define TOLERANCE 1e-4
 #define MAXITERATIONS 500
 
 unsigned cudacgls(const value *val, const unsigned *ptr, const unsigned *ind, unsigned m,
