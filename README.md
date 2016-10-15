@@ -5,7 +5,7 @@ APEQIS: APproximately EQuivalent IS-represented cooperative games
 
 Requirements
 ----------
-APEQIS requires `g++` to compile, and relies on [IBM CPLEX](https://www-01.ibm.com/software/commerce/optimization/cplex-optimizer) to solve the LP model. In order to compile against CPLEX, `INC` and `LDIR` inside [`Makefile`](Makefile)  must be set to point to the `include` and `lib` folders of CPLEX.
+APEQIS requires `g++` to compile, and relies on [IBM CPLEX](https://www-01.ibm.com/software/commerce/optimization/cplex-optimizer) to solve the LP model. In order to compile against CPLEX, `CPLEXROOT` inside [`Makefile`](Makefile) must be set to point to the root folder of CPLEX.
 
 In order to employ Twitter as network topology, `java` must be installed on the system, and the [Twitter GitHub repository](https://github.com/filippobistaffa/twitter) must be `git clone`'d inside APEQIS's root directory.
 
