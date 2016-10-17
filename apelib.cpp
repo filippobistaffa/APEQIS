@@ -335,8 +335,6 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		#endif
 	}
 
-	if (!l) free(tl);
-
 	// Write output file
 
 	if (!rc) {
@@ -359,6 +357,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		#endif
 	}
 
+	if (!l) free(tl);
 	free(adj);
 
 	if (rc) {
