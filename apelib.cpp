@@ -336,7 +336,6 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	}
 
 	if (!l) free(tl);
-	free(adj);
 
 	// Write output file
 
@@ -345,7 +344,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		#ifdef CFSS
 		FILE *cfss = fopen(CFSS, "w+");
 		for (agent i = 0; i < _N; i++)
-			fprintf(cfss, "%s%f\n", GET(l, i) ? "*" : "", -w[i]);
+			fprintf(cfss, "%s%f\n", GET(l ? l : tl, i) ? "*" : "", -w[i]);
 		for (agent i = 0; i < _N; i++) {
 			for (agent j = 0; j < adj[i * _N]; j++) {
 				const agent k = adj[i * _N + j + 1];
@@ -359,6 +358,8 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		assert(dif < EPSILON);
 		#endif
 	}
+
+	free(adj);
 
 	if (rc) {
 		fprintf(stderr, RED("ERROR: exit code of CGLS = %u\n"), rc);
