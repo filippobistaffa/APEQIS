@@ -5,7 +5,7 @@ APEQIS: APproximately EQuivalent IS-represented cooperative games
 
 Requirements
 ----------
-APEQIS requires `g++` and [CUDA](http://www.nvidia.com/object/cuda_home_new.html) to compile and execute. CUDA 6.0 or newer is required as APEQIS uses [Unified Memory](https://devblogs.nvidia.com/parallelforall/unified-memory-in-cuda-6/). Before compiling and executing APEQIS, it is necessary to adjust the `CUDAARCH` compilation parameter (i.e., the compute capabilities of the GPU) within the [`Makefile`](Makefile). The correct value can be printed by means of the `smquery` utility.
+APEQIS requires `g++` with C++11 support and [CUDA](http://www.nvidia.com/object/cuda_home_new.html) to compile and execute. CUDA 6.0 or newer is required as APEQIS uses [Unified Memory](https://devblogs.nvidia.com/parallelforall/unified-memory-in-cuda-6/). Before compiling and executing APEQIS, it is necessary to adjust the `CUDAARCH` compilation parameter (i.e., the compute capabilities of the GPU) within the [`Makefile`](Makefile). The correct value can be printed by means of the `smquery` utility.
 
 APEQIS has been tested on an [NVIDIA GeForce GTX TITAN X](http://www.geforce.com/hardware/desktop-gpus/geforce-gtx-titan-x) GPU.
 
