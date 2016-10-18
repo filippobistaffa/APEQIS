@@ -270,11 +270,29 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	const bool quiet = true;
 	#endif
 
+	const unsigned *ptr, *idx;
+	#if (__cplusplus >= 201103L)
+	unsigned *uptr = (unsigned *)malloc(sizeof(unsigned) * (ncols + 1));
+	unsigned *uidx = (unsigned *)malloc(sizeof(unsigned) * nvals);
+	for (size_t i = 0; i < ncols + 1; ++i) uptr[i] = A.col_ptrs[i];
+	for (size_t i = 0; i < nvals; ++i) uidx[i] = A.row_indices[i];
+	ptr = uptr;
+	idx = uidx;
+	#else
+	ptr = A.col_ptrs;
+	idx = A.row_indices;
+	#endif
+
 	float rt;
 	#ifdef SINGLETONS
-	unsigned rc = cudacgls(A.values, A.col_ptrs, A.row_indices, nrows, ncols, nvals, b, w + _N, &rt, quiet);
+	unsigned rc = cudacgls(A.values, ptr, idx, nrows, ncols, nvals, b, w + _N, &rt, quiet);
 	#else
-	unsigned rc = cudacgls(A.values, A.col_ptrs, A.row_indices, nrows, ncols, nvals, b, w, &rt, quiet);
+	unsigned rc = cudacgls(A.values, ptr, idx, nrows, ncols, nvals, b, w, &rt, quiet);
+	#endif
+
+	#if (__cplusplus >= 201103L)
+	free(uptr);
+	free(uidx);
 	#endif
 
 	value dif = 0, topdif = 0;
