@@ -1,7 +1,7 @@
+<p align="center"><img src="https://filippobistaffa.github.io/images/apeqis.svg" width="500" /></p>
+
 APEQIS: APproximately EQuivalent IS-represented cooperative games
 ===================
-
-<p align="center"><img src="https://filippobistaffa.github.io/images/apeqis.svg" width="500" /></p>
 
 Requirements
 ----------
