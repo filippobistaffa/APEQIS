@@ -8,6 +8,5 @@
 #include "instance.h"
 #include "params.h"
 #include "macros.h"
-#include "types.h"
 
 #endif /* IP_H_ */
