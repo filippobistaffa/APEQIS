@@ -92,6 +92,9 @@ ${COBJSUBDIR}/apeqis.o: apeqis.cpp
 ${CUOBJSUBDIR}/cgls.o: cgls.cu
 	@$(compilecuda)
 
+${COBJSUBDIR}/ip.o:
+	@$(compilec)
+
 clean:
 	@echo "Removing subdirectories..."
 	@rm -rf ${COBJSUBDIR} ${CUOBJSUBDIR} ${DEPSUBDIR}
