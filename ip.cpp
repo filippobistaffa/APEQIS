@@ -112,10 +112,3 @@ value maxpartition(const value *valbuf) {
 	printf("%zu total partition(s)\n", count);
 	return md.maxval;
 }
-
-int main(int argc, char *argv[]) {
-
-	value val[] = { 0, 4, 11, 6, 10, 8 };
-	printf("Maximum value = %f\n", maxpartition(val));
-	return 0;
-}
