@@ -1,5 +1,10 @@
 #include "ip.h"
 
+typedef struct {
+	const value *valbuf;
+	value maxval;
+} maxdata;
+
 __attribute__((always_inline)) inline
 void initialise(int *a, unsigned n, unsigned m) {
 
@@ -15,6 +20,20 @@ __attribute__((always_inline)) inline
 void printpart(int *a, unsigned n, void *data) {
 
 	printbuf(a, n);
+}
+
+__attribute__((always_inline)) inline
+void maxvaluepart(int *a, unsigned n, void *data) {
+
+	maxdata *md = (maxdata *)data;
+	value val = 0;
+
+	for (unsigned i = 0; i < n; ++i)
+		val += md->valbuf[a[i]];
+
+	printbuf(a, n, NULL, NULL, " = ");
+	printf("%f\n", val);
+	if (val > md->maxval) md->maxval = val;
 }
 
 __attribute__((always_inline)) inline
@@ -43,6 +62,7 @@ size_t enumerate(int *a, unsigned m, void (*pf)(int *, unsigned, void *), void (
 	size_t count = 0;
 
 	while (1) {
+
 		count++;
 		if (pf) pf(a, m, data);
 		if (cf) conjugate(a, m, cf, data);
@@ -52,38 +72,50 @@ size_t enumerate(int *a, unsigned m, void (*pf)(int *, unsigned, void *), void (
 			a[1]++;
 			continue;
 		}
+
 		int j = 2;
 		int s = a[0] + a[1] - 1;
+
 		while (j < m && a[j] >= a[0] - 1) {
 		    s += a[j];
 		    j++;
 		}
+
 		if (j >= m) return count;
 		int x = a[j] + 1;
 		a[j] = x;
 		j--;
+
 		while (j > 0) {
 		    a[j] = x;
 		    s -= x;
 		    j--;
 		}
+
 		a[0] = s;
 	}
 }
 
-int main(int argc, char *argv[]) {
+value maxpartition(const value *valbuf) {
 
 	int a[K + 1];
 	size_t count = 0;
+	maxdata md = { .valbuf = valbuf, .maxval = 0 };
 
 	for (unsigned m = 1; m <= K; ++m) {
 		initialise(a, _N, m);
-		size_t c = enumerate(a, m, NULL, printpart, NULL);
+		size_t c = enumerate(a, m, NULL, maxvaluepart, &md);
 		printf("%zu partition(s) for m = %u\n", c, m);
 		count += c;
 	}
 
 	printf("%zu total partition(s)\n", count);
+	return md.maxval;
+}
 
+int main(int argc, char *argv[]) {
+
+	value val[] = { 0, 4, 11, 6, 10, 8 };
+	printf("Maximum value = %f\n", maxpartition(val));
 	return 0;
 }

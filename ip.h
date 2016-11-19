@@ -8,5 +8,8 @@
 #include "instance.h"
 #include "params.h"
 #include "macros.h"
+#include "types.h"
+
+value maxpartition(const value *valbuf);
 
 #endif /* IP_H_ */
