@@ -169,7 +169,8 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	#endif
 
 	#ifndef APE_SILENT
-	printf("\nA\n%zu rows\n%zu columns\n%zu ones\n%zu bytes\n\n", nrows, ncols, nvals, sizeof(float) * nvals + sizeof(uword) * (nvals + ncols + 1));
+	printf("\nA\n%zu rows\n%zu columns\n%zu ones\n%zu bytes\n\n", nrows, ncols, nvals,
+	       sizeof(float) * nvals + sizeof(uword) * (nvals + ncols + 1));
 	#endif
 
 	#ifdef SINGLETONS
