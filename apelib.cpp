@@ -62,6 +62,7 @@ void locations(agent *c, agent nl, const edge *g, const agent *adj, const chunk 
 	#endif
 
 	fd->b[fd->rowidx] = cv;
+	fd->size[fd->rowidx] = *c;
 
 	for (agent i = 0; i < *c; i++) {
 		const agent v1 = c[i + 1];
@@ -192,10 +193,12 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	funcdata *fd[_T];
 	value *b = (value *)malloc(sizeof(value) * nrows);
+	id *size = (id *)malloc(sizeof(id) * nrows);
 	umat *locs = new umat(2, nvals);
 
 	for (agent t = 0; t < _T; ++t) {
 		fd[t] = (funcdata *)malloc(sizeof(funcdata));
+		fd[t]->size = size + rowpfx[t];
 		fd[t]->b = b + rowpfx[t];
 		fd[t]->tv = 0;
 		#ifdef SINGLETONS
@@ -297,6 +300,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	value dif = 0, topdif = 0;
 	value difbuf[nrows];
+	value maxdif[K + 1] = { 0 };
 
 	if (!rc) {
 
@@ -305,6 +309,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		#endif
 		for (agent i = 0; i < nrows; i++) {
 			difbuf[i] = abs(b[i]);
+			if (difbuf[i] > maxdif[size[i]]) maxdif[size[i]] = difbuf[i];
 			dif += difbuf[i];
 			#ifdef DIFFERENCES
 			cout << "d_" << i << " = " << difbuf[i] << endl;
@@ -324,6 +329,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 			topdif += difbuf[i];
 	}
 
+	free(size);
 	free(b);
 
 	if (!rc) {

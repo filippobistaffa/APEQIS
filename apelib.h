@@ -60,6 +60,7 @@ typedef struct {
 	size_t rowidx, locidx;
 	size_t rowoff, valoff;
 	umat *locs;
+	id *size;
 
 } funcdata;
 
