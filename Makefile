@@ -68,7 +68,7 @@ all: apeqis
 
 -include ${DEPSUBDIR}/*.d
 
-apeqis: ${COBJSUBDIR}/apeqis.o ${COBJSUBDIR}/sp.o ${COBJSUBDIR}/value.o ${COBJSUBDIR}/random.o ${COBJSUBDIR}/apelib.o ${CUOBJSUBDIR}/cgls.o
+apeqis: ${COBJSUBDIR}/apeqis.o ${COBJSUBDIR}/sp.o ${COBJSUBDIR}/value.o ${COBJSUBDIR}/random.o ${COBJSUBDIR}/apelib.o ${COBJSUBDIR}/ip.o ${CUOBJSUBDIR}/cgls.o
 	@${ECHOLD} apeqis
 	@nvcc ${CUOPT} ${LDIR} $^ ${LINK} -o ${OUT}
 
