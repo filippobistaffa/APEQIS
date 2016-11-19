@@ -92,7 +92,7 @@ ${COBJSUBDIR}/apeqis.o: apeqis.cpp
 ${CUOBJSUBDIR}/cgls.o: cgls.cu
 	@$(compilecuda)
 
-${COBJSUBDIR}/ip.o:
+${COBJSUBDIR}/ip.o: ip.cpp
 	@$(compilec)
 
 clean:
