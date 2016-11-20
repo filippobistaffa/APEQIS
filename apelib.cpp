@@ -314,7 +314,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		#ifdef DIFFERENCES
 		puts("Differences:");
 		#endif
-		for (agent i = 0; i < nrows; i++) {
+		for (id i = 0; i < nrows; i++) {
 			difbuf[i] = abs(b[i]);
 			difs[size[i]].push_back(difbuf[i]);
 			dif += difbuf[i];
