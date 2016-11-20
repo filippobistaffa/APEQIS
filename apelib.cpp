@@ -378,8 +378,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		printf("Average difference = %.2f\n", dif / nrows);
 		printf("Sum of the %u highest differences = %.2f\n", _N, topdif);
 		#endif
-		printbuf(maxdif, K + 1, "maxdif");
-		printf("Maximum error considering integer partitions = %.2f\n", maxpartition(maxdif));
+		printf("Maximum error w.r.t. integer partitions = %.2f\n", maxpartition(difs));
 		#endif
 	}
 
