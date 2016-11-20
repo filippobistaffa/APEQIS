@@ -114,10 +114,10 @@ value maxpartition(const std::vector<value> *difpfx) {
 	for (unsigned m = 1; m <= K; ++m) {
 		initialise(a, _N, m);
 		size_t c = enumerate(a, m, NULL, maxvaluepart, &md);
-		printf("%zu partition(s) for m = %u\n", c, m);
+		//printf("%zu partition(s) with max value = %u\n", c, m);
 		count += c;
 	}
 
-	printf("%zu total partition(s)\n", count);
+	printf("%zu total integer partition(s)\n", count);
 	return md.maxval;
 }
