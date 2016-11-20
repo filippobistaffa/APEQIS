@@ -2,6 +2,7 @@
 #define IP_H_
 // Headers
 
+#include <vector>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -10,6 +11,6 @@
 #include "macros.h"
 #include "types.h"
 
-value maxpartition(const value *valbuf);
+value maxpartition(const std::vector<value> *difpfx);
 
 #endif /* IP_H_ */

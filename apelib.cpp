@@ -85,6 +85,12 @@ void locations(agent *c, agent nl, const edge *g, const agent *adj, const chunk 
 	fd->rowidx++;
 }
 
+void inplaceinclpfxsum(vector<value>& vec) {
+
+	for (id i = 1; i < vec.size(); ++i)
+		vec[i] += vec[i - 1];
+}
+
 value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	      void *cfdata, const chunk *l, agent maxc, agent maxl) {
 
@@ -301,7 +307,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	value dif = 0, topdif = 0;
 	value difbuf[nrows];
-	value maxdif[K + 1] = { 0 };
+	vector<value> difs[K + 1];
 
 	if (!rc) {
 
@@ -310,7 +316,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		#endif
 		for (agent i = 0; i < nrows; i++) {
 			difbuf[i] = abs(b[i]);
-			if (difbuf[i] > maxdif[size[i]]) maxdif[size[i]] = difbuf[i];
+			difs[size[i]].push_back(difbuf[i]);
 			dif += difbuf[i];
 			#ifdef DIFFERENCES
 			cout << "d_" << i << " = " << difbuf[i] << endl;
@@ -318,6 +324,11 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		}
 		#ifdef DIFFERENCES
 		puts("");
+		#endif
+
+		#ifdef SINGLETONS
+		for (agent i = 0; i < _N; ++i)
+			difs[1].push_back(0);
 		#endif
 
 		QSORT(value, difbuf, nrows, GT);
@@ -328,6 +339,16 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		for (agent i = 0; i < _N; i++)
 		#endif
 			topdif += difbuf[i];
+	}
+
+	for (id k = 1; k <= K; ++k) {
+		std::sort(difs[k].begin(), difs[k].end(), std::greater<value>());
+		//printvec(difs[k]);
+	}
+
+	for (id k = 1; k <= K; ++k) {
+		inplaceinclpfxsum(difs[k]);
+		//printvec(difs[k]);
 	}
 
 	free(size);

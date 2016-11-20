@@ -1,7 +1,7 @@
 #include "ip.h"
 
 typedef struct {
-	const value *valbuf;
+	const std::vector<value> *difpfx;
 	value maxval;
 } maxdata;
 
@@ -23,16 +23,25 @@ void printpart(int *a, unsigned n, void *data) {
 }
 
 __attribute__((always_inline)) inline
+void computehist(const int *a, unsigned n, unsigned *hist) {
+
+	for (unsigned i = 0; i < n; ++i)
+		hist[a[i]]++;
+}
+
+__attribute__((always_inline)) inline
 void maxvaluepart(int *a, unsigned n, void *data) {
 
 	maxdata *md = (maxdata *)data;
+	unsigned hist[K + 1] = { 0 };
+	computehist(a, n, hist);
 	value val = 0;
 
-	for (unsigned i = 0; i < n; ++i)
-		val += md->valbuf[a[i]];
+	for (unsigned k = 1; k <= K; ++k)
+		val += hist[k] > 0 ? md->difpfx[k][hist[k] - 1] : 0;
 
-	printbuf(a, n, NULL, NULL, " = ");
-	printf("%f\n", val);
+	//printbuf(a, n, NULL, NULL, " = ");
+	//printf("%f\n", val);
 	if (val > md->maxval) md->maxval = val;
 }
 
@@ -96,11 +105,11 @@ size_t enumerate(int *a, unsigned m, void (*pf)(int *, unsigned, void *), void (
 	}
 }
 
-value maxpartition(const value *valbuf) {
+value maxpartition(const std::vector<value> *difpfx) {
 
 	int a[K + 1];
 	size_t count = 0;
-	maxdata md = { .valbuf = valbuf, .maxval = 0 };
+	maxdata md = { .difpfx = difpfx, .maxval = 0 };
 
 	for (unsigned m = 1; m <= K; ++m) {
 		initialise(a, _N, m);
