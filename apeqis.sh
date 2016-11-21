@@ -77,6 +77,7 @@ tmp=`mktemp`
 echo "#define _N $n" > $tmp
 echo "#define CORES `grep -c ^processor /proc/cpuinfo`" >> $tmp
 echo "#define DRIVERSPERC $d" >> $tmp
+echo "#define _D (_N * DRIVERSPERC / 100)" >> $tmp
 if [ ! -z "${c}" ]
 then
 	echo "#define CFSS \"$c\"" >> $tmp
