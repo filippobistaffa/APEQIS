@@ -305,6 +305,10 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	free(uidx);
 	#endif
 
+	for (id i = 0; i < ncols; ++i)
+		if (A.col(i).max() == 0)
+			w[i + _N] = UNFEASIBLEVALUE;
+
 	value dif = 0, topdif = 0;
 	value difbuf[nrows];
 	vector<value> difs[K + 1];
