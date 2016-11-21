@@ -245,6 +245,10 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	sp_fmat A(*locs, *vals);
 
+	// Manually set A size if necessary
+	if (ncols != A.n_cols)
+		A.resize(nrows, ncols);
+
 	delete locs;
 	delete vals;
 
