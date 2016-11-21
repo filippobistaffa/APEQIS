@@ -41,7 +41,7 @@ type reducebuf(const type *buf, unsigned n) {
 	return ret;
 }
 
-#include <assert.h>
+//#include <assert.h>
 
 __attribute__((always_inline)) inline
 void maxvaluepart(int *a, unsigned n, void *data) {
