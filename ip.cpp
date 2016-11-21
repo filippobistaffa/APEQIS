@@ -29,6 +29,20 @@ void computehist(const int *a, unsigned n, unsigned *hist) {
 		hist[a[i]]++;
 }
 
+template <typename type>
+__attribute__((always_inline)) inline
+type reducebuf(const type *buf, unsigned n) {
+
+	type ret = 0;
+
+	for (unsigned i = 0; i < n; ++i)
+		ret += buf[i];
+
+	return ret;
+}
+
+#include <assert.h>
+
 __attribute__((always_inline)) inline
 void maxvaluepart(int *a, unsigned n, void *data) {
 
@@ -37,9 +51,17 @@ void maxvaluepart(int *a, unsigned n, void *data) {
 	computehist(a, n, hist);
 	value val = 0;
 
-	for (unsigned k = 1; k <= K; ++k)
-		val += hist[k] > 0 ? md->difpfx[k][hist[k] - 1] : 0;
+	// If the number of cars exceeds the number of drivers, the integer partition is unfeasible
+	if (reducebuf(hist + 2, K - 1) > _D)
+		return;
 
+	for (unsigned k = 1; k <= K; ++k) {
+		//printf("k = %u, hist[%u] = %u, md->difpfx[%u].size() = %lu\n", k, k, hist[k], k, md->difpfx[k].size());
+		//assert(hist[k] <= md->difpfx[k].size());
+		val += hist[k] > 0 ? md->difpfx[k][MIN(hist[k], md->difpfx[k].size()) - 1] : 0;
+	}
+
+	//printbuf(hist, K + 1, "hist");
 	//printbuf(a, n, NULL, NULL, " = ");
 	//printf("%f\n", val);
 	if (val > md->maxval) md->maxval = val;
