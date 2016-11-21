@@ -58,7 +58,8 @@ void maxvaluepart(int *a, unsigned n, void *data) {
 	for (unsigned k = 1; k <= K; ++k) {
 		//printf("k = %u, hist[%u] = %u, md->difpfx[%u].size() = %lu\n", k, k, hist[k], k, md->difpfx[k].size());
 		//assert(hist[k] <= md->difpfx[k].size());
-		val += hist[k] > 0 ? md->difpfx[k][MIN(hist[k], md->difpfx[k].size()) - 1] : 0;
+		if (md->difpfx[k].size())
+			val += hist[k] > 0 ? md->difpfx[k][MIN(hist[k], md->difpfx[k].size()) - 1] : 0;
 	}
 
 	//printbuf(hist, K + 1, "hist");
