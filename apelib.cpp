@@ -299,9 +299,9 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	float rt;
 	#ifdef SINGLETONS
-	unsigned rc = cudacgls(A.values, ptr, idx, nrows, ncols, nvals, b, w + _N, &rt, quiet);
+	unsigned rc = 0;
 	#else
-	unsigned rc = cudacgls(A.values, ptr, idx, nrows, ncols, nvals, b, w, &rt, quiet);
+	unsigned rc = 0;
 	#endif
 
 	#if (__cplusplus >= 201103L)

@@ -25,7 +25,6 @@
 #include "macros.h"
 #include "iqsort.h"
 #include "coal.h"
-#include "cgls.h"
 #include "ip.h"
 
 using namespace std;

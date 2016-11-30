@@ -69,7 +69,7 @@ all: apeqis
 -include ${DEPSUBDIR}/*.d
 
 apeqis: ${COBJSUBDIR}/apeqis.o ${COBJSUBDIR}/sp.o ${COBJSUBDIR}/value.o ${COBJSUBDIR}/random.o ${COBJSUBDIR}/apelib.o \
-	${COBJSUBDIR}/ip.o ${CUOBJSUBDIR}/cgls.o
+	${COBJSUBDIR}/ip.o
 	@${ECHOLD} apeqis
 	@nvcc ${CUOPT} ${LDIR} $^ ${LINK} -o ${OUT}
 
@@ -87,9 +87,6 @@ ${COBJSUBDIR}/random.o: random.c
 
 ${COBJSUBDIR}/apeqis.o: apeqis.cpp
 	@$(compilec)
-
-${CUOBJSUBDIR}/cgls.o: cgls.cu
-	@$(compilecuda)
 
 ${COBJSUBDIR}/ip.o: ip.cpp
 	@$(compilec)
