@@ -62,6 +62,7 @@ void locations(agent *c, agent nl, const edge *g, const agent *adj, const chunk 
 	#endif
 
 	fd->b[fd->rowidx] = cv;
+	fd->size[fd->rowidx] = *c;
 
 	for (agent i = 0; i < *c; i++) {
 		const agent v1 = c[i + 1];
@@ -82,6 +83,12 @@ void locations(agent *c, agent nl, const edge *g, const agent *adj, const chunk 
 	}
 
 	fd->rowidx++;
+}
+
+void inplaceinclpfxsum(vector<value>& vec) {
+
+	for (id i = 1; i < vec.size(); ++i)
+		vec[i] += vec[i - 1];
 }
 
 value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
@@ -168,7 +175,8 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	#endif
 
 	#ifndef APE_SILENT
-	printf("\nA\n%zu rows\n%zu columns\n%zu ones\n%zu bytes\n\n", nrows, ncols, nvals, sizeof(float) * nvals + sizeof(uword) * (nvals + ncols + 1));
+	printf("\nA\n%zu rows\n%zu columns\n%zu ones\n%zu bytes\n\n", nrows, ncols, nvals,
+	       sizeof(float) * nvals + sizeof(uword) * (nvals + ncols + 1));
 	#endif
 
 	#ifdef SINGLETONS
@@ -192,10 +200,12 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	funcdata *fd[_T];
 	value *b = (value *)malloc(sizeof(value) * nrows);
+	id *size = (id *)malloc(sizeof(id) * nrows);
 	umat *locs = new umat(2, nvals);
 
 	for (agent t = 0; t < _T; ++t) {
 		fd[t] = (funcdata *)malloc(sizeof(funcdata));
+		fd[t]->size = size + rowpfx[t];
 		fd[t]->b = b + rowpfx[t];
 		fd[t]->tv = 0;
 		#ifdef SINGLETONS
@@ -235,6 +245,10 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	sp_fmat A(*locs, *vals);
 
+	// Manually set A size if necessary
+	if (ncols != A.n_cols)
+		A.resize(nrows, ncols);
+
 	delete locs;
 	delete vals;
 
@@ -270,23 +284,47 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	const bool quiet = true;
 	#endif
 
+	const unsigned *ptr, *idx;
+	#if (__cplusplus >= 201103L)
+	unsigned *uptr = (unsigned *)malloc(sizeof(unsigned) * (ncols + 1));
+	unsigned *uidx = (unsigned *)malloc(sizeof(unsigned) * nvals);
+	for (size_t i = 0; i < ncols + 1; ++i) uptr[i] = A.col_ptrs[i];
+	for (size_t i = 0; i < nvals; ++i) uidx[i] = A.row_indices[i];
+	ptr = uptr;
+	idx = uidx;
+	#else
+	ptr = A.col_ptrs;
+	idx = A.row_indices;
+	#endif
+
 	float rt;
 	#ifdef SINGLETONS
-	unsigned rc = cudacgls(A.values, A.col_ptrs, A.row_indices, nrows, ncols, nvals, b, w + _N, &rt, quiet);
+	unsigned rc = cudacgls(A.values, ptr, idx, nrows, ncols, nvals, b, w + _N, &rt, quiet);
 	#else
-	unsigned rc = cudacgls(A.values, A.col_ptrs, A.row_indices, nrows, ncols, nvals, b, w, &rt, quiet);
+	unsigned rc = cudacgls(A.values, ptr, idx, nrows, ncols, nvals, b, w, &rt, quiet);
 	#endif
+
+	#if (__cplusplus >= 201103L)
+	free(uptr);
+	free(uidx);
+	#endif
+
+	for (id i = 0; i < ncols; ++i)
+		if (A.col(i).max() == 0)
+			w[i + _N] = UNFEASIBLEVALUE;
 
 	value dif = 0, topdif = 0;
 	value difbuf[nrows];
+	vector<value> difs[K + 1];
 
 	if (!rc) {
 
 		#ifdef DIFFERENCES
 		puts("Differences:");
 		#endif
-		for (agent i = 0; i < nrows; i++) {
+		for (id i = 0; i < nrows; i++) {
 			difbuf[i] = abs(b[i]);
+			difs[size[i]].push_back(difbuf[i]);
 			dif += difbuf[i];
 			#ifdef DIFFERENCES
 			cout << "d_" << i << " = " << difbuf[i] << endl;
@@ -294,6 +332,11 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		}
 		#ifdef DIFFERENCES
 		puts("");
+		#endif
+
+		#ifdef SINGLETONS
+		for (agent i = 0; i < _N; ++i)
+			difs[1].push_back(0);
 		#endif
 
 		QSORT(value, difbuf, nrows, GT);
@@ -306,6 +349,17 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 			topdif += difbuf[i];
 	}
 
+	for (id k = 1; k <= K; ++k) {
+		std::sort(difs[k].begin(), difs[k].end(), std::greater<value>());
+		//printvec(difs[k]);
+	}
+
+	for (id k = 1; k <= K; ++k) {
+		inplaceinclpfxsum(difs[k]);
+		//printvec(difs[k]);
+	}
+
+	free(size);
 	free(b);
 
 	if (!rc) {
@@ -332,6 +386,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		printf("Average difference = %.2f\n", dif / nrows);
 		printf("Sum of the %u highest differences = %.2f\n", _N, topdif);
 		#endif
+		printf("Maximum error w.r.t. integer partitions = %.2f\n", maxpartition(difs));
 		#endif
 	}
 

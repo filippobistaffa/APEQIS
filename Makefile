@@ -1,17 +1,15 @@
 .PHONY: all
 
-CUDAARCH=sm_52
-
 ifndef OUT
 OUT=./apeqis
 endif
 
-CMP=g++ #-std=c++11
+CMP=g++ -std=c++11
 WARN=-Wall -Wno-unused-result -Wno-deprecated-declarations -Wno-sign-compare -Wno-maybe-uninitialized
 OPTIM=-Ofast -march=native -funroll-loops -funsafe-loop-optimizations -falign-functions=16 -falign-loops=16 -fopenmp
 NOOPTIM=-O0 -march=native -fopenmp
 DBG=-g ${NOOPTIM}
-CUOPT=--use_fast_math -arch=${CUDAARCH} -m64 -D_FORCE_INLINES
+CUOPT=--use_fast_math -m64 -D_FORCE_INLINES -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52
 
 INC=
 LDIR=
@@ -70,7 +68,8 @@ all: apeqis
 
 -include ${DEPSUBDIR}/*.d
 
-apeqis: ${COBJSUBDIR}/apeqis.o ${COBJSUBDIR}/sp.o ${COBJSUBDIR}/value.o ${COBJSUBDIR}/random.o ${COBJSUBDIR}/apelib.o ${CUOBJSUBDIR}/cgls.o
+apeqis: ${COBJSUBDIR}/apeqis.o ${COBJSUBDIR}/sp.o ${COBJSUBDIR}/value.o ${COBJSUBDIR}/random.o ${COBJSUBDIR}/apelib.o \
+	${COBJSUBDIR}/ip.o ${CUOBJSUBDIR}/cgls.o
 	@${ECHOLD} apeqis
 	@nvcc ${CUOPT} ${LDIR} $^ ${LINK} -o ${OUT}
 
@@ -92,7 +91,7 @@ ${COBJSUBDIR}/apeqis.o: apeqis.cpp
 ${CUOBJSUBDIR}/cgls.o: cgls.cu
 	@$(compilecuda)
 
-${COBJSUBDIR}/ip.o:
+${COBJSUBDIR}/ip.o: ip.cpp
 	@$(compilec)
 
 clean:

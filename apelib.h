@@ -26,6 +26,7 @@
 #include "iqsort.h"
 #include "coal.h"
 #include "cgls.h"
+#include "ip.h"
 
 using namespace std;
 using namespace arma;
@@ -60,6 +61,7 @@ typedef struct {
 	size_t rowidx, locidx;
 	size_t rowoff, valoff;
 	umat *locs;
+	id *size;
 
 } funcdata;
 

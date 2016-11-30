@@ -5,8 +5,6 @@
 #include "params.h"
 #include "types.h"
 
-#define _D (_N * DRIVERSPERC / 100)
-
 using namespace std;
 
 #include "apelib.h"

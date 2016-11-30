@@ -4,9 +4,6 @@
 // Maximum number of drivers per car
 #define MAXDRIVERS 1
 
-// Minimise the sum of the squared errors
-#define LSE
-
 // Enable parallelism
 #define PARALLEL
 
@@ -39,3 +36,6 @@
 
 // Print B vector
 //#define PRINTB
+
+// Explicitely represent edges that are never part of a feasible coalition
+#define APE_UNFEASIBLE

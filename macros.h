@@ -72,4 +72,20 @@ void printbuf(const type *buf, unsigned n, const char *name = NULL, const char *
 	printf("]%s", (after) ? after : "\n");
 }
 
+// Prints the content given vector
+
+#include <vector>
+template <typename type>
+__attribute__((always_inline)) inline
+void printvec(const std::vector<type> &vec, const char *name = NULL, const char *format = NULL, const char *after = NULL) {
+
+	if (name) printf("%s = [ ", name);
+	else printf("[ ");
+	for (typename std::vector<type>::const_iterator it = vec.begin(); it != vec.end(); ++it) {
+		if (format) { printf(format, *it); printf(" "); }
+		else std::cout << *it << " ";
+	}
+	printf("]%s", (after) ? after : "\n");
+}
+
 #endif  /* MACROS_H_ */
