@@ -3,13 +3,13 @@
 red='\033[0;31m'			# Red
 nc='\033[0m'				# No color
 re='^[0-9]+$'				# Regular expression to detect natural numbers
-d=20					# Default d = 20
+d=10					# Default d = 10
 m=2					# Default m = 2
 basename="twitter/net/twitter-2010"	# Twitter files must be in "twitter/net" subdir and have twitter-2010.* filenames
 wg="twitter/wg"				# Place WebGraph libraries in "twitter/wg" subdir
 tw=""
 
-usage() { echo -e "Usage: $0 -t <scalefree|twitter> -n <#agents> -s <seed> [-m <barab_m>] [-d <drivers%>] [-c <out_file>]\n-t\tNetwork topology (either scalefree or twitter)\n-n\tNumber of agents\n-s\tSeed\n-d\tDrivers' percentage (optional, default d = 20)\n-m\tParameter m of the Barabasi-Albert model (optional, default m = 2)\n-c\tOutputs an input file formatted for CFSS (optional)" 1>&2; exit 1; }
+usage() { echo -e "Usage: $0 -t <scalefree|twitter> -n <#agents> -s <seed> [-m <barab_m>] [-d <drivers%>] [-c <out_file>]\n-t\tNetwork topology (either scalefree or twitter)\n-n\tNumber of agents\n-s\tSeed\n-d\tDrivers' percentage (optional, default d = 10)\n-m\tParameter m of the Barabasi-Albert model (optional, default m = 2)\n-c\tOutputs an input file formatted for CFSS (optional)" 1>&2; exit 1; }
 
 while getopts ":t:n:s:d:m:c:" o; do
 	case "${o}" in
