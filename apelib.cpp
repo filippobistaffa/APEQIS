@@ -115,6 +115,10 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	cplex.setOut(env.getNullStream());
 	#endif
 
+	#ifndef PARALLEL
+	cplex.setParam(IloCplex::Threads, 1);
+	#endif
+
 	if (!cplex.solve()) {
 		env.out() << "Unable to find a solution" << endl;
 		exit(1);

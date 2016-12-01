@@ -4,6 +4,9 @@
 // Maximum number of drivers per car
 #define MAXDRIVERS 1
 
+// Enable parallelism
+//#define PARALLEL
+
 // Minimise the sum of the squared errors
 #define LSE
 
