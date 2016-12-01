@@ -165,8 +165,8 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	// Print output
 
 	#ifdef APE_CSV
-	printf("%u,%.2f,%.2f,%.2f,%.2f,%.2f\n", N, dif, (dif * 100) / tv, dif / da.getSize(), timer.getTime(),
-						(double)(t2.tv_usec - t1.tv_usec) / 1e6 + t2.tv_sec - t1.tv_sec);
+	printf("%.2f,%.2f,%.2f,%.2f,%.2f\n", dif, (dif * 100) / tv, dif / da.getSize(), timer.getTime(),
+					     (double)(t2.tv_usec - t1.tv_usec) / 1e6 + t2.tv_sec - t1.tv_sec);
 	#endif
 
 	#ifndef APE_SILENT
