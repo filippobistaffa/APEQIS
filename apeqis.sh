@@ -108,7 +108,7 @@ fi
 make -j
 if [[ $? == 0 ]]
 then
-	time -p ./apeqis $s $tw
+	./apeqis $s $tw
 fi
 
 if [[ $t == "twitter" ]]

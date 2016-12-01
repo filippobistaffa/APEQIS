@@ -4,6 +4,7 @@
 // Headers
 
 #include <ilcplex/ilocplex.h>
+#include <sys/time.h>
 #include <float.h>
 
 #ifdef APE_SUBDIR
@@ -35,7 +36,7 @@ using namespace std;
 #define UNFEASIBLEVALUE 0
 #endif
 
-#ifdef CSV
+#ifdef APE_CSV
 #define APE_SILENT
 #endif
 

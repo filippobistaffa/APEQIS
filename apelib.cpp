@@ -82,10 +82,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	// Create constraints
 
-	#ifndef APE_SILENT
-	const value tv =
-	#endif
-	constraints(g, adj, l ? l : tl, cf, data, env, model, ea, da, maxc, maxl);
+	const value tv = constraints(g, adj, l ? l : tl, cf, data, env, model, ea, da, maxc, maxl);
 
 	// Create objective expression
 
@@ -109,6 +106,8 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	#endif
 
 	IloCplex cplex(model);
+	struct timeval t1, t2;
+	gettimeofday(&t1, NULL);
 	IloTimer timer(env);
 	timer.start();
 
@@ -121,6 +120,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		exit(1);
 	}
 
+	gettimeofday(&t2, NULL);
 	timer.stop();
 	double difbuf[da.getSize()];
 	double dif = 0;
@@ -161,14 +161,16 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	// Print output
 
 	#ifdef APE_CSV
-	printf("%u,%.2f,%.2f,%.2f,%.2f\n", N, dif, (dif * 1E4) / tv, dif / da.getSize(), timer.getTime() * 1000);
+	printf("%u,%.2f,%.2f,%.2f,%.2f,%.2f\n", N, dif, (dif * 100) / tv, dif / da.getSize(), timer.getTime(),
+						(double)(t2.tv_usec - t1.tv_usec) / 1e6 + t2.tv_sec - t1.tv_sec);
 	#endif
 
 	#ifndef APE_SILENT
 	puts("\nEdge values:");
 	for (edge i = 0; i < ea.getSize(); i++)
 		cout << ea[i].getName() << " = " << w[i] << endl;
-	env.out() << "\nSolution elapsed time = " << timer.getTime() * 1000 << "ms" << endl;
+	env.out() << "\nCPLEX elapsed time = " << timer.getTime() << endl;
+	printf("Clock elapsed time = %f\n", (double)(t2.tv_usec - t1.tv_usec) / 1e6 + t2.tv_sec - t1.tv_sec);
 	printf("Overall difference = %.2f\n", dif);
 	printf("Percentage difference = %.2f%%\n", dif < EPSILON ? 0 : (dif * 100) / tv);
 	#ifdef SINGLETONS
