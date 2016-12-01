@@ -5,7 +5,7 @@
 #define MAXDRIVERS 1
 
 // Enable parallelism
-//#define PARALLEL
+#define PARALLEL
 
 // Minimise the sum of the squared errors
 #define LSE
