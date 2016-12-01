@@ -8,7 +8,7 @@
 #define LSE
 
 // Enable debug messages (lots of output, reduces performance)
-#define APE_DEBUG
+//#define APE_DEBUG
 
 // Print DOT representation of graph
 //#define DOT
