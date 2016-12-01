@@ -111,9 +111,12 @@ make -j
 if [[ $? == 0 ]]
 then
 	time -p ./apeqis $s $tw
+	rc=$?
 fi
 
 if [[ $t == "twitter" ]]
 then
 	rm $tw
 fi
+
+exit $rc
