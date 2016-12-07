@@ -367,7 +367,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		// Print output
 
 		#ifdef APE_CSV
-		printf("%u,%f,%f,%f,%f\n", _N, dif, (dif * 1E4) / tv, dif / nrows, rt);
+		printf("%u,%f,%f,%f,%f\n", _N, dif, (dif * 1e2) / tv, dif / nrows, rt / 1e3);
 		#endif
 
 		#ifndef APE_SILENT
