@@ -6,7 +6,7 @@ nt=20		# number of tests
 
 cd ..
 
-for n in 100 200 300
+for n in 100 200 300 400 500
 do
 	i=0
 	s=$is
