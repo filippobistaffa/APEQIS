@@ -2,7 +2,7 @@
 
 is=0		# initial seed
 t=scalefree	# network topology
-nt=80		# number of tests
+nt=100		# number of tests
 
 cd ..
 
@@ -13,7 +13,7 @@ do
 
 	while [ $i -lt $nt ]
 	do
-		grep "^$n,$s," exp/$1 > /dev/null
+		grep "^$n,$s," exp/$1 > /dev/null 2>&1
 
 		if [[ $? != 0 ]]
 		then
