@@ -2,7 +2,7 @@
 
 is=0		# initial seed
 t=scalefree	# network topology
-nt=20		# number of tests
+nt=80		# number of tests
 
 cd ..
 
@@ -13,12 +13,17 @@ do
 
 	while [ $i -lt $nt ]
 	do
-		out=`./apeqis.sh -t $t -n $n -s $s 2> /dev/null`
+		grep "^$n,$s," exp/$1 > /dev/null
 
-		if [[ $? == 0 ]]
+		if [[ $? != 0 ]]
 		then
-			echo $n,$s,$out
-			i=$(( $i + 1 ))
+			out=`./apeqis.sh -t $t -n $n -s $s 2> /dev/null`
+
+			if [[ $? == 0 ]]
+			then
+				echo $n,$s,$out
+				i=$(( $i + 1 ))
+			fi
 		fi
 
 		s=$(( $s + 1 ))
