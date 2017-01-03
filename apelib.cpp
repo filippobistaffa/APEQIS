@@ -309,9 +309,11 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	free(uidx);
 	#endif
 
+	#ifdef APE_UNFEASIBLE
 	for (id i = 0; i < ncols; ++i)
 		if (A.col(i).max() == 0)
 			w[i + _N] = UNFEASIBLEVALUE;
+	#endif
 
 	value dif = 0, topdif = 0;
 	value difbuf[nrows];
