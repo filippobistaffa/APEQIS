@@ -119,9 +119,19 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	cplex.setParam(IloCplex::Threads, 1);
 	#endif
 
-	if (!cplex.solve()) {
-		env.out() << "Unable to find a solution" << endl;
-		exit(1);
+	try {
+		if (!cplex.solve()) {
+			#ifndef APE_SILENT
+			env.out() << "Unable to find a solution" << endl;
+			#endif
+			exit(EXIT_FAILURE);
+		}
+	}
+	catch (IloCplex::Exception e) {
+		#ifndef APE_SILENT
+		env.out() << "An exception occurred" << endl;
+		#endif
+		exit(EXIT_FAILURE);
 	}
 
 	gettimeofday(&t2, NULL);
