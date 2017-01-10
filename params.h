@@ -30,3 +30,6 @@
 
 // Explicitely represent edges that are never part of a feasible coalition
 #define APE_UNFEASIBLE
+
+// CPLEX time limit in seconds
+#define TIME_LIMIT 43200 // 12H

@@ -119,6 +119,10 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	cplex.setParam(IloCplex::Threads, 1);
 	#endif
 
+	#ifdef TIME_LIMIT
+	cplex.setParam(IloCplex::TiLim, TIME_LIMIT);
+	#endif
+
 	try {
 		if (!cplex.solve()) {
 			#ifndef APE_SILENT
