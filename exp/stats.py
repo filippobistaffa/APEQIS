@@ -5,13 +5,13 @@ import sys
 n_n=5
 n_rep=100
 
-if ((len(sys.argv) != 4) and (len(sys.argv) != 7)):
-	sys.exit("Usage: stats.py input_csv column output_csv [ n_rows n_n n_rep ]")
+if ((len(sys.argv) != 4) and (len(sys.argv) != 6)):
+	sys.exit("Usage: stats.py input_csv column output_csv [ n_n n_rep ]")
 
-if (len(sys.argv) == 7):
-	n_rows = int(sys.argv[4])
-	n_n = int(sys.argv[5])
-	n_rep = int(sys.argv[6])
+if (len(sys.argv) == ):
+	n_n = int(sys.argv[4])
+	n_rep = int(sys.argv[5])
+	n_rows = n_n * n_rep
 	x=numpy.loadtxt(open(sys.argv[1],"rb"),delimiter=",")[0:n_rows,:]
 else:
 	x=numpy.loadtxt(open(sys.argv[1],"rb"),delimiter=",")
