@@ -315,7 +315,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 			w[i + _N] = UNFEASIBLEVALUE;
 	#endif
 
-	value dif = 0, topdif = 0;
+	value dif = 0, difsq = 0, topdif = 0;
 	value difbuf[nrows];
 	vector<value> difs[K + 1];
 
@@ -328,6 +328,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 			difbuf[i] = abs(b[i]);
 			difs[size[i]].push_back(difbuf[i]);
 			dif += difbuf[i];
+			difsq += difbuf[i] * difbuf[i];
 			#ifdef DIFFERENCES
 			cout << "d_" << i << " = " << difbuf[i] << endl;
 			#endif
@@ -369,7 +370,8 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		// Print output
 
 		#ifdef APE_CSV
-		printf("%f,%f,%f,%f\n", dif, (dif * 1e2) / tv, dif / nrows, rt / 1e3);
+		printf("%f,%f,%f,%f,%f,%f,%f\n",
+		       dif, (dif * 1e2) / tv, dif / nrows, difsq, (difsq * 1e2) / tv, difsq / nrows, rt / 1e3);
 		#endif
 
 		#ifndef APE_SILENT
