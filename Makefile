@@ -16,6 +16,7 @@ INC=-DIL_STD -I${CPLEXROOT}/cplex/include -I${CPLEXROOT}/concert/include
 LDIR=-L${CPLEXROOT}/concert/lib/x86-64_linux/static_pic -L${CPLEXROOT}/cplex/lib/x86-64_linux/static_pic
 LINK=-lconcert -lilocplex -lcplex
 
+CUOBJSUBDIR=cuobj
 COBJSUBDIR=cobj
 DEPSUBDIR=dep
 
@@ -72,4 +73,4 @@ ${COBJSUBDIR}/apeqis.o: apeqis.cpp
 
 clean:
 	@echo "Removing subdirectories..."
-	@rm -rf ${COBJSUBDIR} ${DEPSUBDIR}
+	@rm -rf ${COBJSUBDIR} ${CUOBJSUBDIR} ${DEPSUBDIR}
