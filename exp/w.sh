@@ -3,17 +3,17 @@
 d=10		# driver's percentage
 is=0		# initial seed
 t=scalefree	# network topology
-nt=100		# number of tests
-w=100		# singletons weight
+nt=40		# number of tests
+n=20		# number of agents
 
-# OUTPUT = N,SEED,ORIG_SOL_VALUE,SR-CFSS_RUNTIME,SR-CFSS_VIS_NODES,CFSS_SOL_VALUE,CFSS_RUNTIME,CFSS_VIS_NODES,ISG_SOL_VALUE
+# OUTPUT = W,SEED,ORIG_SOL_VALUE,SR-CFSS_RUNTIME,SR-CFSS_VIS_NODES,CFSS_SOL_VALUE,CFSS_RUNTIME,CFSS_VIS_NODES,ISG_SOL_VALUE
 
 isg=`mktemp`
 isgsol=`mktemp`
 
 cd ..
 
-for n in 10 30 40
+for w in 10
 do
 	i=0
 	s=$is
@@ -42,7 +42,7 @@ do
 
 			#echo SR-VALUE: $srvalue
 
-			echo $n,$s,$srcfss,$cfss,$srvalue
+			echo $w,$s,$srcfss,$cfss,$srvalue
 			i=$(( $i + 1 ))
 		fi
 

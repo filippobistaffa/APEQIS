@@ -80,18 +80,22 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	puts("");
 	#endif
 
+	// Weights for norm (will be all 1 if weighted norm is not used)
+
+	vector<value> wn;
+
 	// Create constraints
 
-	const value tv = constraints(g, adj, l ? l : tl, cf, data, env, model, ea, da, maxc, maxl);
+	const value tv = constraints(g, adj, l ? l : tl, cf, data, env, model, ea, da, wn, maxc, maxl);
 
 	// Create objective expression
 
 	IloExpr expr(env);
 	for (agent i = 0; i < da.getSize(); i++)
 		#ifdef LSE
-		expr += da[i] * da[i];
+		expr += wn[i] * da[i] * da[i];
 		#else
-		expr += da[i];
+		expr += wn[i] * da[i];
 		#endif
 
 	#ifdef APE_DEBUG

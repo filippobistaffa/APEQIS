@@ -6,6 +6,7 @@
 #include <ilcplex/ilocplex.h>
 #include <sys/time.h>
 #include <float.h>
+#include <vector>
 
 #ifdef APE_SUBDIR
 #include "../instance.h"
@@ -39,6 +40,10 @@ using namespace std;
 #ifdef APE_CSV
 #define APE_SILENT
 #endif
+
+//#if defined(SINGLETONS) && defined(WEIGHT)
+//#error "Weighted norm AND exact singletons not supported"
+//#endif
 
 double *apeqis(const edge *g, value (*cf)(agent *, agent, void *), void *data = NULL,
 	       const chunk *l = NULL, agent maxc = N, agent maxl = N);

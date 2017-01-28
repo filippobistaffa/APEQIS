@@ -26,7 +26,7 @@
 //#define POSITIVEEDGES
 
 // Force equality among singletons
-#define SINGLETONS
+//#define SINGLETONS
 
 // Explicitely represent edges that are never part of a feasible coalition
 #define APE_UNFEASIBLE
