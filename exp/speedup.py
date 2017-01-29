@@ -6,7 +6,7 @@ n_n=5
 n_rep=100
 
 if ((len(sys.argv) != 4) and (len(sys.argv) != 6)):
-	sys.exit("Usage: stats.py input_csv1 input_csv2 output_csv [ n_n n_rep ]")
+	sys.exit("Usage: speedup.py input_csv1 input_csv2 output_csv [ n_n n_rep ]")
 
 if (len(sys.argv) == 6):
 	n_n = int(sys.argv[4])
