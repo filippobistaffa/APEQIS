@@ -3,6 +3,7 @@
 is=0		# initial seed
 t=scalefree	# network topology
 nt=100		# number of tests
+w=100		# singletons weight
 
 cd ..
 
@@ -17,7 +18,7 @@ do
 
 		if [[ $? != 0 ]]
 		then
-			out=`./apeqis.sh -t $t -n $n -s $s 2> /dev/null`
+			out=`./apeqis.sh -t $t -n $n -s $s -w $w 2> /dev/null`
 
 			if [[ $? == 0 ]]
 			then
