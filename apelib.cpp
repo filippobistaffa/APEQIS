@@ -316,7 +316,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	#endif
 
 	value dif = 0, difsq = 0, topdif = 0;
-	value difbuf[nrows];
+	value *difbuf = (value *)malloc(sizeof(value) * nrows);
 	vector<value> difs[K + 1];
 
 	if (!rc) {
@@ -362,6 +362,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		//printvec(difs[k]);
 	}
 
+	free(difbuf);
 	free(size);
 	free(b);
 
