@@ -9,9 +9,9 @@ basename="twitter/net/twitter-2010"	# Twitter files must be in "twitter/net" sub
 wg="twitter/wg"				# Place WebGraph libraries in "twitter/wg" subdir
 tw=""
 
-usage() { echo -e "Usage: $0 -t <scalefree|twitter> -n <#agents> -s <seed> [-m <barab_m>] [-d <drivers%>] [-c <out_file>]\n-t\tNetwork topology (either scalefree or twitter)\n-n\tNumber of agents\n-s\tSeed\n-d\tDrivers' percentage (optional, default d = 10)\n-m\tParameter m of the Barabasi-Albert model (optional, default m = 2)\n-c\tOutputs an input file formatted for CFSS (optional)" 1>&2; exit 1; }
+usage() { echo -e "Usage: $0 -t <scalefree|twitter> -n <#agents> -s <seed> [-m <barab_m>] [-d <drivers%>] [-c <out_file>] [-w <weight>]\n-t\tNetwork topology (either scalefree or twitter)\n-n\tNumber of agents\n-s\tSeed\n-d\tDrivers' percentage (optional, default d = 10)\n-m\tParameter m of the Barabasi-Albert model (optional, default m = 2)\n-c\tOutputs an input file formatted for CFSS (optional)\n-w\tWeight for singletons in weighted norm" 1>&2; exit 1; }
 
-while getopts ":t:n:s:d:m:c:" o; do
+while getopts ":t:n:s:d:m:c:w:" o; do
 	case "${o}" in
 	t)
 		t=${OPTARG}
@@ -48,6 +48,13 @@ while getopts ":t:n:s:d:m:c:" o; do
 			usage
 		fi
 		;;
+	w)
+		w=${OPTARG}
+		if ! [[ $w =~ $re ]] ; then
+			echo -e "${red}Parameter w must be a number!${nc}\n" 1>&2
+			usage
+		fi
+		;;
 	c)
 		c=${OPTARG}
 		touch $c 2> /dev/null
@@ -78,9 +85,15 @@ echo "#define _N $n" > $tmp
 echo "#define CORES `grep -c ^processor /proc/cpuinfo`" >> $tmp
 echo "#define DRIVERSPERC $d" >> $tmp
 echo "#define _D (_N * DRIVERSPERC / 100)" >> $tmp
+
 if [ ! -z "${c}" ]
 then
 	echo "#define CFSS \"$c\"" >> $tmp
+fi
+
+if [ ! -z "${w}" ]
+then
+	echo "#define WEIGHT $w" >> $tmp
 fi
 
 if [[ $t == "scalefree" ]]
