@@ -12,6 +12,14 @@ void exclprefixsum(const type *hi, type *ho, unsigned hn) {
 }
 
 template <typename type>
+__attribute__((always_inline)) inline
+void inplaceinclpfxsum(vector<type>& vec) {
+
+	for (id i = 1; i < vec.size(); ++i)
+		vec[i] += vec[i - 1];
+}
+
+template <typename type>
 void count(agent *c, agent nl, const edge *g, const agent *adj, const chunk *l, type *data) {
 
 	#ifdef SINGLETONS
@@ -83,12 +91,6 @@ void locations(agent *c, agent nl, const edge *g, const agent *adj, const chunk 
 	}
 
 	fd->rowidx++;
-}
-
-void inplaceinclpfxsum(vector<value>& vec) {
-
-	for (id i = 1; i < vec.size(); ++i)
-		vec[i] += vec[i - 1];
 }
 
 value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
