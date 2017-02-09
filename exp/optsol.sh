@@ -13,7 +13,7 @@ isgsol=`mktemp`
 
 cd ..
 
-for n in 10 30 40
+for n in 10 20 30 40
 do
 	i=0
 	s=$is
