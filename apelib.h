@@ -49,6 +49,10 @@ using namespace arma;
 #define APE_SILENT
 #endif
 
+#if defined(SINGLETONS) && defined(WEIGHT)
+#error "Both hard (SINGLETONS) and soft (WEIGHT) constraints specified!"
+#endif
+
 typedef struct {
 
 	value (*cf)(agent *, agent, void *);
