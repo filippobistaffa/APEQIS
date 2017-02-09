@@ -15,7 +15,7 @@ Execution
 ----------
 APEQIS must be executed by means of the [`apeqis.sh`](apeqis.sh) script, i.e.,
 ```
-./apeqis.sh -t <scalefree|twitter> -n <#agents> -s <seed> [-m <barab_m>] [-d <drivers%>] [-c <out_file>]
+./apeqis.sh -t <scalefree|twitter> -n <#agents> -s <seed> [-m <barab_m>] [-d <drivers%>] [-c <out_file>] [-w <weight>]
 
 -t	Network topology (either scalefree or twitter)
 -n	Number of agents
@@ -23,6 +23,7 @@ APEQIS must be executed by means of the [`apeqis.sh`](apeqis.sh) script, i.e.,
 -d	Drivers' percentage (optional, default d = 20)
 -m	Parameter m of the Barabasi-Albert model (optional, default m = 2)
 -c	Outputs an input file formatted for CFSS (optional)
+-w	Weight for singletons in weighted norm
 ```
 
 Acknowledgements
