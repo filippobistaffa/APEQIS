@@ -69,6 +69,10 @@ void locations(agent *c, agent nl, const edge *g, const agent *adj, const chunk 
 	if (*c == 1) return;
 	#endif
 
+	#ifdef WEIGHT
+	if (*c == 1) fd->sl[c[1]] = fd->valoff + fd->locidx;
+	#endif
+
 	fd->b[fd->rowidx] = cv;
 	fd->size[fd->rowidx] = *c;
 
@@ -204,6 +208,9 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	value *b = (value *)malloc(sizeof(value) * nrows);
 	id *size = (id *)malloc(sizeof(id) * nrows);
 	umat *locs = new umat(2, nvals);
+	#ifdef WEIGHT
+	size_t sl[_N];
+	#endif
 
 	for (agent t = 0; t < _T; ++t) {
 		fd[t] = (funcdata *)malloc(sizeof(funcdata));
@@ -212,6 +219,9 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		fd[t]->tv = 0;
 		#ifdef SINGLETONS
 		fd[t]->s = w;
+		#endif
+		#ifdef WEIGHT
+		fd[t]->sl = sl;
 		#endif
 		fd[t]->locs = locs;
 		fd[t]->valoff = valpfx[t];
@@ -244,6 +254,14 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	fvec *vals = new fvec(nvals);
 	vals->ones();
+
+	#ifdef WEIGHT
+	for (size_t i = 0; i < nrows; i++)
+		if (size[i] == 1)
+			b[i] *= sqrt(WEIGHT);
+	for (size_t i = 0; i < _N; i++)
+		vals->at(sl[i]) *= sqrt(WEIGHT);
+	#endif
 
 	sp_fmat A(*locs, *vals);
 
@@ -327,7 +345,11 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		puts("Differences:");
 		#endif
 		for (id i = 0; i < nrows; i++) {
+			#ifdef WEIGHT
+			difbuf[i] = abs(b[i]) / (size[i] == 1 ? WEIGHT : 1);
+			#else
 			difbuf[i] = abs(b[i]);
+			#endif
 			difs[size[i]].push_back(difbuf[i]);
 			dif += difbuf[i];
 			difsq += difbuf[i] * difbuf[i];

@@ -5,6 +5,7 @@
 
 #include <stdlib.h>
 #include <float.h>
+#include <math.h> // for sqrt()
 
 // Armadillo library
 
@@ -60,6 +61,9 @@ typedef struct {
 	value *b, tv;
 	#ifdef SINGLETONS
 	value *s;
+	#endif
+	#ifdef WEIGHT
+	size_t *sl;
 	#endif
 
 	size_t rowidx, locidx;
