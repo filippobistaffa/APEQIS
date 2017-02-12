@@ -82,6 +82,13 @@ edge scalefree(edge *g) {
 
 #endif
 
+#define MAXRAND 10
+
+value randomvalue(agent *c, agent nl, void *data) {
+
+	return nextFloat() * MAXRAND;
+}
+
 int main(int argc, char *argv[]) {
 
 	unsigned seed = atoi(argv[1]);
