@@ -13,6 +13,7 @@ void init(long long s);
 int next(int bits);
 int nextInt(int n);
 // nextInt() == next(32)
+float nextFloat();
 
 // Shuffle the content of an array
 
