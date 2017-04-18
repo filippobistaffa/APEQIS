@@ -132,7 +132,7 @@ value maxpartition(const std::vector<value> *difpfx) {
 
 	int a[K + 1];
 	size_t count = 0;
-	maxdata md = { .difpfx = difpfx, .maxval = 0 };
+	maxdata md = { .difpfx = difpfx, .maxval = -FLT_MAX };
 
 	for (unsigned m = 1; m <= K; ++m) {
 		initialise(a, _N, m);

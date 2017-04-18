@@ -4,6 +4,7 @@
 // Headers
 
 #include <vector>
+#include <float.h>
 #include <stdio.h>
 #include <stdlib.h>
 
