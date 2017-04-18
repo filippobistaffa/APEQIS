@@ -32,8 +32,15 @@ agent *creteadj(const edge *g, edge ne, const chunk *l, IloEnv &env, IloFloatVar
 	return adj;
 }
 
+value resvalue(agent *c, agent nl, void *data) {
+
+	map<vector<agent>, value> *resmap = (map<vector<agent>, value> *)data;
+	vector<agent> key(c + 1, c + *c + 1);
+	return resmap->at(key);
+}
+
 double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
-	       void *data, const chunk *l, agent maxc, agent maxl) {
+	       void *data, const chunk *l, agent maxc, agent maxl, agent it) {
 
 	chunk *tl;
 
@@ -80,9 +87,11 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	puts("");
 	#endif
 
+	map<vector<agent>, value> resmap;
+
 	// Create constraints
 
-	const value tv = constraints(g, adj, l ? l : tl, cf, data, env, model, ea, da, maxc, maxl);
+	const value tv = constraints(g, adj, l ? l : tl, cf, data, env, model, ea, da, maxc, maxl, resmap);
 
 	// Create objective expression
 
@@ -153,6 +162,17 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		cout << da[i].getName() << " = " << difbuf[i] << endl;
 		#endif
 	}
+
+	for(map<vector<agent>, value>::iterator it = resmap.begin(); it != resmap.end(); ++it)
+		it->second = cplex.getValue(da[it->second]);
+
+	#ifdef APE_DEBUG
+	for(map<vector<agent>, value>::const_iterator it = resmap.begin(); it != resmap.end(); ++it) {
+		printf("v(");
+		printvec(it->first, NULL, NULL, ") = ");
+		printf("%f\n", it->second);
+	}
+	#endif
 
 	QSORT(double, difbuf, da.getSize(), GT);
 	double topdif = 0;

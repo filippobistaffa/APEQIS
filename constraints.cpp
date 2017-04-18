@@ -177,7 +177,11 @@ unsigned vectorsum(const agent *r, agent n, const chunk *x) {
 
 __attribute__((always_inline)) inline
 value coalition(agent *c, agent d, const chunk *l, value (*cf)(agent *, agent, void *), void *data, const edge *g, const agent *adj,
-		IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da) {
+		IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da, map<vector<agent>, value> &resmap) {
+
+	vector<agent> key(c + 1, c + *c + 1);
+	const value val = (value)resmap.size();
+	resmap[key] = val;
 
 	IloExpr expr(env);
 
@@ -217,7 +221,7 @@ value coalition(agent *c, agent d, const chunk *l, value (*cf)(agent *, agent, v
 }
 
 value recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, agent d, const chunk *l, value (*cf)(agent *, agent, void *), void *data,
-		IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da, agent maxc, agent maxl) {
+		IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da, agent maxc, agent maxl, map<vector<agent>, value> &resmap) {
 
 	value ret = 0;
 
@@ -225,7 +229,7 @@ value recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, ag
 		#ifdef APE_DEBUG
 		printc(r, cf(r, d, data));
 		#endif
-		ret += coalition(r, d, l, cf, data, g, adj, env, model, ea, da);
+		ret += coalition(r, d, l, cf, data, g, adj, env, model, ea, da, resmap);
 	}
 
 	if (*f && m) {
@@ -243,7 +247,7 @@ value recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, ag
 				memcpy(nfs, fs, sizeof(agent) * k);
 				QSORT(agent, nr + 1, *nr, LTL);
 				nbar(fs, k, r, nr, adj, nf, l);
-				ret += recursive(nr, nf, m - k, g, adj, d + nd, l, cf, data, env, model, ea, da, maxc, maxl);
+				ret += recursive(nr, nf, m - k, g, adj, d + nd, l, cf, data, env, model, ea, da, maxc, maxl, resmap);
 			}
 			inittwiddle(k, *f, p);
 			while (!twiddle(&w, &y, &z, p)) {
@@ -254,7 +258,7 @@ value recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, ag
 					memcpy(nfs, fs, sizeof(agent) * k);
 					QSORT(agent, nr + 1, *nr, LTL);
 					nbar(fs, k, r, nr, adj, nf, l);
-					ret += recursive(nr, nf, m - k, g, adj, d + nd, l, cf, data, env, model, ea, da, maxc, maxl);
+					ret += recursive(nr, nf, m - k, g, adj, d + nd, l, cf, data, env, model, ea, da, maxc, maxl, resmap);
 				}
 			}
 		}
@@ -264,7 +268,8 @@ value recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, ag
 }
 
 value constraints(const edge *g, const agent *adj, const chunk *l, value (*cf)(agent *, agent, void *), void *data,
-		  IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da, agent maxc, agent maxl) {
+		  IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da, agent maxc, agent maxl,
+		  map<vector<agent>, value> &resmap) {
 
 	agent *r = (agent *)malloc(sizeof(agent) * (maxc + 1) * N);
 	agent *f = (agent *)malloc(sizeof(agent) * (N + 1) * N);
@@ -274,7 +279,7 @@ value constraints(const edge *g, const agent *adj, const chunk *l, value (*cf)(a
 	for (agent i = 0; i < N; i++) {
 		if (memcmp(g + i * N, zero, sizeof(agent) * N)) {
 			r[0] = 0; f[0] = 1; f[1] = i;
-			ret += recursive(r, f, maxc, g, adj, 0, l, cf, data, env, model, ea, da, maxc, maxl);
+			ret += recursive(r, f, maxc, g, adj, 0, l, cf, data, env, model, ea, da, maxc, maxl, resmap);
 		}
 	}
 

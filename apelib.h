@@ -6,6 +6,8 @@
 #include <ilcplex/ilocplex.h>
 #include <sys/time.h>
 #include <float.h>
+#include <vector>
+#include <map>
 
 #ifdef APE_SUBDIR
 #include "../instance.h"
@@ -41,6 +43,6 @@ using namespace std;
 #endif
 
 double *apeqis(const edge *g, value (*cf)(agent *, agent, void *), void *data = NULL,
-	       const chunk *l = NULL, agent maxc = N, agent maxl = N);
+	       const chunk *l = NULL, agent maxc = N, agent maxl = N, agent it = 0);
 
 #endif /* APELIB_H_ */

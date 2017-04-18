@@ -5,6 +5,8 @@
 
 #include <ilcplex/ilocplex.h>
 #include <float.h>
+#include <vector>
+#include <map>
 
 #ifdef APE_SUBDIR
 #include "../instance.h"
@@ -29,6 +31,7 @@ void printc(const agent *c, value v) {
 }
 
 value constraints(const edge *g, const agent *adj, const chunk *l, value (*cf)(agent *, agent, void *), void *data,
-		  IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da, agent maxc, agent maxl);
+		  IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da, agent maxc, agent maxl,
+		  map<vector<agent>, value> &resmap);
 
 #endif /* CONSTRAINTS_H_ */
