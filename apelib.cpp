@@ -49,7 +49,7 @@ void locations(agent *c, agent nl, const edge *g, const agent *adj, const chunk 
 
 	funcdata *fd = (funcdata *)data;
 	value cv = fd->cf(c, nl, fd->cfdata);
-	fd->tv += cv;
+	//fd->tv += cv;
 	/*#pragma omp critical
 	{
 		printf("%u: ", omp_get_thread_num());
@@ -68,6 +68,7 @@ void locations(agent *c, agent nl, const edge *g, const agent *adj, const chunk 
 		const agent v1 = c[i + 1];
 		#ifdef SINGLETONS
 		fd->b[fd->rowidx] -= fd->s[v1];
+		fd->sv += fd->s[v1];
 		#else
 		setlocation(fd->rowidx, v1, &(fd->locidx), fd->rowoff, fd->valoff, fd->locs);
 		#endif
@@ -91,8 +92,132 @@ void inplaceinclpfxsum(vector<value>& vec) {
 		vec[i] += vec[i - 1];
 }
 
+unsigned solve(const sp_fmat &A, value *b, value *w, id *size, size_t nrows, size_t ncols, size_t nvals, value sv, size_t it) {
+
+	const value tv = accumulate(b, b + nrows, sv);
+
+	#ifndef APE_SILENT
+	puts("Starting CUDA solver...\n");
+	const bool quiet = false;
+	#else
+	const bool quiet = true;
+	#endif
+
+	const unsigned *ptr, *idx;
+	#if (__cplusplus >= 201103L)
+	unsigned *uptr = (unsigned *)malloc(sizeof(unsigned) * (ncols + 1));
+	unsigned *uidx = (unsigned *)malloc(sizeof(unsigned) * nvals);
+	for (size_t i = 0; i < ncols + 1; ++i) uptr[i] = A.col_ptrs[i];
+	for (size_t i = 0; i < nvals; ++i) uidx[i] = A.row_indices[i];
+	ptr = uptr;
+	idx = uidx;
+	#else
+	ptr = A.col_ptrs;
+	idx = A.row_indices;
+	#endif
+
+	float rt;
+	#ifdef SINGLETONS
+	unsigned rc = cudacgls(A.values, ptr, idx, nrows, ncols, nvals, b, w + _N, &rt, quiet);
+	#else
+	unsigned rc = cudacgls(A.values, ptr, idx, nrows, ncols, nvals, b, w, &rt, quiet);
+	#endif
+
+	#if (__cplusplus >= 201103L)
+	free(uptr);
+	free(uidx);
+	#endif
+
+	#ifdef APE_UNFEASIBLE
+	for (id i = 0; i < ncols; ++i)
+		if (A.col(i).max() == 0)
+			w[i + _N] = UNFEASIBLEVALUE;
+	#endif
+
+	value dif = 0, difsq = 0, topdif = 0;
+	value *difbuf = (value *)malloc(sizeof(value) * nrows);
+	vector<value> difs[K + 1];
+
+	if (!rc) {
+
+		#ifdef DIFFERENCES
+		puts("Differences:");
+		#endif
+		for (id i = 0; i < nrows; i++) {
+			difbuf[i] = abs(b[i]);
+			difs[size[i]].push_back(difbuf[i]);
+			dif += difbuf[i];
+			difsq += difbuf[i] * difbuf[i];
+			#ifdef DIFFERENCES
+			cout << "d_" << i << " = " << difbuf[i] << endl;
+			#endif
+		}
+		#ifdef DIFFERENCES
+		puts("");
+		#endif
+
+		#ifdef SINGLETONS
+		for (agent i = 0; i < _N; ++i)
+			difs[1].push_back(0);
+		#endif
+
+		QSORT(value, difbuf, nrows, GT);
+
+		#ifdef SINGLETONS
+		for (agent i = 0; i < _N / 2; i++)
+		#else
+		for (agent i = 0; i < _N; i++)
+		#endif
+			topdif += difbuf[i];
+	}
+
+	for (id k = 1; k <= K; ++k) {
+		std::sort(difs[k].begin(), difs[k].end(), std::greater<value>());
+		//printvec(difs[k]);
+	}
+
+	for (id k = 1; k <= K; ++k) {
+		inplaceinclpfxsum(difs[k]);
+		//printvec(difs[k]);
+	}
+
+	free(difbuf);
+
+	if (!rc) {
+
+		// Print output
+
+		#ifdef APE_CSV
+		printf("%f,%f,%f,%f,%f,%f,%f\n",
+		       dif, (dif * 1e2) / tv, dif / nrows, difsq, (difsq * 1e2) / tv, difsq / nrows, rt / 1e3);
+		#endif
+
+		#ifndef APE_SILENT
+		cout << "Solution elapsed time = " << rt << "ms" << endl;
+		printf("Overall difference = %.2f\n", dif);
+		printf("Percentage difference = %.2f%%\n", dif < EPSILON ? 0 : (dif * 100) / tv);
+		#ifdef SINGLETONS
+		printf("Average difference (excluding singletons) = %.2f\n", dif < EPSILON ? 0 : dif / nrows);
+		printf("Sum of the %u highest differences = %.2f\n", _N / 2, topdif);
+		#else
+		printf("Average difference = %.2f\n", dif / nrows);
+		printf("Sum of the %u highest differences = %.2f\n", _N, topdif);
+		#endif
+		//printf("Maximum error w.r.t. integer partitions = %.2f\n", maxpartition(difs));
+		puts("");
+		#endif
+
+		#ifdef APE_NOERROR
+		assert(dif < EPSILON);
+		#endif
+	}
+	else fprintf(stderr, RED("ERROR: exit code of CGLS = %u\n"), rc);
+
+	return rc;
+}
+
 value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
-	      void *cfdata, const chunk *l, agent maxc, agent maxl) {
+	      void *cfdata, const chunk *l, agent maxc, agent maxl, size_t it) {
 
 	chunk *tl;
 
@@ -207,8 +332,9 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		fd[t] = (funcdata *)malloc(sizeof(funcdata));
 		fd[t]->size = size + rowpfx[t];
 		fd[t]->b = b + rowpfx[t];
-		fd[t]->tv = 0;
+		//fd[t]->tv = 0;
 		#ifdef SINGLETONS
+		fd[t]->sv = 0;
 		fd[t]->s = w;
 		#endif
 		fd[t]->locs = locs;
@@ -229,10 +355,18 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	coalitions(g, locations, fd[0], K, l ? l : tl, MAXDRIVERS);
 	#endif
 
-	value tv = 0;
+	//value tv = 0;
+	#ifdef SINGLETONS
+	value sv = accumulate(w, w + _N, 0.0);
+	#else
+	value sv = 0;
+	#endif
 
 	for (agent t = 0; t < _T; ++t) {
-		tv += fd[t]->tv;
+		//tv += fd[t]->tv;
+		#ifdef SINGLETONS
+		sv += fd[t]->sv;
+		#endif
 		free(fd[t]);
 	}
 
@@ -277,103 +411,12 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	puts("");
 	#endif
 
-	#ifndef APE_SILENT
-	puts("Starting CUDA solver...\n");
-	const bool quiet = false;
-	#else
-	const bool quiet = true;
-	#endif
+	unsigned rc = solve(A, b, w, size, nrows, ncols, nvals, sv, it);
 
-	const unsigned *ptr, *idx;
-	#if (__cplusplus >= 201103L)
-	unsigned *uptr = (unsigned *)malloc(sizeof(unsigned) * (ncols + 1));
-	unsigned *uidx = (unsigned *)malloc(sizeof(unsigned) * nvals);
-	for (size_t i = 0; i < ncols + 1; ++i) uptr[i] = A.col_ptrs[i];
-	for (size_t i = 0; i < nvals; ++i) uidx[i] = A.row_indices[i];
-	ptr = uptr;
-	idx = uidx;
-	#else
-	ptr = A.col_ptrs;
-	idx = A.row_indices;
-	#endif
-
-	float rt;
-	#ifdef SINGLETONS
-	unsigned rc = cudacgls(A.values, ptr, idx, nrows, ncols, nvals, b, w + _N, &rt, quiet);
-	#else
-	unsigned rc = cudacgls(A.values, ptr, idx, nrows, ncols, nvals, b, w, &rt, quiet);
-	#endif
-
-	#if (__cplusplus >= 201103L)
-	free(uptr);
-	free(uidx);
-	#endif
-
-	#ifdef APE_UNFEASIBLE
-	for (id i = 0; i < ncols; ++i)
-		if (A.col(i).max() == 0)
-			w[i + _N] = UNFEASIBLEVALUE;
-	#endif
-
-	value dif = 0, difsq = 0, topdif = 0;
-	value *difbuf = (value *)malloc(sizeof(value) * nrows);
-	vector<value> difs[K + 1];
-
-	if (!rc) {
-
-		#ifdef DIFFERENCES
-		puts("Differences:");
-		#endif
-		for (id i = 0; i < nrows; i++) {
-			difbuf[i] = abs(b[i]);
-			difs[size[i]].push_back(difbuf[i]);
-			dif += difbuf[i];
-			difsq += difbuf[i] * difbuf[i];
-			#ifdef DIFFERENCES
-			cout << "d_" << i << " = " << difbuf[i] << endl;
-			#endif
-		}
-		#ifdef DIFFERENCES
-		puts("");
-		#endif
-
-		#ifdef SINGLETONS
-		for (agent i = 0; i < _N; ++i)
-			difs[1].push_back(0);
-		#endif
-
-		QSORT(value, difbuf, nrows, GT);
-
-		#ifdef SINGLETONS
-		for (agent i = 0; i < _N / 2; i++)
-		#else
-		for (agent i = 0; i < _N; i++)
-		#endif
-			topdif += difbuf[i];
-	}
-
-	for (id k = 1; k <= K; ++k) {
-		std::sort(difs[k].begin(), difs[k].end(), std::greater<value>());
-		//printvec(difs[k]);
-	}
-
-	for (id k = 1; k <= K; ++k) {
-		inplaceinclpfxsum(difs[k]);
-		//printvec(difs[k]);
-	}
-
-	free(difbuf);
 	free(size);
 	free(b);
 
 	if (!rc) {
-
-		// Print output
-
-		#ifdef APE_CSV
-		printf("%f,%f,%f,%f,%f,%f,%f\n",
-		       dif, (dif * 1e2) / tv, dif / nrows, difsq, (difsq * 1e2) / tv, difsq / nrows, rt / 1e3);
-		#endif
 
 		#ifndef APE_SILENT
 		puts("Edge values:");
@@ -381,23 +424,9 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 			cout << "e_" << i << " = " << w[i] << endl;
 		for (edge i = _N; i < _N + ne; i++)
 			cout << "e_" << X(a, i - _N) << "," << Y(a, i - _N) << " = " << w[i] << endl;
-		cout << "\nSolution elapsed time = " << rt << "ms" << endl;
-		printf("Overall difference = %.2f\n", dif);
-		printf("Percentage difference = %.2f%%\n", dif < EPSILON ? 0 : (dif * 100) / tv);
-		#ifdef SINGLETONS
-		printf("Average difference (excluding singletons) = %.2f\n", dif < EPSILON ? 0 : dif / nrows);
-		printf("Sum of the %u highest differences = %.2f\n", _N / 2, topdif);
-		#else
-		printf("Average difference = %.2f\n", dif / nrows);
-		printf("Sum of the %u highest differences = %.2f\n", _N, topdif);
 		#endif
-		printf("Maximum error w.r.t. integer partitions = %.2f\n", maxpartition(difs));
-		#endif
-	}
 
-	// Write output file
-
-	if (!rc) {
+		// Write output file
 
 		#ifdef CFSS
 		FILE *cfss = fopen(CFSS, "w+");
@@ -411,19 +440,13 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		}
 		fclose(cfss);
 		#endif
-
-		#ifdef APE_NOERROR
-		assert(dif < EPSILON);
-		#endif
 	}
 
 	if (!l) free(tl);
 	free(adj);
 
 	if (rc) {
-		fprintf(stderr, RED("ERROR: exit code of CGLS = %u\n"), rc);
+		free(w);
 		return NULL;
-	}
-
-	return w;
+	} else return w;
 }
