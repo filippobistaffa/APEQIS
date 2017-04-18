@@ -43,6 +43,6 @@ using namespace std;
 #endif
 
 double *apeqis(const edge *g, value (*cf)(agent *, agent, void *), void *data = NULL,
-	       const chunk *l = NULL, agent maxc = N, agent maxl = N, agent it = 0);
+	       const chunk *l = NULL, agent maxc = N, agent maxl = N, agent iter = 0);
 
 #endif /* APELIB_H_ */

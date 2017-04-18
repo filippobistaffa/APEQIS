@@ -40,7 +40,7 @@ value resvalue(agent *c, agent nl, void *data) {
 }
 
 double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
-	       void *data, const chunk *l, agent maxc, agent maxl, agent it) {
+	       void *data, const chunk *l, agent maxc, agent maxl, agent iter) {
 
 	chunk *tl;
 
@@ -243,6 +243,8 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	#ifdef APE_NOERROR
 	assert(dif < EPSILON);
 	#endif
+
+	if (iter) apeqis(g, resvalue, &resmap, l, K, MAXDRIVERS, iter - 1);
 
 	return w;
 }
