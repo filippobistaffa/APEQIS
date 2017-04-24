@@ -157,7 +157,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	#endif
 	for (agent i = 0; i < da.getSize(); i++) {
 		difbuf[i] = cplex.getValue(da[i]);
-		dif += difbuf[i];
+		dif += fabs(difbuf[i]);
 		#ifdef DIFFERENCES
 		cout << da[i].getName() << " = " << difbuf[i] << endl;
 		#endif
