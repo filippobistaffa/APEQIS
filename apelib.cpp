@@ -176,16 +176,6 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	}
 	#endif
 
-	QSORT(double, difbuf, da.getSize(), GT);
-	double topdif = 0;
-
-	#ifdef SINGLETONS
-	for (agent i = 0; i < N / 2; i++)
-	#else
-	for (agent i = 0; i < N; i++)
-	#endif
-		topdif += difbuf[i];
-
 	// Generate weights array
 
 	double *w = (double *)malloc(sizeof(double) * ea.getSize());
@@ -215,10 +205,8 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	printf("Percentage difference = %.2f%%\n", dif < EPSILON ? 0 : (dif * 100) / tv);
 	#ifdef SINGLETONS
 	printf("Average difference (excluding singletons) = %.2f\n", dif < EPSILON ? 0 : dif / (da.getSize() - N));
-	printf("Sum of the %u highest differences = %.2f\n", N / 2, topdif);
 	#else
 	printf("Average difference = %.2f\n", dif / da.getSize());
-	printf("Sum of the %u highest differences = %.2f\n", N, topdif);
 	#endif
 	#endif
 
