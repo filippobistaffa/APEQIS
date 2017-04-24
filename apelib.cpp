@@ -163,6 +163,8 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		#endif
 	}
 
+	// Update residuals map
+
 	for(map<vector<agent>, value>::iterator it = resmap.begin(); it != resmap.end(); ++it)
 		it->second = cplex.getValue(da[it->second]);
 
