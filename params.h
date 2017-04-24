@@ -33,3 +33,7 @@
 
 // CPLEX time limit in seconds
 #define TIME_LIMIT 43200 // 12H
+
+// Recursion parameters
+#define THRESHOLD EPSILON
+#define MAXIT 1e3

@@ -234,7 +234,10 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	assert(dif < EPSILON);
 	#endif
 
-	if (maxit) apeqis(g, resvalue, &resmap, l, K, MAXDRIVERS, maxit - 1);
+	// Recursion (if possible / necessary)
+
+	if (maxit && fabs(tv - dif) > EPSILON && dif > THRESHOLD)
+		apeqis(g, resvalue, &resmap, l, K, MAXDRIVERS, maxit - 1);
 
 	return w;
 }
