@@ -1,7 +1,7 @@
 #include "apelib.h"
 
 __attribute__((always_inline)) inline
-agent *creteadj(const edge *g, edge ne, const chunk *l, IloEnv &env, IloFloatVarArray &ea) {
+agent *createadj(const edge *g, edge ne, const chunk *l, IloEnv &env, IloFloatVarArray &ea) {
 
 	agent *adj = (agent *)calloc(N * N, sizeof(agent));
 	agent ab[2 * ne];
@@ -71,7 +71,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		for (agent j = i + 1; j < N; j++)
 			if (g[i * N + j]) ne++;
 
-	agent *adj = creteadj(g, ne, l ? l : tl, env, ea);
+	agent *adj = createadj(g, ne, l ? l : tl, env, ea);
 
 	#ifndef APE_SILENT
 	puts("Creating model...");
