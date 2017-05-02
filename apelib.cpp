@@ -211,22 +211,6 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	#endif
 
 	env.end();
-
-	// Write output file
-
-	#ifdef CFSS
-	FILE *cfss = fopen(CFSS, "w+");
-	for (agent i = 0; i < N; i++)
-		fprintf(cfss, "%s%f\n", GET(l ? l : tl, i) ? "*" : "", -w[i]);
-	for (agent i = 0; i < N; i++) {
-		for (agent j = 0; j < adj[i * N]; j++) {
-			const agent k = adj[i * N + j + 1];
-			if (k > i) fprintf(cfss, "%u %u %f\n", i, k, -w[g[i * N + k]]);
-		}
-	}
-	fclose(cfss);
-	#endif
-
 	if (!l) free(tl);
 	free(adj);
 

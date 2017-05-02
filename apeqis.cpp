@@ -119,6 +119,19 @@ int main(int argc, char *argv[]) {
 
 	double *w = apeqis(g, srvalue, sp, l, K, MAXDRIVERS, MAXIT);
 
+	// Write output file
+
+	#ifdef CFSS
+	FILE *cfss = fopen(CFSS, "w+");
+	for (agent i = 0; i < N; i++)
+		fprintf(cfss, "%s%f\n", GET(l, i) ? "*" : "", -w[i]);
+	for (agent i = 0; i < N; i++)
+		for (agent j = i + 1; j < N; j++)
+			if (g[i * N + j])
+				fprintf(cfss, "%u %u %f\n", i, j, -w[g[i * N + j]]);
+	fclose(cfss);
+	#endif
+
 	free(sp);
 	free(g);
 	free(w);
