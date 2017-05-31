@@ -275,6 +275,7 @@ value constraints(const edge *g, const agent *adj, const chunk *l, value (*cf)(a
 	agent *f = (agent *)malloc(sizeof(agent) * (N + 1) * N);
 	agent zero[N] = {0};
 	value ret = 0;
+	dn = 0;
 
 	for (agent i = 0; i < N; i++) {
 		if (memcmp(g + i * N, zero, sizeof(agent) * N)) {
