@@ -266,8 +266,8 @@ value recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, ag
 value constraints(const edge *g, const agent *adj, const chunk *l, value (*cf)(agent *, agent, void *), void *data,
 		  IloEnv &env, IloModel &model, IloFloatVarArray &ea, IloFloatVarArray &da, agent maxc, agent maxl) {
 
-	agent *r = (agent *)malloc(sizeof(agent) * (maxc + 1) * N);
-	agent *f = (agent *)malloc(sizeof(agent) * (N + 1) * N);
+	agent *r = (agent *)malloc(sizeof(agent) * (maxc + 1) * (N + 1));
+	agent *f = (agent *)malloc(sizeof(agent) * (N + 1) * (N + 1));
 	agent zero[N] = {0};
 	value ret = 0;
 
