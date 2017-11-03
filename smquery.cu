@@ -4,8 +4,16 @@
 
 int main() {
 
-	cudaDeviceProp devProp;
-	cudaGetDeviceProperties(&devProp, 0);
-	printf("sm_%d%d\n", devProp.major, devProp.minor);
+	// Number of CUDA devices
+	int devCount;
+	cudaGetDeviceCount(&devCount);
+
+	// Iterate through devices
+	for (int i = 0; i < devCount; ++i) {
+		cudaDeviceProp devProp;
+		cudaGetDeviceProperties(&devProp, i);
+		printf("sm_%d%d\n", devProp.major, devProp.minor);
+	}
+
 	return 0;
 }
