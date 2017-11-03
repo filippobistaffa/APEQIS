@@ -289,8 +289,8 @@ void coalitions(const edge *g, void (*cf)(agent *, agent, const edge *, const ag
 		ONES(tl, _N, _C);
 	}
 
-	agent *r = (agent *)malloc(sizeof(agent) * (maxc + 1) * _N);
-	agent *f = (agent *)malloc(sizeof(agent) * (_N + 1) * _N);
+	agent *r = (agent *)malloc(sizeof(agent) * (maxc + 1) * (_N + 1));
+	agent *f = (agent *)malloc(sizeof(agent) * (_N + 1) * (_N + 1));
 	edge ne = 0;
 
 	for (agent i = 0; i < _N; i++)
