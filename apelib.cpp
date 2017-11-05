@@ -335,7 +335,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 			w[i + _N] = UNFEASIBLEVALUE;
 	#endif
 
-	value dif = 0, difsq = 0, topdif = 0;
+	value dif = 0, difsq = 0;
 	value *difbuf = (value *)malloc(sizeof(value) * nrows);
 	vector<value> difs[K + 1];
 
@@ -346,12 +346,12 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		#endif
 		for (id i = 0; i < nrows; i++) {
 			#ifdef WEIGHT
-			difbuf[i] = abs(b[i]) / (size[i] == 1 ? WEIGHT : 1);
+			difbuf[i] = b[i] / (size[i] == 1 ? WEIGHT : 1);
 			#else
-			difbuf[i] = abs(b[i]);
+			difbuf[i] = b[i];
 			#endif
 			difs[size[i]].push_back(difbuf[i]);
-			dif += difbuf[i];
+			dif += fabs(difbuf[i]);
 			difsq += difbuf[i] * difbuf[i];
 			#ifdef DIFFERENCES
 			cout << "d_" << i << " = " << difbuf[i] << endl;
@@ -365,15 +365,6 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		for (agent i = 0; i < _N; ++i)
 			difs[1].push_back(0);
 		#endif
-
-		QSORT(value, difbuf, nrows, GT);
-
-		#ifdef SINGLETONS
-		for (agent i = 0; i < _N / 2; i++)
-		#else
-		for (agent i = 0; i < _N; i++)
-		#endif
-			topdif += difbuf[i];
 	}
 
 	for (id k = 1; k <= K; ++k) {
@@ -410,10 +401,8 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		printf("Percentage difference = %.2f%%\n", dif < EPSILON ? 0 : (dif * 100) / tv);
 		#ifdef SINGLETONS
 		printf("Average difference (excluding singletons) = %.2f\n", dif < EPSILON ? 0 : dif / nrows);
-		printf("Sum of the %u highest differences = %.2f\n", _N / 2, topdif);
 		#else
 		printf("Average difference = %.2f\n", dif / nrows);
-		printf("Sum of the %u highest differences = %.2f\n", _N, topdif);
 		#endif
 		printf("Maximum error w.r.t. integer partitions = %.2f\n", maxpartition(difs));
 		#endif
