@@ -9,7 +9,7 @@ WARN=-Wall -Wno-unused-result -Wno-deprecated-declarations -Wno-sign-compare -Wn
 OPTIM=-Ofast -march=native -funroll-loops -funsafe-loop-optimizations -falign-functions=16 -falign-loops=16 -fopenmp
 NOOPTIM=-O0 -march=native -fopenmp
 DBG=-g ${NOOPTIM}
-CUOPT=--use_fast_math -m64 -D_FORCE_INLINES -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52
+CUOPT=--use_fast_math -m64 -D_FORCE_INLINES -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_61,code=sm_61
 
 INC=
 LDIR=
