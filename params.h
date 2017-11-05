@@ -28,9 +28,6 @@
 // Force equality among singletons
 //#define SINGLETONS
 
-// Weighting matrix diagonal value
-#define WEIGHT 100
-
 // Print A matrix in dense form
 //#define PRINTDENSE
 
