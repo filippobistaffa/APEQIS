@@ -26,7 +26,10 @@
 //#define POSITIVEEDGES
 
 // Force equality among singletons
-#define SINGLETONS
+//#define SINGLETONS
+
+// Weighting matrix diagonal value
+#define WEIGHT 100
 
 // Print A matrix in dense form
 //#define PRINTDENSE
