@@ -6,12 +6,13 @@
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
+#include <float.h>
 
 #include "instance.h"
 #include "params.h"
 #include "macros.h"
 #include "types.h"
 
-value maxpartition(const std::vector<value> *difpfx);
+value minpartition(const std::vector<value> *difpfx);
 
 #endif /* IP_H_ */

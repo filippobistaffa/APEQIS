@@ -368,7 +368,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	}
 
 	for (id k = 1; k <= K; ++k) {
-		std::sort(difs[k].begin(), difs[k].end(), std::greater<value>());
+		std::sort(difs[k].begin(), difs[k].end());
 		//printvec(difs[k]);
 	}
 
@@ -404,7 +404,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		#else
 		printf("Average difference = %.2f\n", dif / nrows);
 		#endif
-		printf("Maximum error w.r.t. integer partitions = %.2f\n", maxpartition(difs));
+		printf("Minimum error w.r.t. integer partitions = %.2f\n", minpartition(difs));
 		#endif
 	}
 

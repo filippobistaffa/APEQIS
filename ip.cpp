@@ -2,8 +2,8 @@
 
 typedef struct {
 	const std::vector<value> *difpfx;
-	value maxval;
-} maxdata;
+	value minval;
+} mindata;
 
 __attribute__((always_inline)) inline
 void initialise(int *a, unsigned n, unsigned m) {
@@ -44,9 +44,9 @@ type reducebuf(const type *buf, unsigned n) {
 //#include <assert.h>
 
 __attribute__((always_inline)) inline
-void maxvaluepart(int *a, unsigned n, void *data) {
+void minvaluepart(int *a, unsigned n, void *data) {
 
-	maxdata *md = (maxdata *)data;
+	mindata *md = (mindata *)data;
 	unsigned hist[K + 1] = { 0 };
 	computehist(a, n, hist);
 	value val = 0;
@@ -65,7 +65,7 @@ void maxvaluepart(int *a, unsigned n, void *data) {
 	//printbuf(hist, K + 1, "hist");
 	//printbuf(a, n, NULL, NULL, " = ");
 	//printf("%f\n", val);
-	if (val > md->maxval) md->maxval = val;
+	if (val < md->minval) md->minval = val;
 }
 
 __attribute__((always_inline)) inline
@@ -128,19 +128,19 @@ size_t enumerate(int *a, unsigned m, void (*pf)(int *, unsigned, void *), void (
 	}
 }
 
-value maxpartition(const std::vector<value> *difpfx) {
+value minpartition(const std::vector<value> *difpfx) {
 
 	int a[K + 1];
 	size_t count = 0;
-	maxdata md = { .difpfx = difpfx, .maxval = 0 };
+	mindata md = { .difpfx = difpfx, .minval = FLT_MAX };
 
 	for (unsigned m = 1; m <= K; ++m) {
 		initialise(a, _N, m);
-		size_t c = enumerate(a, m, NULL, maxvaluepart, &md);
-		//printf("%zu partition(s) with max value = %u\n", c, m);
+		size_t c = enumerate(a, m, NULL, minvaluepart, &md);
+		//printf("%zu partition(s) with min value = %u\n", c, m);
 		count += c;
 	}
 
 	printf("%zu total integer partition(s)\n", count);
-	return md.maxval;
+	return md.minval;
 }
