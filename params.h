@@ -38,4 +38,4 @@
 //#define PRINTB
 
 // Explicitely represent edges that are never part of a feasible coalition
-#define APE_UNFEASIBLE
+//#define APE_UNFEASIBLE

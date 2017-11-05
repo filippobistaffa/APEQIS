@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
 	printf("}\n\n");
 	#endif
 
-	value *w = apeqis(g, srvalue, sp, l, K, MAXDRIVERS);
+	value *w = apeqis(g, srvalue, sp, l, K, MAXDRIVERS, argv[3], argv[4]);
 
 	free(sp);
 	free(g);

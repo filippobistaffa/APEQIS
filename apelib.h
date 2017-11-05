@@ -74,6 +74,7 @@ typedef struct {
 } funcdata;
 
 value *apeqis(const edge *g, value (*cf)(agent *, agent, void *), void *cfdata = NULL,
-	      const chunk *l = NULL, agent maxc = _N, agent maxl = _N);
+	      const chunk *l = NULL, agent maxc = _N, agent maxl = _N,
+	      char *cfssfilename = NULL, char *resfilename = NULL);
 
 #endif /* APELIB_H_ */

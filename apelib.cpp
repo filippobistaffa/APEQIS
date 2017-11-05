@@ -98,7 +98,8 @@ void locations(agent *c, agent nl, const edge *g, const agent *adj, const chunk 
 }
 
 value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
-	      void *cfdata, const chunk *l, agent maxc, agent maxl) {
+	      void *cfdata, const chunk *l, agent maxc, agent maxl,
+	      char *cfssfilename, char *resfilename) {
 
 	chunk *tl;
 
@@ -341,15 +342,39 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 	if (!rc) {
 
+		#ifdef RESIDUAL
+		FILE *res = fopen(resfilename, "w+");
+		#ifdef SINGLETONS
+		for (id i = 0; i < _N; i++) {
+			fprintf(res, "%u %f\n", i, 0.0);
+		}
+		#endif
+		#endif
+
 		#ifdef DIFFERENCES
 		puts("Differences:");
 		#endif
 		for (id i = 0; i < nrows; i++) {
+
 			#ifdef WEIGHT
 			difbuf[i] = b[i] / (size[i] == 1 ? WEIGHT : 1);
 			#else
 			difbuf[i] = b[i];
 			#endif
+
+			#ifdef RESIDUAL
+			#ifdef SINGLETONS
+			// TODO:
+			#else
+			for (id j = 0; j < _N; ++j) {
+				if (A(i, j) == 1) {
+					fprintf(res, "%u ", j);
+				}
+			}
+			#endif
+			fprintf(res, "%f\n", difbuf[i]);
+			#endif
+
 			difs[size[i]].push_back(difbuf[i]);
 			dif += fabs(difbuf[i]);
 			difsq += difbuf[i] * difbuf[i];
@@ -359,6 +384,10 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		}
 		#ifdef DIFFERENCES
 		puts("");
+		#endif
+
+		#ifdef RESIDUAL
+		fclose(res);
 		#endif
 
 		#ifdef SINGLETONS
@@ -413,7 +442,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	if (!rc) {
 
 		#ifdef CFSS
-		FILE *cfss = fopen(CFSS, "w+");
+		FILE *cfss = fopen(cfssfilename, "w+");
 		for (agent i = 0; i < _N; i++)
 			fprintf(cfss, "%s%f\n", GET(l ? l : tl, i) ? "*" : "", -w[i]);
 		for (agent i = 0; i < _N; i++) {
