@@ -336,7 +336,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 			w[i + _N] = UNFEASIBLEVALUE;
 	#endif
 
-	value dif = 0, difsq = 0;
+	value dif = 0, difsq = 0, min_r = 0;
 	value *difbuf = (value *)malloc(sizeof(value) * nrows);
 	vector<value> difs[K + 1];
 
@@ -397,24 +397,27 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		puts("");
 		#endif
 
-		#ifdef RESIDUAL
-		fclose(res);
-		#endif
-
 		#ifdef SINGLETONS
 		for (agent i = 0; i < _N; ++i)
 			difs[1].push_back(0);
 		#endif
-	}
 
-	for (id k = 1; k <= K; ++k) {
-		std::sort(difs[k].begin(), difs[k].end());
-		//printvec(difs[k]);
-	}
+		for (id k = 1; k <= K; ++k) {
+			std::sort(difs[k].begin(), difs[k].end());
+			//printvec(difs[k]);
+		}
 
-	for (id k = 1; k <= K; ++k) {
-		inplaceinclpfxsum(difs[k]);
-		//printvec(difs[k]);
+		for (id k = 1; k <= K; ++k) {
+			inplaceinclpfxsum(difs[k]);
+			//printvec(difs[k]);
+		}
+
+		min_r = minpartition(difs);
+
+		#ifdef RESIDUAL
+		fprintf(res, "%f\n", min_r);
+		fclose(res);
+		#endif
 	}
 
 	free(difbuf);
@@ -444,7 +447,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		#else
 		printf("Average difference = %.2f\n", dif / nrows);
 		#endif
-		printf("Minimum error w.r.t. integer partitions = %.2f\n", minpartition(difs));
+		printf("Minimum error w.r.t. integer partitions = %.2f\n", min_r);
 		#endif
 	}
 
