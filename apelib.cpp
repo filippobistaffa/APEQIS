@@ -364,7 +364,18 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 			#ifdef RESIDUAL
 			#ifdef SINGLETONS
-			// TODO:
+			std::set<agent> coal;
+			for (id j = 0; j < ncols; ++j) {
+				if (A(i, j) == 1) {
+					//printf("%u %u %u\n", j, X(a, j), Y(a, j));
+					coal.insert(X(a, j));
+					coal.insert(Y(a, j));
+				}
+			}
+			//print_it(coal.begin(), coal.end());
+			for (auto it = coal.begin(); it != coal.end(); ++it) {
+				fprintf(res, "%u ", *it);
+			}
 			#else
 			for (id j = 0; j < _N; ++j) {
 				if (A(i, j) == 1) {

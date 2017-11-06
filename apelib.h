@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <float.h>
 #include <math.h> // for sqrt()
+#include <set>
 
 // Armadillo library
 
@@ -72,6 +73,20 @@ typedef struct {
 	id *size;
 
 } funcdata;
+
+// Prints the content of an iterable type
+template <typename iterator>
+__attribute__((always_inline)) inline
+void print_it(iterator begin, iterator end, const char *name = nullptr, const char *format = nullptr, const char *after = nullptr) {
+
+	if (name) printf("%s = [ ", name);
+	else printf("[ ");
+	for (iterator it = begin; it != end; ++it) {
+		if (format) { printf(format, *it); printf(" "); }
+		else cout << *it << " ";
+	}
+	printf("]%s", (after) ? after : "\n");
+}
 
 value *apeqis(const edge *g, value (*cf)(agent *, agent, void *), void *cfdata = NULL,
 	      const chunk *l = NULL, agent maxc = _N, agent maxl = _N,
