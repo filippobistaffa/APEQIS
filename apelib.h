@@ -35,6 +35,10 @@ using namespace arma;
 
 #define _C CEILBPC(_N)
 
+#ifndef MAXDRIVERS
+#define MAXDRIVERS _N
+#endif
+
 #ifdef APE_UNFEASIBLE
 #define UNFEASIBLEVALUE FLT_MAX
 #else
