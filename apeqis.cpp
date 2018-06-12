@@ -145,9 +145,6 @@ int main(int argc, char *argv[]) {
 	}
 	#endif
 
-	//agent c[] = {8, 0, 1, 2, 3, 6, 7, 8, 9};
-	//cout << mcnet(c, c[0], &mcnd) << endl;
-
 	double *w = apeqis(g, mcnet, &mcnd);
 
 	free(g);
