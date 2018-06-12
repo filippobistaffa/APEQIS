@@ -145,6 +145,17 @@ int main(int argc, char *argv[]) {
 	}
 	#endif
 
+	#ifdef FULL_GRAPH
+	edge ne = 0;
+
+	for (id i = 0; i < N; ++i) {
+		for (id j = i + 1; j < N; ++j) {
+			g[i * N + j] = g[j * N + i] = N + ne;
+			ne++;
+		}
+	}
+	#endif
+
 	double *w = apeqis(g, mcnet, &mcnd);
 
 	free(g);

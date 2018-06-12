@@ -16,6 +16,9 @@
 // Print DOT representation of graph
 //#define DOT
 
+// Use a fully connected graph
+#define FULL_GRAPH
+
 // Print d_i variables
 //#define DIFFERENCES
 
