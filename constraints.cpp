@@ -241,9 +241,6 @@ value recursive(agent *r, agent *f, agent m, const edge *g, const agent *adj, ag
 	value ret = 0;
 
 	if (*r && (d || *r == 1)) {
-		#ifdef APE_DEBUG
-		printc(r, cf(r, d, data));
-		#endif
 		ret += coalition(r, d, l, cf, data, g, adj, env, model, ea, da, wn);
 	}
 

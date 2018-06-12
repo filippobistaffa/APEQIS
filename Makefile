@@ -5,12 +5,12 @@ OUT=./apeqis
 endif
 
 CMP=g++
-WARN=-Wall -Wno-unused-result -Wno-deprecated-declarations -Wno-sign-compare -Wno-maybe-uninitialized
+WARN=-Wall -Wno-unused-result -Wno-deprecated-declarations -Wno-sign-compare -Wno-maybe-uninitialized -Wno-ignored-attributes
 OPTIM=-Ofast -march=native -funroll-loops -funsafe-loop-optimizations -falign-functions=16 -falign-loops=16 -fopenmp
 NOOPTIM=-O0 -march=native -fopenmp
 DBG=-g ${NOOPTIM}
 
-CPLEXROOT=/opt/ibm/ILOG/CPLEX_Studio1263
+CPLEXROOT=/opt/ibm/ILOG/CPLEX_Studio1271
 
 INC=-DIL_STD -I${CPLEXROOT}/cplex/include -I${CPLEXROOT}/concert/include
 LDIR=-L${CPLEXROOT}/concert/lib/x86-64_linux/static_pic -L${CPLEXROOT}/cplex/lib/x86-64_linux/static_pic
@@ -49,7 +49,7 @@ all: apeqis
 
 -include ${DEPSUBDIR}/*.d
 
-apeqis: ${COBJSUBDIR}/apeqis.o ${COBJSUBDIR}/sp.o ${COBJSUBDIR}/value.o ${COBJSUBDIR}/constraints.o ${COBJSUBDIR}/random.o ${COBJSUBDIR}/apelib.o
+apeqis: ${COBJSUBDIR}/apeqis.o ${COBJSUBDIR}/constraints.o ${COBJSUBDIR}/apelib.o
 	@${ECHOLD} apeqis
 	@${CMP} ${OPT} ${LDIR} $^ ${LINK} -o ${OUT}
 
@@ -57,15 +57,6 @@ ${COBJSUBDIR}/apelib.o: apelib.cpp
 	@$(compilec)
 
 ${COBJSUBDIR}/constraints.o: constraints.cpp
-	@$(compilec)
-
-${COBJSUBDIR}/value.o: value.cpp
-	@$(compilec)
-
-${COBJSUBDIR}/sp.o: sp.cpp
-	@$(compilec)
-
-${COBJSUBDIR}/random.o: random.c
 	@$(compilec)
 
 ${COBJSUBDIR}/apeqis.o: apeqis.cpp

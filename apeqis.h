@@ -5,12 +5,11 @@
 #include "params.h"
 #include "types.h"
 
-#define D (N * DRIVERSPERC / 100)
+#include <algorithm>
+#include <vector>
 
 using namespace std;
 
 #include "apelib.h"
-#include "value.h"
-#include "sp.h"
 
 #endif /* APEQIS_H_ */

@@ -1,8 +1,8 @@
 // Maximum coalition size
-#define K 5
+#define K N
 
 // Maximum number of drivers per car
-#define MAXDRIVERS 1
+#define MAXDRIVERS N
 
 // Enable parallelism
 #define PARALLEL
@@ -27,9 +27,6 @@
 
 // Force equality among singletons
 //#define SINGLETONS
-
-// Explicitely represent edges that are never part of a feasible coalition
-#define APE_UNFEASIBLE
 
 // CPLEX time limit in seconds
 #define TIME_LIMIT 43200 // 12H

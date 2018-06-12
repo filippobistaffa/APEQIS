@@ -72,4 +72,19 @@ void printbuf(const type *buf, unsigned n, const char *name = NULL, const char *
 	printf("]%s", (after) ? after : "\n");
 }
 
+// Prints the content of an iterable type
+
+template <typename iterator>
+__attribute__((always_inline)) inline
+void print_it(iterator begin, iterator end, const char *name = nullptr, const char *format = nullptr, const char *after = nullptr) {
+
+	if (name) printf("%s = [ ", name);
+	else printf("[ ");
+	for (iterator it = begin; it != end; ++it) {
+		if (format) { printf(format, *it); printf(" "); }
+		else std::cout << *it << " ";
+	}
+	printf("]%s", (after) ? after : "\n");
+}
+
 #endif  /* MACROS_H_ */
