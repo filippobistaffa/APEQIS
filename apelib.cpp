@@ -194,7 +194,7 @@ double *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 	env.out() << "\nCPLEX elapsed time = " << timer.getTime() << endl;
 	printf("Clock elapsed time = %f\n", (double)(t2.tv_usec - t1.tv_usec) / 1e6 + t2.tv_sec - t1.tv_sec);
 	printf("Overall difference = %.2f\n", dif);
-	printf("Percentage difference = %.2f%%\n", dif < EPSILON ? 0 : (dif * 100) / tv);
+	printf("Percentage difference = %.2f%%\n", dif < EPSILON ? 0 : (dif * 100) / fabs(tv));
 	#ifdef SINGLETONS
 	printf("Average difference (excluding singletons) = %.2f\n", dif < EPSILON ? 0 : dif / (da.getSize() - N));
 	printf("Sum of the %u highest differences = %.2f\n", N / 2, topdif);
