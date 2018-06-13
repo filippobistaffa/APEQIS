@@ -21,7 +21,9 @@ void parse_mcnet(const char *filename, edge *g, vector<vector<agent> > &pos, vec
 
 	ifstream f(filename);
 	string line;
+	#ifndef FULL_GRAPH
 	edge ne = 0;
+	#endif
 
 	for (id i = 0; i < RULES; ++i) {
 
@@ -52,6 +54,7 @@ void parse_mcnet(const char *filename, edge *g, vector<vector<agent> > &pos, vec
 		pos[i] = p;
 		neg[i] = n;
 
+		#ifndef FULL_GRAPH
 		for (vector<agent>::const_iterator it1 = p.begin(); it1 != p.end(); ++it1) {
 			for (vector<agent>::const_iterator it2 = it1 + 1; it2 != p.end(); ++it2) {
 				if (!g[*it1 * N + *it2]) {
@@ -60,6 +63,7 @@ void parse_mcnet(const char *filename, edge *g, vector<vector<agent> > &pos, vec
 				}
 			}
 		}
+		#endif
 	}
 
 	f.close();
