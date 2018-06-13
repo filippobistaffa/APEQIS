@@ -7,7 +7,7 @@ fn_re='^.*Agents[0-9]+Rules[0-9]+.*.txt$'	# Regular expression to match Ueda's f
 c=""
 r=""
 
-usage() { echo -e "Usage: $0 -i <mcnet_file>  [-w <weight>] [-c <out_file>] [-r <res_file>] [-f]\n-i\tMC-net input file (filename must be formatted as Agents<n_agents>Rules<n_Rules>*.txt)\n-w\tWeight for singletons in weighted norm (optional, default = 1)\n-c\tOutputs an input file formatted for CFSS (optional)\n-r\tWrites the residual vector to file (optional)\n-f\tUse a fully connected graph (optional)" 1>&2; exit 1; }
+usage() { echo -e "Usage: $0 -i <mcnet_file> [-w <weight>] [-c <out_file>] [-r <res_file>] [-f]\n-i\tMC-net input file (filename must be formatted as Agents<n_agents>Rules<n_Rules>*.txt)\n-w\tWeight for singletons in weighted norm (optional, default = 1)\n-c\tOutputs an input file formatted for CFSS (optional)\n-r\tWrites the residual vector to file (optional)\n-f\tUse a fully connected graph (optional)" 1>&2; exit 1; }
 
 while getopts ":i:c:w:r:f" o; do
 	case "${o}" in
