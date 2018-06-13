@@ -15,7 +15,7 @@ APEQIS must be executed by means of the [`apeqis.sh`](apeqis.sh) script, i.e.,
 ./apeqis.sh -i <mcnet_file> [-c <out_file>] [-w <weight>] [-f]
 
 Usage: 
--i	MC-net input file (filename must be formatted as Agents<n_agents>Coalitions<n_coalitions>*.txt)
+-i	MC-net input file (filename must be formatted as Agents<n_agents>Rules<n_rules>*.txt)
 -c	Outputs an input file formatted for CFSS (optional)
 -w	Weight for singletons in weighted norm (optional, default = 1)
 -f	Use a fully connected graph (optional)

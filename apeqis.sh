@@ -3,9 +3,9 @@
 red='\033[0;31m'				# Red
 nc='\033[0m'					# No color
 re='^[0-9]+$'					# Regular expression to detect natural numbers
-fn_re='^.*Agents[0-9]+Coalitions[0-9]+.*.txt$'	# Regular expression to match Ueda's filename format
+fn_re='^.*Agents[0-9]+Rules[0-9]+.*.txt$'	# Regular expression to match Ueda's filename format
 
-usage() { echo -e "Usage: $0 -i <mcnet_file> [-c <out_file>] [-w <weight>] [-f]\n-i\tMC-net input file (filename must be formatted as Agents<n_agents>Coalitions<n_coalitions>*.txt)\n-c\tOutputs an input file formatted for CFSS (optional)\n-w\tWeight for singletons in weighted norm (optional, default = 1)\n-f\tUse a fully connected graph (optional)" 1>&2; exit 1; }
+usage() { echo -e "Usage: $0 -i <mcnet_file> [-c <out_file>] [-w <weight>] [-f]\n-i\tMC-net input file (filename must be formatted as Agents<n_agents>Rules<n_rules>*.txt)\n-c\tOutputs an input file formatted for CFSS (optional)\n-w\tWeight for singletons in weighted norm (optional, default = 1)\n-f\tUse a fully connected graph (optional)" 1>&2; exit 1; }
 
 while getopts ":i:c:w:f" o; do
 	case "${o}" in
@@ -58,8 +58,8 @@ then
 fi
 
 n=${i##*Agents}
-n=${n%Coalitions*}
-r=${i##*Coalitions}
+n=${n%Rules*}
+r=${i##*Rules}
 end=`echo $r | grep -o [[:alpha:]] | head -n 1`
 r=${r%${end}*}
 
