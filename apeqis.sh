@@ -1,58 +1,32 @@
 #!/usr/bin/env bash
 
-red='\033[0;31m'			# Red
-nc='\033[0m'				# No color
-re='^[0-9]+$'				# Regular expression to detect natural numbers
-d=10					# Default d = 10
-m=2					# Default m = 2
-basename="twitter/net/twitter-2010"	# Twitter files must be in "twitter/net" subdir and have twitter-2010.* filenames
-wg="twitter/wg"				# Place WebGraph libraries in "twitter/wg" subdir
-tw="x"
+red='\033[0;31m'				# Red
+nc='\033[0m'					# No color
+re='^[0-9]+$'					# Regular expression to detect natural numbers
+fn_re='^.*Agents[0-9]+Coalitions[0-9]+.*.txt$'	# Regular expression to match Ueda's filename format
 c=""
 r=""
 
-usage() { echo -e "Usage: $0 -t <scalefree|twitter> -n <#agents> -s <seed> [-m <barab_m>] [-d <drivers%>] [-c <out_file>] [-w <weight>]\n-t\tNetwork topology (either scalefree or twitter)\n-n\tNumber of agents\n-s\tSeed\n-d\tDrivers' percentage (optional, default d = 10)\n-m\tParameter m of the Barabasi-Albert model (optional, default m = 2)\n-c\tOutputs an input file formatted for CFSS (optional)\n-w\tWeight for singletons in weighted norm (optional, default = 1)\n-r\tWrites the residual vector to file (optional)" 1>&2; exit 1; }
+usage() { echo -e "Usage: $0 -i <mcnet_file>  [-w <weight>] [-c <out_file>] [-r <res_file>] [-f]\n-i\tMC-net input file (filename must be formatted as Agents<n_agents>Coalitions<n_coalitions>*.txt)\n-w\tWeight for singletons in weighted norm (optional, default = 1)\n-c\tOutputs an input file formatted for CFSS (optional)\n-r\tWrites the residual vector to file (optional)\n-f\tUse a fully connected graph (optional)" 1>&2; exit 1; }
 
-while getopts ":t:n:s:d:m:c:w:r:" o; do
+while getopts ":i:c:w:r:f" o; do
 	case "${o}" in
-	t)
-		t=${OPTARG}
-		if ! [[ $t == "scalefree" || $t == "twitter" ]] ; then
-			echo -e "${red}Network topology must be either scalefree or twitter!${nc}\n" 1>&2
+	i)
+		i=${OPTARG}
+		if [ ! -f "$i" ]
+		then
+			echo -e "${red}Input file \"$i\" not found!${nc}\n" 1>&2
 			usage
 		fi
-		;;
-	n)
-		n=${OPTARG}
-		if ! [[ $n =~ $re ]] ; then
-			echo -e "${red}Number of agents must be a number!${nc}\n" 1>&2
-			usage
-		fi
-		;;
-	s)
-		s=${OPTARG}
-		if ! [[ $s =~ $re ]] ; then
-			echo -e "${red}Seed must be a number!${nc}\n" 1>&2
-			usage
-		fi
-		;;
-	d)
-		d=${OPTARG}
-		if ! [[ $d =~ $re ]] ; then
-			echo -e "${red}Drivers' percentage must be a number!${nc}\n" 1>&2
-			usage
-		fi
-		;;
-	m)
-		m=${OPTARG}
-		if ! [[ $m =~ $re ]] ; then
-			echo -e "${red}Parameter m must be a number!${nc}\n" 1>&2
+		if ! [[ $i =~ $fn_re ]] ; then
+			echo -e "${red}Input filename \"$i\" not in the correct format!${nc}\n" 1>&2
 			usage
 		fi
 		;;
 	w)
 		w=${OPTARG}
-		if ! [[ $w =~ $re ]] ; then
+		if ! [[ $w =~ $re ]]
+		then
 			echo -e "${red}Parameter w must be a number!${nc}\n" 1>&2
 			usage
 		fi
@@ -81,6 +55,9 @@ while getopts ":t:n:s:d:m:c:w:r:" o; do
 			rm $r
 		fi
 		;;
+	f)
+		f=1
+		;;
 	\?)
 		echo -e "${red}-$OPTARG is not a valid option!${nc}\n" 1>&2
 		usage
@@ -89,16 +66,23 @@ while getopts ":t:n:s:d:m:c:w:r:" o; do
 done
 shift $((OPTIND-1))
 
-if [ -z "${t}" ] || [ -z "${n}" ] || [ -z "${s}" ]; then
-	echo -e "${red}Missing one or more required options!${nc}\n" 1>&2
+if [ -z "${i}" ]
+then
+	echo -e "${red}Missing input file!${nc}\n" 1>&2
 	usage
 fi
 
+n=${i##*Agents}
+n=${n%Coalitions*}
+rul=${i##*Coalitions}
+end=`echo $rul | grep -o [[:alpha:]] | head -n 1`
+rul=${rul%${end}*}
+
 tmp=`mktemp`
 echo "#define _N $n" > $tmp
+echo "#define _D $n" >> $tmp
 echo "#define CORES `grep -c ^processor /proc/cpuinfo`" >> $tmp
-echo "#define DRIVERSPERC $d" >> $tmp
-echo "#define _D (_N * DRIVERSPERC / 100)" >> $tmp
+echo "#define RULES $rul" >> $tmp
 
 if [ ! -z "${w}" ]
 then
@@ -119,13 +103,9 @@ else
 	r="x"
 fi
 
-if [[ $t == "scalefree" ]]
+if [ ! -z "${f}" ]
 then
-	echo "#define _M $m" >> $tmp
-else
-	echo "#define TWITTER" >> $tmp
-	tw=`mktemp`
-	java -Xmx4000m -cp .:$wg/* ReduceGraph $basename $n $s | grep -v WARN > $tw
+	echo "#define FULL_GRAPH" >> $tmp
 fi
 
 if [ ! -f instance.h ]
@@ -146,13 +126,8 @@ fi
 make -j
 if [[ $? == 0 ]]
 then
-	./apeqis $s $tw $c $r
+	./apeqis $i $c $r
 	rc=$?
-fi
-
-if [[ $t == "twitter" ]]
-then
-	rm $tw
 fi
 
 exit $rc

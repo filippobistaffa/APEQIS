@@ -68,21 +68,12 @@ all: apeqis
 
 -include ${DEPSUBDIR}/*.d
 
-apeqis: ${COBJSUBDIR}/apeqis.o ${COBJSUBDIR}/sp.o ${COBJSUBDIR}/value.o ${COBJSUBDIR}/random.o ${COBJSUBDIR}/apelib.o \
+apeqis: ${COBJSUBDIR}/apeqis.o ${COBJSUBDIR}/apelib.o \
 	${COBJSUBDIR}/ip.o ${CUOBJSUBDIR}/cgls.o
 	@${ECHOLD} apeqis
 	@nvcc ${CUOPT} ${LDIR} $^ ${LINK} -o ${OUT}
 
 ${COBJSUBDIR}/apelib.o: apelib.cpp
-	@$(compilec)
-
-${COBJSUBDIR}/value.o: value.cpp
-	@$(compilec)
-
-${COBJSUBDIR}/sp.o: sp.cpp
-	@$(compilec)
-
-${COBJSUBDIR}/random.o: random.c
 	@$(compilec)
 
 ${COBJSUBDIR}/apeqis.o: apeqis.cpp

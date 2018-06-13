@@ -430,7 +430,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 
 		#ifdef APE_CSV
 		printf("%f,%f,%f,%f,%f,%f,%f\n",
-		       dif, (dif * 1e2) / tv, dif / nrows, difsq, (difsq * 1e2) / tv, difsq / nrows, rt / 1e3);
+		       dif, (dif * 1e2) / tv, dif / nrows, difsq, (difsq * 1e2) / fabs(tv), difsq / nrows, rt / 1e3);
 		#endif
 
 		#ifndef APE_SILENT
@@ -441,7 +441,7 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 			cout << "e_" << X(a, i - _N) << "," << Y(a, i - _N) << " = " << w[i] << endl;
 		cout << "\nSolution elapsed time = " << rt << "ms" << endl;
 		printf("Overall difference = %.2f\n", dif);
-		printf("Percentage difference = %.2f%%\n", dif < EPSILON ? 0 : (dif * 100) / tv);
+		printf("Percentage difference = %.2f%%\n", dif < EPSILON ? 0 : (dif * 100) / fabs(tv));
 		#ifdef SINGLETONS
 		printf("Average difference (excluding singletons) = %.2f\n", dif < EPSILON ? 0 : dif / nrows);
 		#else
@@ -458,11 +458,11 @@ value *apeqis(const edge *g, value (*cf)(agent *, agent, void *),
 		#ifdef CFSS
 		FILE *cfss = fopen(cfssfilename, "w+");
 		for (agent i = 0; i < _N; i++)
-			fprintf(cfss, "%s%f\n", GET(l ? l : tl, i) ? "*" : "", -w[i]);
+			fprintf(cfss, "%s%f\n", GET(l ? l : tl, i) ? "*" : "", w[i]);
 		for (agent i = 0; i < _N; i++) {
 			for (agent j = 0; j < adj[i * _N]; j++) {
 				const agent k = adj[i * _N + j + 1];
-				if (k > i) fprintf(cfss, "%u %u %f\n", i, k, -w[g[i * _N + k]]);
+				if (k > i) fprintf(cfss, "%u %u %f\n", i, k, w[g[i * _N + k]]);
 			}
 		}
 		fclose(cfss);

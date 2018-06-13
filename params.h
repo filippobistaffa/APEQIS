@@ -1,8 +1,8 @@
 // Maximum coalition size
-#define K 5
+#define K _N
 
 // Maximum number of drivers per car
-#define MAXDRIVERS 1
+#define MAXDRIVERS _N
 
 // Enable parallelism
 #define PARALLEL
@@ -36,6 +36,3 @@
 
 // Print B vector
 //#define PRINTB
-
-// Explicitely represent edges that are never part of a feasible coalition
-//#define APE_UNFEASIBLE
