@@ -2,6 +2,8 @@
 
 APEQIS: APproximately EQuivalent IS-represented cooperative games
 ===================
+This repository contains the implementation of the algorithm presented by Filippo Bistaffa, Georgios Chalkiadakis, and Alessandro Farinelli in “[Efficient Coalition Structure Generation via Approximately Equivalent Induced Subgraph Games](	http://hdl.handle.net/10261/223529)”, IEEE Transactions on Cybernetics (IEEE TCYB), 2020 (in press), DOI: [10.1109/TCYB.2020.3040622](https://doi.org/10.1109/TCYB.2020.3040622).
+
 
 Requirements
 ----------
